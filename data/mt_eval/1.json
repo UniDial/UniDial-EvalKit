@@ -1,0 +1,255 @@
+{
+  "dialog_id": 1,
+  "dialog_raw_info": {
+    "raw_id": "2",
+    "source_file": "expansion_multi.jsonl",
+    "line_index": 1
+  },
+  "dialog_labels": {
+    "task_type": "expansion",
+    "task_subtype": "multi"
+  },
+  "dialog_eval_config": {
+    "use_reference_history": false
+  },
+  "dialog_turns": [
+    {
+      "turn_id": 0,
+      "role": "user",
+      "content": "Content: Yesterday, Lumina City witnessed the spectacular conclusion of the first-ever Hoverball World Championship, a sport that has captured the imagination of millions worldwide. Hoverball, a game that combines elements of basketball, soccer, and advanced hover technology, was introduced just five years ago by the innovative sports scientist Dr. Elara Miro.\n\nThe championship match, held in the stunning, gravity-defying Lumina Arena, was between the Solar Flares and the Nebula Knights. The arena, known for its floating platforms and dynamic environment, provided an extraordinary backdrop for the event. Spectators watched in awe as players maneuvered on hoverboards, defying gravity and showcasing incredible athleticism.\n\nKey players in the match included Jaxon \"Lightning\" Vega of the Solar Flares, known for his rapid movements and precision shooting, and Nebula Knights' captain Lyra \"Meteor\" Kael, famed for her strategic plays and unmatched defense. The game was a breathtaking display of skill, strategy, and futuristic technology.\n\nThe first half saw the Solar Flares taking a narrow lead, with Vega's incredible mid-air acrobatics earning them crucial points. However, the Nebula Knights made a stunning comeback in the second half, thanks to Kael's brilliant coordination and a game-changing gravity-defying goal.\n\nAs the final buzzer sounded, the score was tied, leading to an intense tie-breaker. In the end, it was Vega's daring last-minute goal that clinched victory for the Solar Flares. The crowd erupted in cheers as confetti rained down, and the Solar Flares lifted the gleaming Hoverball Trophy, designed by renowned sculptor Atlas Pyron.\n\nThe Hoverball World Championship not only marked a new chapter in sports history but also showcased the incredible potential of human innovation and spirit. Fans around the world are already eagerly anticipating next year's championship, as Hoverball continues to soar in popularity. \n\nInstruction: Write a short summary based on the initially provided content. Do not include any further explanations or extra output in your response.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 1,
+      "role": "assistant",
+      "content": null,
+      "reference": "The first Hoverball World Championship concluded spectacularly in Lumina City's Lumina Arena. This new sport, a fusion of basketball, soccer, and hover technology, was created by Dr. Elara Miro five years ago. The final match was between the Solar Flares and the Nebula Knights. Players like Jaxon \"Lightning\" Vega and Lyra \"Meteor\" Kael showcased their talents on hoverboards in the arena's unique, gravity-defying environment. The Solar Flares initially led, thanks to Vega's skills, but the Nebula Knights, led by Kael, made a strong comeback. The game, tied at the end of regular play, was won by Vega's last-minute goal, securing victory for the Solar Flares. The event, marked by high-level athleticism and technological innovation, has significantly increased Hoverball's global popularity, with fans eagerly awaiting next year's championship.",
+      "reference_document": "Yesterday, Lumina City witnessed the spectacular conclusion of the first-ever Hoverball World Championship, a sport that has captured the imagination of millions worldwide. Hoverball, a game that combines elements of basketball, soccer, and advanced hover technology, was introduced just five years ago by the innovative sports scientist Dr. Elara Miro.\n\nThe championship match, held in the stunning, gravity-defying Lumina Arena, was between the Solar Flares and the Nebula Knights. The arena, known for its floating platforms and dynamic environment, provided an extraordinary backdrop for the event. Spectators watched in awe as players maneuvered on hoverboards, defying gravity and showcasing incredible athleticism.\n\nKey players in the match included Jaxon \"Lightning\" Vega of the Solar Flares, known for his rapid movements and precision shooting, and Nebula Knights' captain Lyra \"Meteor\" Kael, famed for her strategic plays and unmatched defense. The game was a breathtaking display of skill, strategy, and futuristic technology.\n\nThe first half saw the Solar Flares taking a narrow lead, with Vega's incredible mid-air acrobatics earning them crucial points. However, the Nebula Knights made a stunning comeback in the second half, thanks to Kael's brilliant coordination and a game-changing gravity-defying goal.\n\nAs the final buzzer sounded, the score was tied, leading to an intense tie-breaker. In the end, it was Vega's daring last-minute goal that clinched victory for the Solar Flares. The crowd erupted in cheers as confetti rained down, and the Solar Flares lifted the gleaming Hoverball Trophy, designed by renowned sculptor Atlas Pyron.\n\nThe Hoverball World Championship not only marked a new chapter in sports history but also showcased the incredible potential of human innovation and spirit. Fans around the world are already eagerly anticipating next year's championship, as Hoverball continues to soar in popularity.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "expansion_evaluation",
+              "constraints": [
+                "Write a short summary based on the initially provided content. Do not include any further explanations or extra output in your response."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 2,
+      "role": "user",
+      "content": "Classify the initially provided content into one of the following labels: ethics, sports, music, art, science, literature, economics, medicine, food, technology, history, travel, education. Just provide the correct label without any further explanations or extra output.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 3,
+      "role": "assistant",
+      "content": null,
+      "reference": "sports",
+      "reference_document": "Yesterday, Lumina City witnessed the spectacular conclusion of the first-ever Hoverball World Championship, a sport that has captured the imagination of millions worldwide. Hoverball, a game that combines elements of basketball, soccer, and advanced hover technology, was introduced just five years ago by the innovative sports scientist Dr. Elara Miro.\n\nThe championship match, held in the stunning, gravity-defying Lumina Arena, was between the Solar Flares and the Nebula Knights. The arena, known for its floating platforms and dynamic environment, provided an extraordinary backdrop for the event. Spectators watched in awe as players maneuvered on hoverboards, defying gravity and showcasing incredible athleticism.\n\nKey players in the match included Jaxon \"Lightning\" Vega of the Solar Flares, known for his rapid movements and precision shooting, and Nebula Knights' captain Lyra \"Meteor\" Kael, famed for her strategic plays and unmatched defense. The game was a breathtaking display of skill, strategy, and futuristic technology.\n\nThe first half saw the Solar Flares taking a narrow lead, with Vega's incredible mid-air acrobatics earning them crucial points. However, the Nebula Knights made a stunning comeback in the second half, thanks to Kael's brilliant coordination and a game-changing gravity-defying goal.\n\nAs the final buzzer sounded, the score was tied, leading to an intense tie-breaker. In the end, it was Vega's daring last-minute goal that clinched victory for the Solar Flares. The crowd erupted in cheers as confetti rained down, and the Solar Flares lifted the gleaming Hoverball Trophy, designed by renowned sculptor Atlas Pyron.\n\nThe Hoverball World Championship not only marked a new chapter in sports history but also showcased the incredible potential of human innovation and spirit. Fans around the world are already eagerly anticipating next year's championship, as Hoverball continues to soar in popularity.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "expansion_evaluation",
+              "constraints": [
+                "Classify the initially provided content into one of the following labels: ethics, sports, music, art, science, literature, economics, medicine, food, technology, history, travel, education. Just provide the correct label without any further explanations or extra output."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 4,
+      "role": "user",
+      "content": "List all the noun and adjectives in the first paragraph of the initially provided content. Your answers should be separated by commas and formatted as 'Noun: ..., ...; Adjectives: ..., ...'.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 5,
+      "role": "assistant",
+      "content": null,
+      "reference": "Nouns: Yesterday, Lumina City, conclusion, Hoverball World Championship, sport, imagination, millions, game, elements, basketball, soccer, hover technology, Dr. Elara Miro; Adjectives: spectacular, first-ever, innovative.",
+      "reference_document": "Yesterday, Lumina City witnessed the spectacular conclusion of the first-ever Hoverball World Championship, a sport that has captured the imagination of millions worldwide. Hoverball, a game that combines elements of basketball, soccer, and advanced hover technology, was introduced just five years ago by the innovative sports scientist Dr. Elara Miro.\n\nThe championship match, held in the stunning, gravity-defying Lumina Arena, was between the Solar Flares and the Nebula Knights. The arena, known for its floating platforms and dynamic environment, provided an extraordinary backdrop for the event. Spectators watched in awe as players maneuvered on hoverboards, defying gravity and showcasing incredible athleticism.\n\nKey players in the match included Jaxon \"Lightning\" Vega of the Solar Flares, known for his rapid movements and precision shooting, and Nebula Knights' captain Lyra \"Meteor\" Kael, famed for her strategic plays and unmatched defense. The game was a breathtaking display of skill, strategy, and futuristic technology.\n\nThe first half saw the Solar Flares taking a narrow lead, with Vega's incredible mid-air acrobatics earning them crucial points. However, the Nebula Knights made a stunning comeback in the second half, thanks to Kael's brilliant coordination and a game-changing gravity-defying goal.\n\nAs the final buzzer sounded, the score was tied, leading to an intense tie-breaker. In the end, it was Vega's daring last-minute goal that clinched victory for the Solar Flares. The crowd erupted in cheers as confetti rained down, and the Solar Flares lifted the gleaming Hoverball Trophy, designed by renowned sculptor Atlas Pyron.\n\nThe Hoverball World Championship not only marked a new chapter in sports history but also showcased the incredible potential of human innovation and spirit. Fans around the world are already eagerly anticipating next year's championship, as Hoverball continues to soar in popularity.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "expansion_evaluation",
+              "constraints": [
+                "List all the noun and adjectives in the first paragraph of the initially provided content. Your answers should be separated by commas and formatted as 'Noun: ..., ...; Adjectives: ..., ...'."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 6,
+      "role": "user",
+      "content": "Base on the initially provided content, answer the question: Who scored the daring last-minute goal in the Hoverball World Championship final, leading the Solar Flares to victory?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 7,
+      "role": "assistant",
+      "content": null,
+      "reference": "Jaxon \"Lightning\" Vega",
+      "reference_document": "Yesterday, Lumina City witnessed the spectacular conclusion of the first-ever Hoverball World Championship, a sport that has captured the imagination of millions worldwide. Hoverball, a game that combines elements of basketball, soccer, and advanced hover technology, was introduced just five years ago by the innovative sports scientist Dr. Elara Miro.\n\nThe championship match, held in the stunning, gravity-defying Lumina Arena, was between the Solar Flares and the Nebula Knights. The arena, known for its floating platforms and dynamic environment, provided an extraordinary backdrop for the event. Spectators watched in awe as players maneuvered on hoverboards, defying gravity and showcasing incredible athleticism.\n\nKey players in the match included Jaxon \"Lightning\" Vega of the Solar Flares, known for his rapid movements and precision shooting, and Nebula Knights' captain Lyra \"Meteor\" Kael, famed for her strategic plays and unmatched defense. The game was a breathtaking display of skill, strategy, and futuristic technology.\n\nThe first half saw the Solar Flares taking a narrow lead, with Vega's incredible mid-air acrobatics earning them crucial points. However, the Nebula Knights made a stunning comeback in the second half, thanks to Kael's brilliant coordination and a game-changing gravity-defying goal.\n\nAs the final buzzer sounded, the score was tied, leading to an intense tie-breaker. In the end, it was Vega's daring last-minute goal that clinched victory for the Solar Flares. The crowd erupted in cheers as confetti rained down, and the Solar Flares lifted the gleaming Hoverball Trophy, designed by renowned sculptor Atlas Pyron.\n\nThe Hoverball World Championship not only marked a new chapter in sports history but also showcased the incredible potential of human innovation and spirit. Fans around the world are already eagerly anticipating next year's championship, as Hoverball continues to soar in popularity.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "expansion_evaluation",
+              "constraints": [
+                "Base on the initially provided content, answer the question: Who scored the daring last-minute goal in the Hoverball World Championship final, leading the Solar Flares to victory?"
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 8,
+      "role": "user",
+      "content": "List all the people in the initially provided content. Your answers should be separated by commas. Do not include any further explanations or extra output in your response.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 9,
+      "role": "assistant",
+      "content": null,
+      "reference": "Dr. Elara Miro, Jaxon 'Lightning' Vega, Lyra 'Meteor' Kael, Atlas Pyron",
+      "reference_document": "Yesterday, Lumina City witnessed the spectacular conclusion of the first-ever Hoverball World Championship, a sport that has captured the imagination of millions worldwide. Hoverball, a game that combines elements of basketball, soccer, and advanced hover technology, was introduced just five years ago by the innovative sports scientist Dr. Elara Miro.\n\nThe championship match, held in the stunning, gravity-defying Lumina Arena, was between the Solar Flares and the Nebula Knights. The arena, known for its floating platforms and dynamic environment, provided an extraordinary backdrop for the event. Spectators watched in awe as players maneuvered on hoverboards, defying gravity and showcasing incredible athleticism.\n\nKey players in the match included Jaxon \"Lightning\" Vega of the Solar Flares, known for his rapid movements and precision shooting, and Nebula Knights' captain Lyra \"Meteor\" Kael, famed for her strategic plays and unmatched defense. The game was a breathtaking display of skill, strategy, and futuristic technology.\n\nThe first half saw the Solar Flares taking a narrow lead, with Vega's incredible mid-air acrobatics earning them crucial points. However, the Nebula Knights made a stunning comeback in the second half, thanks to Kael's brilliant coordination and a game-changing gravity-defying goal.\n\nAs the final buzzer sounded, the score was tied, leading to an intense tie-breaker. In the end, it was Vega's daring last-minute goal that clinched victory for the Solar Flares. The crowd erupted in cheers as confetti rained down, and the Solar Flares lifted the gleaming Hoverball Trophy, designed by renowned sculptor Atlas Pyron.\n\nThe Hoverball World Championship not only marked a new chapter in sports history but also showcased the incredible potential of human innovation and spirit. Fans around the world are already eagerly anticipating next year's championship, as Hoverball continues to soar in popularity.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "expansion_evaluation",
+              "constraints": [
+                "List all the people in the initially provided content. Your answers should be separated by commas. Do not include any further explanations or extra output in your response."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 10,
+      "role": "user",
+      "content": "Translate the second paragraph to Chinese. Just provide the translation directly without any further explanations or extra output.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 11,
+      "role": "assistant",
+      "content": null,
+      "reference": "这场冠军赛在令人惊叹的、充满挑战重力的露米纳竞技场举行，比赛是由太阳耀斑队和星云骑士队进行的。这个竞技场以其漂浮的平台和动态环境而著名，为比赛提供了非凡的背景。观众们惊叹地观看着运动员们在悬浮板上操作，挑战重力，展示了令人难以置信的运动能力。",
+      "reference_document": "Yesterday, Lumina City witnessed the spectacular conclusion of the first-ever Hoverball World Championship, a sport that has captured the imagination of millions worldwide. Hoverball, a game that combines elements of basketball, soccer, and advanced hover technology, was introduced just five years ago by the innovative sports scientist Dr. Elara Miro.\n\nThe championship match, held in the stunning, gravity-defying Lumina Arena, was between the Solar Flares and the Nebula Knights. The arena, known for its floating platforms and dynamic environment, provided an extraordinary backdrop for the event. Spectators watched in awe as players maneuvered on hoverboards, defying gravity and showcasing incredible athleticism.\n\nKey players in the match included Jaxon \"Lightning\" Vega of the Solar Flares, known for his rapid movements and precision shooting, and Nebula Knights' captain Lyra \"Meteor\" Kael, famed for her strategic plays and unmatched defense. The game was a breathtaking display of skill, strategy, and futuristic technology.\n\nThe first half saw the Solar Flares taking a narrow lead, with Vega's incredible mid-air acrobatics earning them crucial points. However, the Nebula Knights made a stunning comeback in the second half, thanks to Kael's brilliant coordination and a game-changing gravity-defying goal.\n\nAs the final buzzer sounded, the score was tied, leading to an intense tie-breaker. In the end, it was Vega's daring last-minute goal that clinched victory for the Solar Flares. The crowd erupted in cheers as confetti rained down, and the Solar Flares lifted the gleaming Hoverball Trophy, designed by renowned sculptor Atlas Pyron.\n\nThe Hoverball World Championship not only marked a new chapter in sports history but also showcased the incredible potential of human innovation and spirit. Fans around the world are already eagerly anticipating next year's championship, as Hoverball continues to soar in popularity.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "expansion_evaluation",
+              "constraints": [
+                "Translate the second paragraph to Chinese. Just provide the translation directly without any further explanations or extra output."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 12,
+      "role": "user",
+      "content": "List all the relations of the types [based in, work for, located in, live in] among the entities [person, location, organization] in the initially provided content. Just provide the relations that were explicitly stated in the context without any further explanations or extra output. Provide the relations in the format of (entity 1, relation, entity 2), (entity 1, relation, entity 2), .... For example: (Shi Liming, work for, Institute of Zoology).",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 13,
+      "role": "assistant",
+      "content": null,
+      "reference": "(Dr. Elara Miro, work for, Hoverball), (Lumina City, located in, Lumina Arena), (Jaxon 'Lightning' Vega, work for, Solar Flares), (Lyra 'Meteor' Kael, work for, Nebula Knights), (Solar Flares, based in, Lumina Arena), (Nebula Knights, based in, Lumina Arena), (Atlas Pyron, work for, Hoverball Trophy), (Jaxon 'Lightning' Vega, live in, Lumina City), (Lyra 'Meteor' Kael, live in, Lumina City)",
+      "reference_document": "Yesterday, Lumina City witnessed the spectacular conclusion of the first-ever Hoverball World Championship, a sport that has captured the imagination of millions worldwide. Hoverball, a game that combines elements of basketball, soccer, and advanced hover technology, was introduced just five years ago by the innovative sports scientist Dr. Elara Miro.\n\nThe championship match, held in the stunning, gravity-defying Lumina Arena, was between the Solar Flares and the Nebula Knights. The arena, known for its floating platforms and dynamic environment, provided an extraordinary backdrop for the event. Spectators watched in awe as players maneuvered on hoverboards, defying gravity and showcasing incredible athleticism.\n\nKey players in the match included Jaxon \"Lightning\" Vega of the Solar Flares, known for his rapid movements and precision shooting, and Nebula Knights' captain Lyra \"Meteor\" Kael, famed for her strategic plays and unmatched defense. The game was a breathtaking display of skill, strategy, and futuristic technology.\n\nThe first half saw the Solar Flares taking a narrow lead, with Vega's incredible mid-air acrobatics earning them crucial points. However, the Nebula Knights made a stunning comeback in the second half, thanks to Kael's brilliant coordination and a game-changing gravity-defying goal.\n\nAs the final buzzer sounded, the score was tied, leading to an intense tie-breaker. In the end, it was Vega's daring last-minute goal that clinched victory for the Solar Flares. The crowd erupted in cheers as confetti rained down, and the Solar Flares lifted the gleaming Hoverball Trophy, designed by renowned sculptor Atlas Pyron.\n\nThe Hoverball World Championship not only marked a new chapter in sports history but also showcased the incredible potential of human innovation and spirit. Fans around the world are already eagerly anticipating next year's championship, as Hoverball continues to soar in popularity.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "expansion_evaluation",
+              "constraints": [
+                "List all the relations of the types [based in, work for, located in, live in] among the entities [person, location, organization] in the initially provided content. Just provide the relations that were explicitly stated in the context without any further explanations or extra output. Provide the relations in the format of (entity 1, relation, entity 2), (entity 1, relation, entity 2), .... For example: (Shi Liming, work for, Institute of Zoology)."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {}
+    }
+  ]
+}

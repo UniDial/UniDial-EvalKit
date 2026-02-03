@@ -407,7 +407,7 @@ def main():
             metric_configs = {name: {} for name in metric_configs}
             
         for name, config in metric_configs.items():
-            print(name, config)
+            # print(name, config)
             if name not in METRIC_REGISTRY:
                 logger.warning(f"Metric {name} not found in registry. Skipping.")
                 continue

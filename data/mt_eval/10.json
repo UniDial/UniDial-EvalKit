@@ -1,0 +1,413 @@
+{
+  "dialog_id": 10,
+  "dialog_raw_info": {
+    "raw_id": "1",
+    "source_file": "recollection_multi_global-inst.jsonl",
+    "line_index": 0
+  },
+  "dialog_labels": {
+    "task_type": "recollection",
+    "task_subtype": "multi"
+  },
+  "dialog_eval_config": {
+    "use_reference_history": false
+  },
+  "dialog_turns": [
+    {
+      "turn_id": 0,
+      "role": "user",
+      "content": "Begin all your responses in the upcoming conversation with the letter o. Keep all your responses under 200 words.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 1,
+      "role": "assistant",
+      "content": "ok.",
+      "reference": "ok.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 2,
+      "role": "user",
+      "content": "Is it morally wrong to break a law you consider unjust?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 3,
+      "role": "assistant",
+      "content": null,
+      "reference": "Opinions on this matter can vary greatly. Some believe in absolute adherence to the law, regardless of personal views, while others argue that civil disobedience can be a moral obligation when laws are unjust. It's important to consider the potential consequences and the ethical implications of both obeying and disobeying such laws. However, it's also crucial to remember that peaceful protest and advocacy for change are often more effective and less risky ways to challenge unjust laws.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 4,
+      "role": "user",
+      "content": "What role do sports play in promoting unity and cultural understanding?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 5,
+      "role": "assistant",
+      "content": null,
+      "reference": "Outstandingly, sports play a significant role in promoting unity and cultural understanding. They bring people together from diverse backgrounds and cultures, fostering a sense of shared identity and common purpose. Sports events often serve as a platform where cultural differences are set aside, and unity is celebrated. They can help break down cultural barriers, promote mutual respect, and encourage understanding and peace among different communities. Through sports, individuals can learn about other cultures, traditions, and perspectives, thereby promoting cultural understanding.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 6,
+      "role": "user",
+      "content": "Write a product description for a paint set that can help beginner artists hone their skills.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 7,
+      "role": "assistant",
+      "content": null,
+      "reference": "Opt for our beginner-friendly paint set, designed to help budding artists hone their skills. This set includes a variety of vibrant, high-quality acrylic paints that offer excellent coverage and a smooth, easy-to-blend texture. Ideal for a range of surfaces, from canvas to paper, these paints are quick-drying and maintain their brilliance once dry. The set also features a selection of brushes in different sizes, perfect for experimenting with various painting techniques. A handy mixing palette is included, encouraging beginners to explore and create their own unique shades. This paint set is not just about providing tools; it's about inspiring creativity and helping you embark on your artistic journey.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 8,
+      "role": "user",
+      "content": "Is a vegan diet healthier than a diet including meat?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 9,
+      "role": "assistant",
+      "content": null,
+      "reference": "Overall, whether a vegan diet is healthier than a diet including meat can depend on several factors. Both diets can be healthy or unhealthy depending on the choices made within them. A well-planned vegan diet can provide all the nutrients your body needs, and it tends to be lower in saturated fat and higher in fiber. However, vegans need to ensure they get enough vitamin B12, iron, and omega-3 fatty acids, which are nutrients more readily available in meat. On the other hand, a diet including lean meats can also be part of a healthy diet, providing high-quality protein and essential nutrients like vitamin B12 and iron. The key to a healthy diet, whether vegan or not, is balance, variety, and moderation.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 10,
+      "role": "user",
+      "content": "What impact does deforestation have on our global climate?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 11,
+      "role": "assistant",
+      "content": null,
+      "reference": "Overwhelmingly, deforestation has a significant impact on our global climate. Trees absorb carbon dioxide, a greenhouse gas, from the atmosphere, helping to regulate the Earth's climate. When forests are cut down, not only is this valuable absorption capacity lost, but the carbon stored in the trees is released back into the atmosphere, contributing to global warming. Additionally, forests influence local weather patterns and create microclimates. Their loss can lead to more extreme temperature swings that can be harmful to plants and animals. Deforestation also threatens biodiversity, as many species depend on forests for habitat.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 12,
+      "role": "user",
+      "content": "Write a blog post talking about tips to ace job interview.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 13,
+      "role": "assistant",
+      "content": null,
+      "reference": "Opening doors to new career opportunities starts with acing your job interview. Here are some tips to help you make a great impression and increase your chances of success.\n\n1. **Organize Your Thoughts**: Before the interview, take time to reflect on your skills, experiences, and goals. Be ready to articulate why you're the best fit for the job.\n\n2. **Observe Company Culture**: Research the company's mission, values, and work environment. This will help you align your responses with the company's culture and show that you're a good fit.\n\n3. **Opt for Professional Attire**: Dress appropriately for the interview. When in doubt, it's better to be overdressed than underdressed.\n\n4. **Offer Specific Examples**: Use the STAR method (Situation, Task, Action, Result) to structure your responses. This will help you provide concrete examples of your skills and experiences.\n\n5. **Open Up About Your Achievements**: Don't be shy about sharing your accomplishments. This is your chance to shine and show what you can bring to the company.\n\n6. **Optimistic Attitude**: Stay positive, even when discussing challenges or mistakes. Employers appreciate candidates who can learn from their experiences and maintain a positive outlook.\n\n7. **Observe Body Language**: Maintain eye contact, offer a firm handshake, and sit up straight. These non-verbal cues can show confidence and engagement.\n\n8. **Organize Your Questions**: Prepare thoughtful questions to ask at the end of the interview. This shows your interest in the role and the company.\n\nRemember, interviews are not just about proving you're right for the job, but also about finding out if the job is right for you. Good luck!",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 14,
+      "role": "user",
+      "content": "Write a blog post on the power of photography in portraying societal issues.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 15,
+      "role": "assistant",
+      "content": null,
+      "reference": "Often overlooked, photography holds immense power in portraying societal issues. It serves as a visual language that transcends cultural and linguistic boundaries, making it a potent tool for social commentary and change.\n\n1. **Observation of Reality**: Photography captures moments in time, presenting reality as it is. It can highlight societal issues that often go unnoticed or are intentionally ignored, forcing viewers to confront these realities.\n\n2. **Opportunity for Empathy**: Powerful images can evoke strong emotions, fostering empathy and understanding. They allow viewers to see the world from different perspectives, promoting a sense of shared humanity.\n\n3. **Ongoing Awareness**: Photographs can keep societal issues in the public eye, maintaining awareness and preventing complacency. They serve as a constant reminder of the ongoing struggles faced by various communities.\n\n4. **Optimizing Advocacy**: Photography can be a powerful advocacy tool. NGOs, activists, and social movements often use impactful images to draw attention to their causes, mobilize support, and influence policy change.\n\n5. **Opening Dialogues**: Photographs can spark conversations about societal issues, encouraging critical thinking and debate. They can challenge stereotypes, break down barriers, and promote cultural understanding.\n\nIn conclusion, photography is more than just a form of art; it's a powerful medium for social commentary and change. It has the power to reveal truths, challenge perceptions, and inspire action, making it an invaluable tool in addressing societal issues.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 16,
+      "role": "user",
+      "content": "Are black holes gateways to other dimensions?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 17,
+      "role": "assistant",
+      "content": null,
+      "reference": "On the basis of current scientific understanding, black holes are not considered gateways to other dimensions. Black holes are regions of space where gravity is so strong that nothing, not even light, can escape from them. They are formed from the remnants of massive stars and are characterized by an event horizon, a boundary beyond which everything is drawn into the black hole. While they are fascinating and complex phenomena, there is no empirical evidence or widely accepted theory suggesting that they serve as portals to other dimensions. However, the extreme conditions and the still not fully understood nature of black holes make them a subject of ongoing scientific exploration and speculation.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 18,
+      "role": "user",
+      "content": "Are humans the only animals that use tools?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 19,
+      "role": "assistant",
+      "content": null,
+      "reference": "Observably, humans are not the only animals that use tools. Many other species have been observed using tools in the wild. For example, chimpanzees use sticks to extract termites from their mounds, and sea otters use rocks to crack open shellfish. Crows have been observed bending wires into hooks to retrieve food from narrow spaces. Dolphins have been seen using sponges to protect their noses while foraging on the seafloor. These examples show that tool use is not exclusive to humans and can be found in various animal species, demonstrating their problem-solving abilities and cognitive sophistication.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    },
+    {
+      "turn_id": 20,
+      "role": "user",
+      "content": "How has social media influenced the way we consume news?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 21,
+      "role": "assistant",
+      "content": null,
+      "reference": "Over the past decade, social media has significantly influenced the way we consume news. It has made news more accessible and immediate. People can receive updates in real-time and share news instantly with their networks. Social media platforms also allow for a more interactive news experience, where users can comment, share their opinions, and engage in discussions. However, the rise of social media as a news source has also led to challenges. The spread of misinformation or \"fake news\" has become a major concern. It's crucial for users to verify the credibility of the news sources and the accuracy of the information they encounter on social media.",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    }
+  ]
+}

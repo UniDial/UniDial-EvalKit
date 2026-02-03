@@ -1,0 +1,336 @@
+{
+  "dialog_id": 8,
+  "dialog_raw_info": {
+    "raw_id": "1",
+    "source_file": "recollection_multi_cls.jsonl",
+    "line_index": 0
+  },
+  "dialog_labels": {
+    "task_type": "recollection",
+    "task_subtype": "multi"
+  },
+  "dialog_eval_config": {
+    "use_reference_history": false
+  },
+  "dialog_turns": [
+    {
+      "turn_id": 0,
+      "role": "user",
+      "content": "You are given one document at each turn where each of them belongs to one of the following categories: \nethics\nsports\nmusic\nart\nscience\nliterature\neconomics\nmedicine\nfood\ntechnology\nhistory\ntravel\neducation\n\nYou task is to classify the document. You should only output the category and nothing else. Reply OK if you understand my instructions.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 1,
+      "role": "assistant",
+      "content": "OK",
+      "reference": "OK",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 2,
+      "role": "user",
+      "content": "In a groundbreaking development that feels like it’s straight out of a science fiction novel, Dr. Elara Mivon and her team at the futuristic Helios Medical Center in the sky city of Stratonimbus have announced the successful creation of the \"Cure-All\" Nanobot. This revolutionary medical technology promises to treat a wide range of diseases, from common colds to chronic illnesses, effectively rewriting the rules of modern medicine.\nThe \"Cure-All\" Nanobot, a microscopic robot barely the size of a dust particle, operates by entering the human body and identifying illness-causing agents. Once detected, it utilizes a combination of advanced AI algorithms and a compact molecular toolkit to neutralize these agents. Remarkably, these nanobots can adapt to various bodily environments, making them effective against a vast array of diseases.\nDr. Mivon, a renowned bioengineer and AI specialist, unveiled this innovation at the annual Global Health Symposium held in the floating gardens of Stratonimbus. \"Our goal was always to revolutionize healthcare,\" Dr. Mivon stated. \"We aimed to create a solution that is both universally accessible and exceptionally effective. With the 'Cure-All' Nanobot, we are a step closer to a world where illness is a relic of the past.\"",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 3,
+      "role": "assistant",
+      "content": "medicine",
+      "reference": "medicine",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 4,
+      "role": "user",
+      "content": "Imagine rising into an iconic city in the clouds, drifting amidst geometric skyscrapers that dance in the blossoming dawn's ever-changing hues. A location garnered from your most surreal dreams, known by its inhabitants as the Sky Haven. This is where our story unfolds. At its heart lingers the Venturis Omni Tech – the gateway to a not-so-distant world where technology isn't just in your pocket, it’s part of you.\nAs you explore its shimmering districts, you'd come across our main character, Sia Nome – a Sky Haven native unparalleled in her knowledge about Venturis Omni Tech. Tall, with cobalt hair matching the city sky, Sia is as extraordinary as the city she calls home. An intuitive being, she'd guide you to comprehend the fantastical and yet simple essence of Venturis Omni Tech.\nYour journey commences as Sia hands you the Touchstone. This ethereal device steals your attention with its gem-like aesthetics. But its allure goes beyond the outer beauty as it unlocks the true potential of Venturis Omni Tech. A simple touch changes everything you thought you knew about connectivity. From communication to creation, to navigation – everything becomes seamless, intuitive, and virtually limitless with the Touchstone.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 5,
+      "role": "assistant",
+      "content": "technology",
+      "reference": "technology",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 6,
+      "role": "user",
+      "content": "In the shimmering metropolis of Luminara, a city known for towering crystal skyscrapers that light the sky, even the economics operates in a unique way. Unlike Earth's traditional reliance on hard currency, the economy in Luminara is dependent on the vibrational energy of crystals as a means of exchange.\nStores in Luminara glow in various hues - each color representing a different crystal energy. The Amethysti, boasting of purple glimmers, offers its services in exchange for amethyst energy — typically used by the Muse School of Arts, igniting inspiration unparalleled. The Ruby Mart, on the other hand, gleams in fervent red, accepting the more vibrant ruby energy — the favorite of the Prime Tower, the city's central governing body.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 7,
+      "role": "assistant",
+      "content": "economics",
+      "reference": "economics",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 8,
+      "role": "user",
+      "content": "In the expansive cosmos, the bustling metropolis of Astral Nova emerges as a beacon of human resolve and inventiveness. Known primarily for its contribution to the realm of interstellar space exploration, Astral Nova is also home to a unique athletic spectacle known as Quasiball, a phenomenon that has facilitated not only physical health but also social cohesion amongst communities in an otherwise sectorial society. \nQuasiball, unlike traditional Earth games, employs the use of Quasi bodies, a biotechnological creation designed to expand the physical prowess of humans beyond conventional limits. The sport involves two teams pit against each other in an anti-gravity arena, as they utilize the Quasi bodies to maneuver a charged ball towards the opponent's goal post.\nThrough an in-depth observation of the citizens of Astral Nova, our research found that the introduction of Quasiball had resulted in substantial improvements to overall health. Owing to the physically demanding nature of the sport, cardiovascular endurance, muscular strength, and balancing skills of the participants showed significant enhancement.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 9,
+      "role": "assistant",
+      "content": "sports",
+      "reference": "sports",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 10,
+      "role": "user",
+      "content": "Greetings, all you food lovers! Get ready to embark upon a gastronomic journey unlike any other, as we introduce to you our newest culinary hotspot, 'Orion's Olive'. Located in the heart of the enchanted city of Nebulopolis, Orion’s Olive serves you interstellar flavors from across the Universe!\nThe city sparkles under a soft pink sky, while the restaurant itself floats on a fluffy cloud beside Rainbow River. Here, we serve the finest dishes of galaxy-renowned master-chef, Zephyr Zest. A tastemaker with eight hands and three heads, Zephyr is the genius behind the menu, each plate an ambrosia that transcends the ordinary perception of flavor and aroma.\nAmong the many dishes that have become the talk of Nebulopolis, let's whet your appetite with a few specials. The 'Supernova Sizzler' is a fiery feast sourced from the spicy meteoroids of Meteoros, certain to tingle your tastebuds. If you are looking for something cooler, try the 'Comet Concoction', blended with icy particles from the rings of Saturnax.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 11,
+      "role": "assistant",
+      "content": "food",
+      "reference": "food",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 12,
+      "role": "user",
+      "content": "This Harmony Accord, established in the Year of the Singing Comet, on the 23rd day of Harmonia, in the fantastical land of New Melodica, seeks to regulate and protect the unique musical heritage and the rights of musicians, composers, and musical entities in the realm.\n1. **Scope and Purpose**: This Accord governs the creation, performance, and distribution of music within the boundaries of New Melodica. It aims to foster a vibrant musical ecosystem, protect the rights of creators, and ensure fair use of musical works.\n2. **Rights of Creators**: Every musician, composer, or musical entity, identified henceforth as 'Creator', holds the exclusive right to their compositions. These include melodies generated by the mythical Echotree leaves and the rhythms of the ancient Drummoss.\n3. **Performance Rights**: Public performances of any musical piece require the express consent of the Creator or their designated representative. This clause excludes performances during the Festival of Echoes, where music is freely shared in the spirit of communal harmony.\n4. **Magical and Technological Reproduction**: The use of magical instruments like the Echoflute or technological devices like the Soundweaver for replicating music must be authorized by the Creator. Unauthorized duplication is subject to penalties under New Melodican law.\n5. **Distribution and Royalties**: Creators are entitled to fair compensation for the use of their works. This includes magical transmissions, physical recordings in the form of Sound Crystals, and live performances.\n6. **Heritage Preservation**: The Council of Harmonic Wisdom shall oversee the preservation of ancient and significant musical traditions, including the songs of the Whispering Winds and the Symphony of the Starry Skies.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 13,
+      "role": "assistant",
+      "content": "music",
+      "reference": "music",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 14,
+      "role": "user",
+      "content": "Dear Luminary, \nI hope this letter finds you radiating in all your celestial glory. I wanted to share with you my recent excursion into the beta dimension, specifically to a hidden corner of this universe, called Suntropica. Wouldn't you be enthralled by a planet where lollipop trees pepper the landscape and the bluegrass whispers sonnets to the wind? \nSuntropica is where I went to experience the distinctive 'Sunset Fiesta.' The sky, as the locals whispered, was painted in hues that no human artist could ever dare to mimic – unparalleled tints of crimson, lavender, teal, and gold. This ethereal display is made possible by an indigenous species of bird dubbed the \"Dazzlewings.\" An extravagant spectacle, these birds protrude dazzling light when they cross the edges of solar rays, creating an exquisite performance you could only wish to witness.\nDuring my visit, I stayed with the Bumblehosts - a generous family of winged jesters. Their home, or rather, a floating bubble, is an architectural marvel that defies the principles of physics, suspended high above the ground amidst soft, rosy clouds! They offered me 'Frosty Combs,' a Suntropican delicacy that tastes like a blend of sparkleberries and lunar meat – a taste that would be imprinted on the palate forever.\nMount Moonbeam, Suntropica's highest peak, was another breathtaking stop. Imagine a mountain carved out of shimmering moonstones, emitting soft light during the famed 'Starless Nights.' There is also no need for the old-fashioned backpacks filled with camping essentials; the 'Gnom-capsules' have it all. ",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 15,
+      "role": "assistant",
+      "content": "travel",
+      "reference": "travel",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 16,
+      "role": "user",
+      "content": "THIS AGREEMENT is made this 27th day of Aeson, in the beta year of Ophiuchus (2056 on the conventional Earth calendar) between Stellar Dynamics Ltd, a multi-planetary conglomerate having its headquarters at Ascension Towers, Zenithal Island on planet Artesius (hereinafter known as \"The Company\") and Dr. Xan Kincaid, a resident of Libra Dome, on Luna, Earth's Moon (hereinafter known as \"The Scientist\").\nWHEREAS The Company is engaged in advanced science and technology development and exploration and possesses the required resources, including but not limited to, the \"Stellar Forge\", the largest particle collider in the Andromeda galaxy and the multi-versatile AI assistant \"Serphina\".\nAND WHEREAS The Scientist is a notable expert in microquantum physics, having crafted the renowned \"Dual-spin Particle Dyad\", and is the recipient of the esteemed Orion Prize for his work on applied singularity manipulation studies.\nTHEREFORE, in consideration of the mutual covenants contained herein and for other good and valuable consideration, the parties agree as follows:\n1. The primary intent of this agreement revolves around the joint development, manufacturing, and optimization of the \"Mercurius Project\", a groundbreaking endeavor to utilize controlled microsingularities as a power source.\n2. Intellectual Property rights pertaining to any and all discoveries, inventions, or improvements resulting from this project will be shared equally between The Company and The Scientist.\n3. This agreement will commence on the Thrakos day of Eos 2056 and will continue for a period of ten cycles unless terminated by either party with six nebula rotations notice period.\nSubject to the foregoing, this Agreement represents the entire understanding between The Company and The Scientist and supersedes all other oral or written agreements, proposals, or understandings between them concerning the subject matter. ",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 17,
+      "role": "assistant",
+      "content": "science",
+      "reference": "science",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 18,
+      "role": "user",
+      "content": "In the heart of the bustling city of Luminar, where buildings spiraled into the sky like giant metallic trees, lay the most extraordinary school ever built - The Clockwork Classroom. This was not an ordinary school; its walls were made of shimmering glass, and gears and cogs whirred behind them, powering the entire establishment. \nChapter 7: \"The Lesson of the Timeless Trees\"\nThe chapter begins in the glowing, glass-encased botanical lab where Professor Elara, a sprightly woman with holographic glasses, greeted her students. Today's lesson was about the Timeless Trees, mythical plants that were said to exist in parallel dimensions. The students, a diverse group of eager young minds, gathered around the Holo-Projector, a device capable of displaying images from different realms.\nAs Elara activated the projector, the room filled with the luminous, ethereal images of the Timeless Trees. Their leaves shimmered in colors that didn't exist in the normal spectrum, and their branches moved gracefully, as if underwater. The students were mesmerized.\nSuddenly, the projector glitched, and a real Timeless Tree sapling, small and glowing, appeared in the middle of the lab. The class gasped in amazement. This was their chance to study something truly otherworldly.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 19,
+      "role": "assistant",
+      "content": "education",
+      "reference": "education",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 20,
+      "role": "user",
+      "content": "Immerse your senses into an outer-worldly gastronomic revelation at Venturis Cosmic Café, the first-ever intergalactic dining destination! Floating in the tranquility of the Olemus Galaxy on the enchanting Space Station: Sereon, we offer a culinary experience unlike anything Earthbound restaurants can conjure.\nEncased in the ethereal beauty of a billion stars, Venturis welcomes you aboard with warm, bright, hovering PhotonServs. These luminous levitating servers, programmed with multiple universal languages and accent-perfect human simulations, possess an in-depth knowledge of our cosmic menu, readily guiding your palate through our extraterrestrial flavours.\nFuel your day with an energizing 'Solstice Sunburst', a breakfast platter modeled after the exploding Dyson Star! The nebula-berry jam spread over comet-crusted toast, coupled with our sun-yolk eggs and crispy asteroid bacon, will zap your taste buds into orbit. Wash it all down with freshly-milky-way-steamed lattes, sprinkled with stardust sugar.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 21,
+      "role": "assistant",
+      "content": "food",
+      "reference": "food",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ]
+      },
+      "turn_labels": {}
+    }
+  ]
+}

@@ -1,0 +1,509 @@
+{
+  "dialog_id": 16,
+  "dialog_raw_info": {
+    "raw_id": "1_sum_ner",
+    "source_file": "refinement_multi.jsonl",
+    "line_index": 0
+  },
+  "dialog_labels": {
+    "task_type": "refinement",
+    "task_subtype": "multi"
+  },
+  "dialog_eval_config": {
+    "use_reference_history": false
+  },
+  "dialog_turns": [
+    {
+      "turn_id": 0,
+      "role": "user",
+      "content": "Content: In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time. \n\nInstruction: Write a short summary based on the initially provided content. Do not include any further explanations or extra output in your response.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 1,
+      "role": "assistant",
+      "content": null,
+      "reference": "In Gastropolis, a city known for its rich culinary scene, lived a legendary chef, Luminara, who owned a quaint restaurant, The Enchanted Pot. Luminara, renowned for her unique ability to blend traditional ingredients with magical elements, crafted dishes that adapted to the diner's mood. Her life took an adventurous turn when she received an invitation to find the Moonberry, a rare ingredient believed to elevate any dish. Accompanied by her talking spatula, Spatulon, she journeyed through mystical lands, including the Whispering Woods and Mount Savor, to acquire the Moonberry from the Gastrogriff, a mythical guardian. Upon her return, Luminara created a dish that not only reflected the diner's mood but also embodied her extraordinary journey. This dish transformed The Enchanted Pot into more than just a restaurant; it became a gateway to culinary wonders, etching Luminara's story into Gastropolis's rich culinary history.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "Write a short summary based on the initially provided content. Do not include any further explanations or extra output in your response.",
+                "Focus only on Luminara's quest and her interaction with the Gastrogriff.",
+                "Use at most 30 words.",
+                "Rewrite it using Luminara's first-person perspective.",
+                "In the summary, use metaphors to describe Luminara's quest and encounter with the Gastrogriff.",
+                "Avoid using the words 'Luminara', 'Moonberry', and 'Gastrogriff'."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "sum"
+      }
+    },
+    {
+      "turn_id": 2,
+      "role": "user",
+      "content": "Focus only on Luminara's quest and her interaction with the Gastrogriff.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 3,
+      "role": "assistant",
+      "content": null,
+      "reference": "Luminara, a renowned chef, embarked on a quest to find the Moonberry, guided by a mysterious letter. She journeyed through the Whispering Woods to Mount Savor, where she met the Gastrogriff. This mythical creature, impressed by her passion, granted her a Moonberry. Luminara returned, using the Moonberry in a dish that embodied her adventure.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "Write a short summary based on the initially provided content. Do not include any further explanations or extra output in your response.",
+                "Focus only on Luminara's quest and her interaction with the Gastrogriff.",
+                "Use at most 30 words.",
+                "Rewrite it using Luminara's first-person perspective.",
+                "In the summary, use metaphors to describe Luminara's quest and encounter with the Gastrogriff.",
+                "Avoid using the words 'Luminara', 'Moonberry', and 'Gastrogriff'."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "sum"
+      }
+    },
+    {
+      "turn_id": 4,
+      "role": "user",
+      "content": "Use at most 30 words.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 5,
+      "role": "assistant",
+      "content": null,
+      "reference": "Chef Luminara's quest for the Moonberry leads her to Mount Savor. Gastrogriff grants her the berry, enriching her culinary art with its magical essence.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "Write a short summary based on the initially provided content. Do not include any further explanations or extra output in your response.",
+                "Focus only on Luminara's quest and her interaction with the Gastrogriff.",
+                "Use at most 30 words.",
+                "Rewrite it using Luminara's first-person perspective.",
+                "In the summary, use metaphors to describe Luminara's quest and encounter with the Gastrogriff.",
+                "Avoid using the words 'Luminara', 'Moonberry', and 'Gastrogriff'."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "sum"
+      }
+    },
+    {
+      "turn_id": 6,
+      "role": "user",
+      "content": "Rewrite it using Luminara's first-person perspective.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 7,
+      "role": "assistant",
+      "content": null,
+      "reference": "I sought the Moonberry, braved Mount Savor's challenges, and earned the Gastrogriff's respect. The berry's magic now infuses my culinary creations, weaving my journey into each dish.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "Write a short summary based on the initially provided content. Do not include any further explanations or extra output in your response.",
+                "Focus only on Luminara's quest and her interaction with the Gastrogriff.",
+                "Use at most 30 words.",
+                "Rewrite it using Luminara's first-person perspective.",
+                "In the summary, use metaphors to describe Luminara's quest and encounter with the Gastrogriff.",
+                "Avoid using the words 'Luminara', 'Moonberry', and 'Gastrogriff'."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "sum"
+      }
+    },
+    {
+      "turn_id": 8,
+      "role": "user",
+      "content": "In the summary, use metaphors to describe Luminara's quest and encounter with the Gastrogriff.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 9,
+      "role": "assistant",
+      "content": null,
+      "reference": "I, a culinary explorer, navigated the seas of Whispering Woods and climbed the mountain of challenges to earn the Moonberry's light from the guardian Gastrogriff, enriching my dishes' stories.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "Write a short summary based on the initially provided content. Do not include any further explanations or extra output in your response.",
+                "Focus only on Luminara's quest and her interaction with the Gastrogriff.",
+                "Use at most 30 words.",
+                "Rewrite it using Luminara's first-person perspective.",
+                "In the summary, use metaphors to describe Luminara's quest and encounter with the Gastrogriff.",
+                "Avoid using the words 'Luminara', 'Moonberry', and 'Gastrogriff'."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "sum"
+      }
+    },
+    {
+      "turn_id": 10,
+      "role": "user",
+      "content": "Avoid using the words 'Luminara', 'Moonberry', and 'Gastrogriff'.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 11,
+      "role": "assistant",
+      "content": null,
+      "reference": "As a culinary voyager, I sought a mystical berry, journeyed through whispering forests to a mountain, earned respect from a legendary guardian, and wove this essence into my creations.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "Write a short summary based on the initially provided content. Do not include any further explanations or extra output in your response.",
+                "Focus only on Luminara's quest and her interaction with the Gastrogriff.",
+                "Use at most 30 words.",
+                "Rewrite it using Luminara's first-person perspective.",
+                "In the summary, use metaphors to describe Luminara's quest and encounter with the Gastrogriff.",
+                "Avoid using the words 'Luminara', 'Moonberry', and 'Gastrogriff'."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "sum"
+      }
+    },
+    {
+      "turn_id": 12,
+      "role": "user",
+      "content": "List all the persons and places in the initially provided content. Your answers should be separated by commas and formatted as 'Person: ..., ...; Places: ..., ...'.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 13,
+      "role": "assistant",
+      "content": null,
+      "reference": "Person: Luminara; Places: Gastropolis, The Enchanted Pot, Whispering Woods, Mount Savor.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "List all the persons and places in the initially provided content. Your answers should be separated by commas and formatted as 'Person: ..., ...; Places: ..., ...'.",
+                "Start each identification as a separate sentence beginning with 'The character' or 'The location'.",
+                "List them in the order they appear in the story.",
+                "Now, each sentence must not exceed seven words.",
+                "Replace 'character' and 'location' with synonyms in each sentence.",
+                "Add an emotional tone to each sentence, reflecting the atmosphere of the story."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "ner"
+      }
+    },
+    {
+      "turn_id": 14,
+      "role": "user",
+      "content": "Start each identification as a separate sentence beginning with 'The character' or 'The location'.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 15,
+      "role": "assistant",
+      "content": null,
+      "reference": "The character is Luminara. The location is Gastropolis. The location is The Enchanted Pot. The location is Whispering Woods. The location is Mount Savor.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "List all the persons and places in the initially provided content. Your answers should be separated by commas and formatted as 'Person: ..., ...; Places: ..., ...'.",
+                "Start each identification as a separate sentence beginning with 'The character' or 'The location'.",
+                "List them in the order they appear in the story.",
+                "Now, each sentence must not exceed seven words.",
+                "Replace 'character' and 'location' with synonyms in each sentence.",
+                "Add an emotional tone to each sentence, reflecting the atmosphere of the story."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "ner"
+      }
+    },
+    {
+      "turn_id": 16,
+      "role": "user",
+      "content": "List them in the order they appear in the story.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 17,
+      "role": "assistant",
+      "content": null,
+      "reference": "The character is Luminara. The location is Gastropolis. The location is The Enchanted Pot. The location is Whispering Woods. The location is Mount Savor.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "List all the persons and places in the initially provided content. Your answers should be separated by commas and formatted as 'Person: ..., ...; Places: ..., ...'.",
+                "Start each identification as a separate sentence beginning with 'The character' or 'The location'.",
+                "List them in the order they appear in the story.",
+                "Now, each sentence must not exceed seven words.",
+                "Replace 'character' and 'location' with synonyms in each sentence.",
+                "Add an emotional tone to each sentence, reflecting the atmosphere of the story."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "ner"
+      }
+    },
+    {
+      "turn_id": 18,
+      "role": "user",
+      "content": "Now, each sentence must not exceed seven words.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 19,
+      "role": "assistant",
+      "content": null,
+      "reference": "Character Luminara is introduced. Gastropolis is first location. The Enchanted Pot is mentioned. Whispering Woods comes next. Lastly, Mount Savor appears.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "List all the persons and places in the initially provided content. Your answers should be separated by commas and formatted as 'Person: ..., ...; Places: ..., ...'.",
+                "Start each identification as a separate sentence beginning with 'The character' or 'The location'.",
+                "List them in the order they appear in the story.",
+                "Now, each sentence must not exceed seven words.",
+                "Replace 'character' and 'location' with synonyms in each sentence.",
+                "Add an emotional tone to each sentence, reflecting the atmosphere of the story."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "ner"
+      }
+    },
+    {
+      "turn_id": 20,
+      "role": "user",
+      "content": "Replace 'character' and 'location' with synonyms in each sentence.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 21,
+      "role": "assistant",
+      "content": null,
+      "reference": "Protagonist Luminara is introduced. City Gastropolis is first. Restaurant The Enchanted Pot is mentioned. Forest Whispering Woods comes next. Finally, Mountain Savor appears.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "List all the persons and places in the initially provided content. Your answers should be separated by commas and formatted as 'Person: ..., ...; Places: ..., ...'.",
+                "Start each identification as a separate sentence beginning with 'The character' or 'The location'.",
+                "List them in the order they appear in the story.",
+                "Now, each sentence must not exceed seven words.",
+                "Replace 'character' and 'location' with synonyms in each sentence.",
+                "Add an emotional tone to each sentence, reflecting the atmosphere of the story."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "ner"
+      }
+    },
+    {
+      "turn_id": 22,
+      "role": "user",
+      "content": "Add an emotional tone to each sentence, reflecting the atmosphere of the story.",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": []
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 23,
+      "role": "assistant",
+      "content": null,
+      "reference": "Enthusiastically, we meet protagonist Luminara. Mysteriously, the city Gastropolis is first revealed. Magically, restaurant The Enchanted Pot emerges. Whisperingly, forest Whispering Woods is encountered. Triumphantly, Mountain Savor finally appears.",
+      "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "llm_judge",
+            "args": {
+              "template_name": "refinement_multi_evaluation",
+              "constraints": [
+                "List all the persons and places in the initially provided content. Your answers should be separated by commas and formatted as 'Person: ..., ...; Places: ..., ...'.",
+                "Start each identification as a separate sentence beginning with 'The character' or 'The location'.",
+                "List them in the order they appear in the story.",
+                "Now, each sentence must not exceed seven words.",
+                "Replace 'character' and 'location' with synonyms in each sentence.",
+                "Add an emotional tone to each sentence, reflecting the atmosphere of the story."
+              ]
+            }
+          }
+        ]
+      },
+      "turn_labels": {
+        "cur_task_type": "ner"
+      }
+    }
+  ]
+}
