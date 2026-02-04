@@ -18,6 +18,10 @@ class TurnEvalConfig(BaseModel):
     do_eval: bool = False
     metrics: List[MetricConfig] = Field(default_factory=list)
 
+    # 动态评测配置源数据：用于运行时生成 metrics
+    # 如果 metrics 为空但 do_eval=True，则尝试从 dynamic_config_source 中获取配置
+    dynamic_config_source: Dict[str, Any] = Field(default_factory=dict)
+
 
 class Turn(BaseModel):
     """

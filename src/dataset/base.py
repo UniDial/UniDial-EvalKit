@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Union
 
-from .schema import Dialog
+from .schema import Dialog, Turn, MetricConfig
 
 PathLike = Union[str, Path]
 
@@ -51,6 +51,13 @@ class BenchmarkDataset(abc.ABC):
         Subclasses should implement all dataset-specific parsing/mapping here.
         """
         ...
+    
+    def get_eval_config_for_turn(self, turn: Turn) -> List[MetricConfig]:
+        """
+        Get evaluation configuration for a specific turn.
+        Subclasses can override this to provide dynamic evaluation configuration.
+        """
+        return turn.eval_config.metrics
 
     def preprocess(self, *, raw_path: str, processed_root: str, force: bool = False) -> str:
         raw_p = Path(raw_path)
