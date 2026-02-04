@@ -21,9 +21,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Suppress noisy library logs (HTTP requests etc.)
-logging.getLogger("httpx").setLevel(logging.WARNING)
-logging.getLogger("openai").setLevel(logging.WARNING)
-logging.getLogger("urllib3").setLevel(logging.WARNING)
+# logging.getLogger("httpx").setLevel(logging.WARNING)
+# logging.getLogger("openai").setLevel(logging.WARNING)
+# logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Pipeline")
@@ -209,7 +209,11 @@ def process_single_dialog_evaluation(
             history_messages.append({"role": "user", "content": turn.content})
         elif turn.role == "assistant":
             if turn.eval_config and turn.eval_config.do_eval:
-                for metric_cfg in turn.eval_config.metrics:
+                
+                # Dynamic Config Resolution
+                metrics_to_run = dataset.get_eval_config_for_turn(turn)
+                
+                for metric_cfg in metrics_to_run:
                     metric_name = metric_cfg.class_name
                     metric_inst = metrics_map.get(metric_name)
                     

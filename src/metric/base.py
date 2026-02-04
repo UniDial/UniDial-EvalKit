@@ -63,13 +63,7 @@ class ExactMatchMetric(BaseMetric):
     def __init__(self, lower: bool = True):
         super().__init__()
         self.lower = lower
-        self.metric = None
 
-        if evaluate is not None:
-            try:
-                self.metric = evaluate.load("exact_match")
-            except Exception:
-                self.metric = None
 
     def compute(
         self,
@@ -82,22 +76,18 @@ class ExactMatchMetric(BaseMetric):
         if reference is None:
             return {"score": 0.0, "rationale": "No reference provided"}
 
+        if kwargs["split_special_start_token"]:
+            prediction = prediction.split(kwargs["split_special_start_token"])[-1].strip()
+            if kwargs["split_special_end_token"] and prediction.endswith(kwargs["split_special_end_token"]):
+                prediction = prediction[:-len(kwargs["split_special_end_token"])].strip()
+
+            
         if self.lower:
             prediction = prediction.lower()
             reference = reference.lower()
             
-        if self.metric is not None:
-            try:
-                result = self.metric.compute(
-                    predictions=[prediction],
-                    references=[reference],
-                )
-                score = result.get("exact_match", list(result.values())[0])
-                return {"score": score, "exact_match": score}
-            except Exception:
-                pass
-        
-        return {"score": 0.0, "error": "ExactMatchMetric failed"}
+        score = 1.0 if prediction == reference else 0.0
+        return {"score": score, "exact_match": score}
 
        
 

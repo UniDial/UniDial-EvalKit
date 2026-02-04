@@ -6,6 +6,9 @@ from .multi_challenge import MultiChallengeDataset
 from .mt_bench_101 import MTBench101Dataset
 from .multi_if import MultiIFDataset
 from .locomo import LoCoMoDataset
+from .longmemeval import LongMemEvalDataset
+from .personamem import PersonaMemDataset
+from .mathchat import MathChatDataset
 
 # Registry mapping dataset names (benchmark_id) to dataset classes
 DATASET_REGISTRY: Dict[str, Type[BenchmarkDataset]] = {
@@ -14,6 +17,9 @@ DATASET_REGISTRY: Dict[str, Type[BenchmarkDataset]] = {
     MTBench101Dataset.benchmark_id: MTBench101Dataset,
     MultiIFDataset.benchmark_id: MultiIFDataset,
     LoCoMoDataset.benchmark_id: LoCoMoDataset,
+    LongMemEvalDataset.benchmark_id: LongMemEvalDataset,
+    PersonaMemDataset.benchmark_id: PersonaMemDataset,
+    MathChatDataset.benchmark_id: MathChatDataset,
 }
 
 def get_dataset_class(name: str) -> Type[BenchmarkDataset]:

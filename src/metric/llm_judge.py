@@ -77,7 +77,7 @@ class LLMJudge(BaseMetric):
                 render_kwargs[param_name] = available_args[param_name]
             elif param.default == inspect.Parameter.empty:
                 missing_args.append(param_name)
-        
+
         if missing_args:
              return {"score": 0.0, "error": f"Missing required arguments for prompt_template_render: {missing_args}"}
 

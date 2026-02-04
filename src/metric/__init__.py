@@ -6,10 +6,11 @@ from .base import (
     PrecisionMetric,
     RecallMetric,
     ExactMatchMetric,
-    F1Metric
+    F1Metric,
 )
 from .instruction_following import InstructionFollowingMetric
 from .llm_judge import LLMJudge
+from .numeric_match import NumericMatchMetric
 
 # Registry mapping metric names to metric classes
 METRIC_REGISTRY: Dict[str, Type[BaseMetric]] = {
@@ -19,6 +20,7 @@ METRIC_REGISTRY: Dict[str, Type[BaseMetric]] = {
     "f1_score": F1Metric,
     "instruction_following": InstructionFollowingMetric,
     "llm_judge": LLMJudge,
+    "numeric_match": NumericMatchMetric,
 }
 
 def get_metric_class(name: str) -> Type[BaseMetric]:
