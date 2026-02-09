@@ -10,9 +10,9 @@
 - **高效并行**：支持多线程并行生成与评测，大幅缩短大规模评估时间。
 - **断点续传**：内置结果缓存机制，自动跳过已完成的对话或评测条目，避免意外中断导致的重复计算。
 - **丰富的评测基准**：内置多种前沿评测数据集支持，包括但不限于：
-  - **通用能力**：`mt_eval`, `mt_bench_101`
-  - **记忆与长窗口**：`longmemeval`, `memorycode`, `personamem`
-  - **特定任务**：`mathchat` (数学), `locomo`, `multi_if`, `multi_challenge`
+  - **通用能力**：`mt_eval`, `mt_bench_101`, `multi_challenge`
+  - **记忆**：`longmemeval`, `locomo`
+  - **特定任务**：`mathchat` (数学), `memorycode`(代码), `multi_if`（指令遵循）, `personamem`(个性化)
 - **灵活的聚合统计**：支持从 Turn (轮次) 到 Dialog (对话) 再到 Dataset (数据集) 的多级分数聚合策略（Mean/Min/Max）。
 
 ## 🛠️ 安装方法
