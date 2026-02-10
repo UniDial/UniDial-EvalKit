@@ -35,7 +35,7 @@ class LoCoMoDataset(BenchmarkDataset):
     def metric_configs(self) -> List[str]:
         # Default to no metrics or basic metrics.
         # Users can override or use evaluate_qa.py for official evaluation.
-        return ["f1_score"]
+        return ["f1_score", "recall"]
 
     def _normalize_raw_data(self, ctx: BenchmarkContext) -> Iterable[Dialog]:
         raw_path = ctx.raw_path

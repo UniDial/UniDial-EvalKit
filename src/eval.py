@@ -32,11 +32,11 @@ def parse_args():
     parser.add_argument("--processed_data_dir", type=str, default="./data", help="Path to store/load processed dialogs")
     parser.add_argument("--output_dir", type=str, default="./output", help="Directory to save evaluation results")
     parser.add_argument("--model_type", type=str, default="openai", help="Type of model to use (openai, etc.)")
-    parser.add_argument("--model_name", type=str, default="deepseek-chat", help="Model to evaluate (e.g., gpt-3.5-turbo)")
+    parser.add_argument("--model_name", type=str, default="deepseek-ai/DeepSeek-V3.2", help="Model to evaluate (e.g., gpt-3.5-turbo)")
     parser.add_argument("--temperature", type=float, default=0.7, help="Temperature for model generation")
     parser.add_argument("--max_tokens", type=int, default=1024, help="Maximum tokens for model generation")
     parser.add_argument("--judge_model_type", type=str, default="openai", help="Type of judge model to use (openai, etc.)")
-    parser.add_argument("--judge_model_name", type=str, default="deepseek-chat", help="Judge model name for LLM-based metrics")
+    parser.add_argument("--judge_model_name", type=str, default="gpt-4.1-2025-04-14", help="Judge model name for LLM-based metrics")
     parser.add_argument("--parallel", type=int, default=4, help="Number of parallel threads/processes")
     parser.add_argument("--api_key", type=str, default=None, help="OpenAI API key (or set OPENAI_API_KEY)")
     parser.add_argument("--base_url", type=str, default=None, help="OpenAI API Base URL")
@@ -413,6 +413,7 @@ def main():
         for name, config in metric_configs.items():
             # print(name, config)
             if name not in METRIC_REGISTRY:
+                # print(name)
                 logger.warning(f"Metric {name} not found in registry. Skipping.")
                 continue
                 
@@ -428,7 +429,8 @@ def main():
             else:
                 metrics_map[name] = get_metric_class(name)(**config)
         
-        
+        # print(metrics_map)
+        # exit(0)
         all_results = run_evaluation_phase(
             generated_dialogs=generated_dialogs,
             metrics_map=metrics_map,
