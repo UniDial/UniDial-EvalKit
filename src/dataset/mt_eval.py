@@ -183,8 +183,8 @@ class MTEvalDataset(BenchmarkDataset):
             task_name = file_path.stem
             for line_index, line in enumerate(iter_jsonl_lines(file_path)):
                 # for debugging
-                if line_index == 2:
-                    break 
+                # if line_index == 2:
+                #     break 
                 
                 data = json.loads(line)
                 dialog_index += 1

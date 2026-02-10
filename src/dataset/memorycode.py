@@ -93,8 +93,8 @@ class MemoryCodeDataset(BenchmarkDataset):
                         for q_idx, (query, regex) in enumerate(zip(history_eval_queries, history_regexes)):
                             
                             dialog_id += 1
-                            if dialog_id == 5:
-                                break
+                            # if dialog_id == 5:
+                            #     break
                             yield self._create_dialog(
                                 dialog_id=dialog_id,
                                 raw_dialog_id=raw_dialog_id,
@@ -112,8 +112,8 @@ class MemoryCodeDataset(BenchmarkDataset):
                                 mentor_persona=mentor_persona,
                                 mentee_persona=mentee_persona,
                             )
-            if dialog_id == 5:
-                break
+            # if dialog_id == 5:
+            #     break
     def _create_dialog(
         self, 
         dialog_id: int,

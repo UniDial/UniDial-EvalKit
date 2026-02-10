@@ -84,8 +84,8 @@ Finally, output the results in the following JSON format:
             with open(file_path, "r", encoding="utf-8") as f:
                 for line_index, line in enumerate(f):
                     
-                    if line_index == 2:
-                        break
+                    # if line_index == 2:
+                    #     break
                     
                     line = line.strip()
                     if not line:

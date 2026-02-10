@@ -203,8 +203,10 @@ class LoCoMoDataset(BenchmarkDataset):
                     ))
 
                 dialog_counter += 1
-                if dialog_counter > 5:
-                    break
+                
+                # if dialog_counter > 5:
+                #     break
+                
                 yield Dialog(
                     dialog_id=dialog_counter,
                     dialog_labels={

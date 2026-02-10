@@ -63,7 +63,7 @@ class BenchmarkDataset(abc.ABC):
         raw_p = Path(raw_path)
         out_dir = Path(processed_root) / self.dataset_name
         meta_path = out_dir / "_meta.json"
-        prompt_path = out_dir / "_prompt_templates.json"
+        # prompt_path = out_dir / "_prompt_templates.json"
 
         raw_abs = str(raw_p.resolve())
         if out_dir.exists() and meta_path.exists() and not force:
@@ -89,8 +89,8 @@ class BenchmarkDataset(abc.ABC):
             count += 1
 
         self._dump_json(meta_path, {"version": self.meta_version(), "raw_path": raw_abs, "benchmark_id": self.benchmark_id, "count": count})
-        if self.prompt_templates():
-            self._dump_json(prompt_path, {"templates": self.prompt_templates()})
+        # if self.prompt_templates():
+        #     self._dump_json(prompt_path, {"templates": self.prompt_templates()})
         return str(out_dir)
 
 

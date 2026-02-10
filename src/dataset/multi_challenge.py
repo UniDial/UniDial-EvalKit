@@ -80,8 +80,8 @@ Evaluate the model response where score is 1 if the criteria is met (YES) and 0 
         dialog_index = -1
         for file_path in _iter_multichallenge_files(raw_path):
             for line_index, line in enumerate(iter_jsonl_lines(file_path)):
-                if line_index == 2:
-                    break
+                # if line_index == 2:
+                #     break
                 data = json.loads(line)
                 dialog_index += 1
                 yield self._build_dialog(

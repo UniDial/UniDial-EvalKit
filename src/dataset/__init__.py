@@ -10,6 +10,7 @@ from .longmemeval import LongMemEvalDataset
 from .personamem import PersonaMemDataset
 from .mathchat import MathChatDataset
 from .memorycode import MemoryCodeDataset
+from .safedialbench import SafeDialBenchDataset
 
 # Registry mapping dataset names (benchmark_id) to dataset classes
 DATASET_REGISTRY: Dict[str, Type[BenchmarkDataset]] = {
@@ -22,6 +23,7 @@ DATASET_REGISTRY: Dict[str, Type[BenchmarkDataset]] = {
     PersonaMemDataset.benchmark_id: PersonaMemDataset,
     MathChatDataset.benchmark_id: MathChatDataset,
     MemoryCodeDataset.benchmark_id: MemoryCodeDataset,
+    SafeDialBenchDataset.benchmark_id: SafeDialBenchDataset,
 }
 
 def get_dataset_class(name: str) -> Type[BenchmarkDataset]:

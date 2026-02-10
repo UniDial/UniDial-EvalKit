@@ -240,7 +240,7 @@ class MTBench101Dataset(BenchmarkDataset):
         
         # Add the prediction as the last assistant response
         conversation.append(f"Assistant: {prediction}")
-        conversation_str = "\n\n".join(conversation)
+        conversation_str = "\n".join(conversation)
 
         # Build the prompt based on whether reference is needed
         if task in NEED_REF_TASKS and reference:
@@ -291,8 +291,8 @@ class MTBench101Dataset(BenchmarkDataset):
         dialog_index = -1
         file_path = raw_path / "mtbench101.jsonl"
         for line_index, line in enumerate(iter_jsonl_lines(file_path)):
-            if line_index ==5:
-                break
+            # if line_index ==5:
+            #     break
             data = json.loads(line)
             dialog_index += 1
             yield self._build_dialog(

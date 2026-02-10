@@ -31,8 +31,8 @@ class MultiIFDataset(BenchmarkDataset):
             
             for line_index, row in enumerate(reader):
                 
-                if line_index == 5:
-                    break
+                # if line_index == 5:
+                #     break
                 
                 yield self._build_dialog(
                     row,

@@ -19,7 +19,7 @@ class LLMJudge(BaseMetric):
     LLM-based Judge metric.
     """
 
-    def __init__(self, llm_client: BaseModel, dataset: BenchmarkDataset, min_score: int = 0, max_score: int = 10):
+    def __init__(self, llm_client: BaseModel, dataset: BenchmarkDataset, min_score: int = 0, max_score: int = 10, post_process_func: Optional[Callable[[str], int]] = None):
         """
         Args:
             llm_client: An initialized LLM client instance adhering to BaseModel interface.
@@ -28,6 +28,7 @@ class LLMJudge(BaseMetric):
         self.dataset = dataset
         self.min_score = min_score
         self.max_score = max_score
+        self.post_process_func = post_process_func
         
     def compute(
         self,
@@ -94,14 +95,21 @@ class LLMJudge(BaseMetric):
             # 4. Call LLM
             llm_output = self.llm_client.generate(messages=messages) # TODO: , **kwargs)
             
-            # 5. Parse Output
-            parsed_result = self._parse_json_output(llm_output)
-            
-            # 6. normalize score
-            parsed_result["score"] = (parsed_result["score"] - self.min_score) / (self.max_score - self.min_score)
-            
-            return parsed_result
+            if not self.post_process_func:
+                parsed_result = self._parse_json_output(llm_output)
+                 # 6. normalize score
+                parsed_result["score"] = (parsed_result["score"] - self.min_score) / (self.max_score - self.min_score)
+                
+                return parsed_result
 
+            else:
+                parsed_result = self.post_process_func(llm_output)
+                return parsed_result
+                
+            # # 5. Parse Output
+            # parsed_result = self._parse_json_output(llm_output)
+            
+           
         except Exception as e:
             logger.error(f"LLMJudge failed: {e}")
             return {

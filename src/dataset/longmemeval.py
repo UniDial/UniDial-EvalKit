@@ -125,8 +125,8 @@ class LongMemEvalDataset(BenchmarkDataset):
             context_type = "longmemeval_oracle"
         
         for i,item in enumerate(data):
-            if i==5:
-                break
+            # if i==5:
+            #     break
             
             yield self._build_dialog(
                 item,
