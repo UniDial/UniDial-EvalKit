@@ -6,12 +6,13 @@
 
 ## ✨ 项目亮点
 
-- **模块化架构**：核心组件（`Dataset`, `Model`, `Metric`）完全解耦，易于扩展新的数据集或评测指标。
+- **模块化架构**：核心组件（`Dataset`, `Model`, `Metric`）完全解耦，易于扩展新的数据集、评测对象或评测指标。
 - **高效并行**：支持多线程并行生成与评测，大幅缩短大规模评估时间。
 - **断点续传**：内置结果缓存机制，自动跳过已完成的对话或评测条目，避免意外中断导致的重复计算。
 - **丰富的评测基准**：内置多种前沿评测数据集支持，包括但不限于：
   - **通用能力**：`mt_eval`, `mt_bench_101`, `multi_challenge`
   - **记忆**：`longmemeval`, `locomo`
+  - **安全**：`safedialbench`
   - **特定任务**：`mathchat` (数学), `memorycode`(代码), `multi_if`（指令遵循）, `personamem`(个性化)
 - **灵活的聚合统计**：支持从 Turn (轮次) 到 Dialog (对话) 再到 Dataset (数据集) 的多级分数聚合策略（Mean/Min/Max）。
 
@@ -20,7 +21,7 @@
 1. 克隆本项目代码：
    ```bash
    git clone https://github.com/your_username/MTEvalKit.git
-   cd MTEvalKit/code
+   cd MTEvalKit
    ```
 
 2. 安装依赖环境：
