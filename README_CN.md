@@ -1,6 +1,6 @@
 # MTEvalKit
 
-**MTEvalKit** 是一个专注于 **大模型多轮交互评测** 的统一框架。我们致力于构建覆盖 **记忆、理解、安全、数学、代码** 等多维度的长期交互综合能力评价体系。通过集成多个主流 Benchmark 进行综合对比，MTEvalKit 为大语言模型及 Agent 系统的多轮人机交互技术演进提供全方位、标准化的能力画像。
+**MTEvalKit** 是一个专注于 **大模型多轮交互评测** 的统一框架。我们致力于构建覆盖 **记忆、理解、安全、数学、代码** 等多维度的长期交互综合能力评价体系。通过集成多个主流Benchmark进行综合对比，MTEvalKit为大语言模型及 Agent系统的多轮人机交互技术演进提供全方位、标准化的能力画像。
 
 作为一款模块化、可扩展的评测工具，MTEvalKit 将数据加载、模型生成与指标评测解耦，支持断点续传与并行加速，能够高效地对各类开源及闭源模型进行全方位能力评估。
 
@@ -8,7 +8,7 @@
 
 - **模块化架构**：核心组件（`Dataset`, `Model`, `Metric`）完全解耦，易于扩展新的数据集、评测对象或评测指标。
 - **高效并行**：支持多线程并行生成与评测，大幅缩短大规模评估时间。
-- **断点续传**：内置结果缓存机制，自动跳过已完成的对话或评测条目，避免意外中断导致的重复计算。
+- **断点续传**：内置结果缓存机制，自动跳过已完成的对话或评测条目，避免意外中断导致的重复推理计算。
 - **丰富的评测基准**：内置多种前沿评测数据集支持，包括但不限于：
   - **通用能力**：`mt_eval`, `mt_bench_101`, `multi_challenge`
   - **记忆**：`longmemeval`, `locomo`
@@ -20,7 +20,7 @@
 
 1. 克隆本项目代码：
    ```bash
-   git clone https://github.com/your_username/MTEvalKit.git
+   git clone https://github.com/JiaQiSJTU/MTEvalKit.git
    cd MTEvalKit
    ```
 
@@ -28,6 +28,29 @@
    ```bash
    pip install -r requirements.txt
    ```
+
+## 📦 数据准备
+
+在运行评测前，需要将对应数据集的原始数据文件放置在 `raw_data/` 目录下。各数据集所需文件如下：
+
+| Benchmark | `--dataset` | 能力维度 | 数据源 | 参考文献 |
+| :--- | :--- | :--- | :--- | :--- |
+| MT-Eval | `mt_eval` | 通用能力 | [🤗 MT-Eval](https://huggingface.co/datasets/wckwan/MT-Eval)(`*.jsonl`) | [2024EMNLP](https://aclanthology.org/2024.emnlp-main.1124.pdf) |
+| MT-Bench-101 | `mt_bench_101` | 通用能力 | []()(`*.jsonl`) | []() |
+| Multi-Challenge | `multi_challenge` | 通用能力 | []()(`*.jsonl`) | [2025ACLfindings](https://aclanthology.org/2025.findings-acl.958/) |
+| LongMemEval | `longmemeval` | 记忆 | []()(`*.json`) | []() |
+| LoCoMo | `locomo` | 记忆 | []()(`*.json`) | []() |
+| MathChat | `mathchat` | 数学 | []()(`*.jsonl`) | []() |
+| MemoryCode | `memorycode` | 代码 | []()(`dialogue_*.json`) | []() |
+| Multi-IF | `multi_if` | 指令遵循 | []()(`*.csv`) | []() |
+| PersonaMem | `personamem` | 个性化 | []()(`questions_*.csv`, `shared_contexts_*.jsonl`) | []() |
+| SafeDialBench | `safedialbench` | 安全 | []()(`datasets_*.jsonl`及prompt文件`*.jsonl`) | []() |
+
+将对应文件放入 `raw_data/<目录名>/` 后，通过 `--raw_data_dir` 参数指定路径即可，例如：
+
+```bash
+--raw_data_dir "./raw_data/MT-Eval"
+```
 
 ## 🚀 使用方法
 
