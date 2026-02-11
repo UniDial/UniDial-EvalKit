@@ -113,13 +113,14 @@ class LLMJudge(BaseMetric):
            
         except Exception as e:
             logger.error(f"LLMJudge failed: {e}")
+            raise ValueError(f"LLMJudge failed: {e}")
             # print(e)
-            # exit(0)
-            return {
-                "score": 0.0,
-                "error": str(e),
-                "raw_output": locals().get("llm_output", "")
-            }
+            # # exit(0)
+            # return {
+            #     "score": 0.0,
+            #     "error": str(e),
+            #     "raw_output": locals().get("llm_output", "")
+            # }
 
     def _parse_json_output(self, text: str) -> Dict[str, Any]:
         """
@@ -148,7 +149,7 @@ class LLMJudge(BaseMetric):
             }
         except json.JSONDecodeError:
             # Fallback: Try to find score using regex if JSON fails
-            score_match = re.search(r'"Score":\s*(\d+(\.\d+)?)', text, re.IGNORECASE)
+            score_match = re.search(r'"score":\s*(\d+(\.\d+)?)', text, re.IGNORECASE)
             # print(text)
             # exit(0)
             if score_match:
