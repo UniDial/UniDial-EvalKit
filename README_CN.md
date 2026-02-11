@@ -36,14 +36,14 @@
 | Benchmark | `--dataset` | 能力维度 | 数据源 | 参考文献 |
 | :--- | :--- | :--- | :--- | :--- |
 | MT-Eval | `mt_eval` | 通用能力 | [🤗 Hugging Face](https://huggingface.co/datasets/wckwan/MT-Eval)(`*.jsonl`) | [2024EMNLP](https://aclanthology.org/2024.emnlp-main.1124.pdf) |
-| MT-Bench-101 | `mt_bench_101` | 通用能力 | [Github](https://github.com/mtbench101/mt-bench-101)(`*.jsonl`) | [2024ACL](https://aclanthology.org/2024.acl-long.401/) |
-| Multi-Challenge | `multi_challenge` | 通用能力 | [Github](https://github.com/ekwinox117/multi-challenge)(`*.jsonl`) | [2025ACLfindings](https://aclanthology.org/2025.findings-acl.958/) |
-| LongMemEval | `longmemeval` | 记忆 | [Github](https://github.com/xiaowu0162/LongMemEval)(`*.json`) | [2025ICLR Poster](https://openreview.net/pdf?id=pZiyCaVuti) |
-| LoCoMo | `locomo` | 记忆 | [Github](https://snap-research.github.io/locomo)(`*.json`) | [2024ACL](https://aclanthology.org/anthology-files/anthology-files/pdf/acl/2024.acl-long.747.pdf) |
-| MathChat | `mathchat` | 数学 | [Github](https://github.com/Zhenwen-NLP/MathChat)(`*.jsonl`) | [Arxiv](https://arxiv.org/pdf/2405.19444) |
-| MemoryCode | `memorycode` | 代码 | [Github](https://github.com/Cohere-Labs-Community/MemoryCode)(`dialogue_*.json`) | [2025ACL](https://arxiv.org/abs/2502.13791) |
-| Multi-IF | `multi_if` | 指令遵循 | [Github](https://github.com/facebookresearch/Multi-IF)(`*.csv`) | [2025ACL](https://aclanthology.org/2025.acl-long.1172.pdf) |
-| PersonaMem | `personamem` | 个性化 | [Github](http://github.com/bowen-upenn/PersonaMem)(`questions_*.csv`, `shared_contexts_*.jsonl`) | [2025COLM](https://arxiv.org/abs/2504.14225) |
+| MT-Bench-101 | `mt_bench_101` | 通用能力 | [:octocat: Github](https://github.com/mtbench101/mt-bench-101)(`*.jsonl`) | [2024ACL](https://aclanthology.org/2024.acl-long.401/) |
+| Multi-Challenge | `multi_challenge` | 通用能力 | [:octocat: Github](https://github.com/ekwinox117/multi-challenge)(`*.jsonl`) | [2025ACLfindings](https://aclanthology.org/2025.findings-acl.958/) |
+| LongMemEval | `longmemeval` | 记忆 | [🤗 Hugging Face](https://huggingface.co/datasets/xiaowu0162/longmemeval-cleaned)(`*.json`) | [2025ICLR Poster](https://openreview.net/pdf?id=pZiyCaVuti) |
+| LoCoMo | `locomo` | 记忆 | [:octocat: Github](https://github.com/snap-research/locomo/tree/main/data)(`*.json`) | [2024ACL](https://aclanthology.org/anthology-files/anthology-files/pdf/acl/2024.acl-long.747.pdf) |
+| MathChat | `mathchat` | 数学 | [:octocat: Github](https://github.com/Zhenwen-NLP/MathChat)(`*.jsonl`) | [Arxiv](https://arxiv.org/pdf/2405.19444) |
+| MemoryCode | `memorycode` | 代码 | [:octocat: Github](https://github.com/Cohere-Labs-Community/MemoryCode)(`dialogue_*.json`) | [2025ACL](https://arxiv.org/abs/2502.13791) |
+| Multi-IF | `multi_if` | 指令遵循 | [🤗 Hugging Face](https://huggingface.co/datasets/facebook/Multi-IF)(`*.csv`) | [2025ACL](https://aclanthology.org/2025.acl-long.1172.pdf) |
+| PersonaMem | `personamem` | 个性化 | [🤗 Hugging Face](https://huggingface.co/datasets/bowen-upenn/PersonaMem)(`questions_*.csv`, `shared_contexts_*.jsonl`) | [2025COLM](https://arxiv.org/abs/2504.14225) |
 | SafeDialBench | `safedialbench` | 安全 | [🤗 Hugging Face](https://huggingface.co/datasets/HongyeCao/SafeDialBench)(`datasets_*.jsonl`及prompt文件`*.jsonl`) | [2026ICLR](https://arxiv.org/abs/2502.11090) |
 
 将对应文件放入 `raw_data/<目录名>/` 后，通过 `--raw_data_dir` 参数指定路径即可，例如：
