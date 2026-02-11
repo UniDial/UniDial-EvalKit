@@ -106,12 +106,8 @@ def process_single_dialog_generation(
             
             # 判断本轮是否需要评测，若需要，则generate；若不需要，则加入content
             if turn.eval_config.do_eval:
-                # Generate response
-                try:
-                    response = model.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
-                except Exception as e:
-                    logger.error(f"Generation failed for dialog {dialog.dialog_id}, turn {turn.turn_id}: {e}")
-                    response = "[ERROR]"
+                # Generate response (let exception propagate so no file is written on error)
+                response = model.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
                 
                 # Update history with generated response
                 if dialog.dialog_eval_config.use_reference_history:                    
@@ -220,35 +216,32 @@ def process_single_dialog_evaluation(
                     if not metric_inst:
                         continue
                         
-                    try:
-                        score_dict = metric_inst.compute(
-                            prediction=turn.content,
-                            reference=turn.reference, 
-                            history_messages=history_messages,
-                            dataset=dataset, 
-                            **metric_cfg.args 
-                        )
-                        
-                        record_metric_name = metric_name
-                        for key, value in metric_cfg.args.items():
-                            if "name" in key.lower() and isinstance(value, str):
-                                record_metric_name = f"{metric_name}->{value}"
-                                break
+                    # Let exception propagate so no file is written on error
+                    score_dict = metric_inst.compute(
+                        prediction=turn.content,
+                        reference=turn.reference, 
+                        history_messages=history_messages,
+                        dataset=dataset, 
+                        **metric_cfg.args 
+                    )
+                    
+                    record_metric_name = metric_name
+                    for key, value in metric_cfg.args.items():
+                        if "name" in key.lower() and isinstance(value, str):
+                            record_metric_name = f"{metric_name}->{value}"
+                            break
 
-                        result_record = {
-                            "dialog_id": dialog.dialog_id,
-                            "turn_id": turn.turn_id,
-                            "metric_name": record_metric_name,
-                            "score": score_dict.get("score", 0.0),
-                            "details": score_dict,
-                            # Keep both separately for analysis/debugging.
-                            "dialog_labels": dialog.dialog_labels,
-                            "turn_labels": {k: v for k, v in turn.turn_labels.items() if not k.startswith("raw")},
-                        }
-                        results.append(result_record)
-                        
-                    except Exception as e:
-                        logger.error(f"Evaluation failed for dialog {dialog.dialog_id}: {e}")
+                    result_record = {
+                        "dialog_id": dialog.dialog_id,
+                        "turn_id": turn.turn_id,
+                        "metric_name": record_metric_name,
+                        "score": score_dict.get("score", 0.0),
+                        "details": score_dict,
+                        # Keep both separately for analysis/debugging.
+                        "dialog_labels": dialog.dialog_labels,
+                        "turn_labels": {k: v for k, v in turn.turn_labels.items() if not k.startswith("raw")},
+                    }
+                    results.append(result_record)
             
             history_messages.append({"role": "assistant", "content": turn.content})
             
