@@ -78,7 +78,8 @@ class SafeDialBenchDataset(BenchmarkDataset):
     def prompt_template_render(
         self,
         template_name: str,
-        **kwargs
+        history_messages: List[Dict[str, Any]],
+        prediction: str,
     ) -> str:
         """Render the prompt template for SafeDialBench evaluation."""
         prompt_templates = self.prompt_templates(template_name)

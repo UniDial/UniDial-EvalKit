@@ -22,10 +22,17 @@ Scoring Guidelines (1-5 points):
 4 points: The model demonstrates good understanding and adherence to instructions, offers a well-reasoned and mostly accurate analysis of the wrong attempt, and corrects the solution effectively with minor mistakes or areas for improvement.
 5 points: The model exhibits excellent understanding and strict adherence to instructions, provides a detailed and accurate analysis of the wrong attempt, and corrects the solution perfectly with a clear, logical, and mathematically sound explanation.
 
-Problem: {question}
-Correct Solution: {reference}
-User's Attempt (Wrong Solution): {wrong_attempt}
-Model's Analysis and Correction: {prediction}
+## Problem
+{question}
+
+## Correct Solution
+{reference}
+
+## User's Attempt (Wrong Solution)
+{wrong_attempt}
+
+## Model's Analysis and Correction
+{prediction}
 
 For each of the three aspects, provide a score along with a concise rationale for each score. Explain how the AI model's performance aligns with the evaluation criteria and contributes to effectively identifying, analyzing, and correcting the mathematical error.
 
@@ -47,10 +54,17 @@ Scoring Guidelines (1-5):
 4 points: The model exhibits a good understanding, creates a relevant and well- constructed problem, and provides a solution that is largely correct with minor mistakes.
 5 points: The model shows an excellent understanding of the task, generates a highly relevant and challenging problem, and provides a perfectly accurate and comprehensive solution.
 
-Seed Problem: {seed_problem}
-Seed Solution: {seed_solution}
-Reference (Example): {reference}
-Model's Generated Problem and Solution: {prediction}
+## Seed Problem
+{seed_problem}
+
+## Seed Solution
+{seed_solution}
+
+## Reference (Example)
+{reference}
+
+## Model's Generated Problem and Solution
+{prediction}
 
 When scoring, consider the overall effectiveness of the AI model in generating a coherent and related problem-solution pair. Provide a score for each criterion, and a rationale for each score, detailing how the AI model's performance aligns with the evaluation criteria and contributes to the quality of the generated content.
 
@@ -401,29 +415,36 @@ Finally, output the results in the following JSON format:
     def get_eval_config_for_turn(self, turn: Turn) -> List[MetricConfig]:
         
         if turn.eval_config.dynamic_config_source.get("task_name", "") == "error_analysis":
+            # print("here1")
+            # exit(0)
             return [MetricConfig(class_name="llm_judge", args={"template_name": "math_chat_error_analysis", "question": turn.eval_config.dynamic_config_source.get("question", ""), "wrong_attempt": turn.eval_config.dynamic_config_source.get("wrong_attempt", "")})]
         elif turn.eval_config.dynamic_config_source.get("task_name", "") == "p2p_generation":
+            # print("here2")
+            # exit(0)
             return [MetricConfig(class_name="llm_judge", args={"template_name": "math_chat_p2p_generation", "seed_problem": turn.eval_config.dynamic_config_source.get("seed_problem", ""), "seed_solution": turn.eval_config.dynamic_config_source.get("seed_solution", "")})]
         else:
+            # print("here3")
+            # exit(0)
             return turn.eval_config.metrics
         
-    def prompt_template_render(self, template_name: str, **kwargs) -> str:
+    def prompt_template_render(self, template_name: str, reference: str, prediction: str, question: str = None, wrong_attempt: str = None, seed_problem: str = None, seed_solution: str = None) -> str:
+
         if template_name == "math_chat_error_analysis":
 
             return self.PROMPT_TEMPLATE_ERROR_ANALYSIS.format(
-                question=kwargs.get("question", ""),
-                wrong_attempt=kwargs.get("wrong_attempt", ""),
-                reference=kwargs.get("reference", ""),
-                prediction=kwargs.get("prediction", "")
+                question=question,
+                wrong_attempt=wrong_attempt,
+                reference=reference,
+                prediction=prediction
             )
             
         elif template_name == "math_chat_p2p_generation":
             
             return self.PROMPT_TEMPLATE_P2P.format(
-                seed_problem=kwargs.get("seed_problem", ""),
-                seed_solution=kwargs.get("seed_solution", ""),
-                reference=kwargs.get("reference", ""),
-                prediction=kwargs.get("prediction", "")
+                seed_problem=seed_problem,
+                seed_solution=seed_solution,
+                reference=reference,
+                prediction=prediction
             )
             
         raise ValueError(f"Unknown template name: {template_name}")

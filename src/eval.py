@@ -225,6 +225,7 @@ def process_single_dialog_evaluation(
                         **metric_cfg.args 
                     )
                     
+                    
                     record_metric_name = metric_name
                     for key, value in metric_cfg.args.items():
                         if "name" in key.lower() and isinstance(value, str):
@@ -242,7 +243,7 @@ def process_single_dialog_evaluation(
                         "turn_labels": {k: v for k, v in turn.turn_labels.items() if not k.startswith("raw")},
                     }
                     results.append(result_record)
-            
+        
             history_messages.append({"role": "assistant", "content": turn.content})
             
     return results
@@ -277,6 +278,7 @@ def run_evaluation_phase(
                         if records:
                              processed_dialog_ids.add(records[0]["dialog_id"])
             except Exception as e:
+                
                 logger.warning(f"Failed to parse eval file {p}: {e}")
             
     remaining_dialogs = [d for d in generated_dialogs if d.dialog_id not in processed_dialog_ids]
@@ -293,11 +295,13 @@ def run_evaluation_phase(
             executor.submit(process_single_dialog_evaluation, d, metrics_map, dataset): d
             for d in remaining_dialogs
         }
-        
+
         for future in tqdm(concurrent.futures.as_completed(future_to_dialog), total=len(future_to_dialog), desc="Evaluating"):
             d = future_to_dialog[future]
             try:
                 res_list = future.result()
+                # print("here",res_list)
+                # exit(0)
                 if res_list:
                     # Write results for this dialog to its own file
                     file_path = output_dir / f"{d.dialog_id}.json"
@@ -305,12 +309,10 @@ def run_evaluation_phase(
                         json.dump(res_list, f, indent=2, ensure_ascii=False)
                     
                     all_results.extend(res_list)
-                else:
-                    # Even if empty results (no eval needed?), mark as processed?
-                    # Maybe create empty file to avoid re-processing?
-                    pass
                     
             except Exception as e:
+                # print(e)
+                # exit(0)
                 logger.error(f"Evaluation generated an exception for dialog {d.dialog_id}: {e}")
                     
     return all_results
@@ -391,6 +393,9 @@ def main():
         if not generated_dialogs:
             logger.error("No generated dialogs found. Cannot proceed with evaluation.")
             return
+    
+        else:
+            logger.info(f"Loaded {len(generated_dialogs)} generated dialogs")
 
 
         logger.info("Starting evaluation phase...")

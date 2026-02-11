@@ -85,7 +85,8 @@ class LLMJudge(BaseMetric):
         try:
             # 3. Render Prompt (Delegated to Dataset)
             prompt = self.dataset.prompt_template_render(**render_kwargs)
-            
+            # print(prompt)
+            # exit(0)
             # Ensure prompt is in message format for chat models
             if isinstance(prompt, str):
                 messages = [{"role": "user", "content": prompt}]
@@ -112,6 +113,8 @@ class LLMJudge(BaseMetric):
            
         except Exception as e:
             logger.error(f"LLMJudge failed: {e}")
+            # print(e)
+            # exit(0)
             return {
                 "score": 0.0,
                 "error": str(e),
@@ -135,7 +138,7 @@ class LLMJudge(BaseMetric):
             data = json.loads(text)
             
             # Normalize keys (mt_eval templates use "Score" and "Rationale")
-            score = data.get("Score", data.get("score", 0))
+            score = data.get("Score", data.get("score", self.min_score))
             rationale = data.get("Rationale", data.get("rationale", ""))
             
             return {
@@ -146,14 +149,13 @@ class LLMJudge(BaseMetric):
         except json.JSONDecodeError:
             # Fallback: Try to find score using regex if JSON fails
             score_match = re.search(r'"Score":\s*(\d+(\.\d+)?)', text, re.IGNORECASE)
+            # print(text)
+            # exit(0)
             if score_match:
                 return {
                     "score": float(score_match.group(1)),
                     "rationale": "Parsed via regex (invalid JSON)",
                     "raw_output": text
                 }
-            return {
-                "score": 0.0,
-                "error": "Failed to parse JSON",
-                "raw_output": text
-            }
+            else:
+                raise ValueError(f"Failed to parse JSON from LLM judge output: {text}")
