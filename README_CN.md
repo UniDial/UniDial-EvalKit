@@ -54,16 +54,18 @@
 
 ## 🚀 使用方法
 
-评测流程主要分为 **生成 (Generation)** 和 **评测 (Evaluation)** 两个阶段，可以通过命令行参数灵活控制。入口脚本为 `src/eval.py`。
+评测流程主要分为 **数据加载**、**模型生成 (Generation)**、**指标评测 (Evaluation)** 和 **结果聚合** 四个阶段。支持 **CLI 命令行** 和 **Python 编程** 两种调用方式（详见 [`eval_pipeline.md`](eval_pipeline.md)）。
 
-### 1. 快速开始
+### 1. CLI 命令行
 
-运行以下命令即可完成从生成到评测的全流程：
+入口脚本为 `src/eval_cli.py`，通过命令行参数灵活控制。
+
+**完整流程（生成 + 评测）：**
 
 ```bash
-python src/eval.py \
+PYTHONPATH=. python src/eval_cli.py \
     --dataset mt_eval \
-    --model_type openai \
+    --raw_data_dir ./raw_data/MT-Eval \
     --model_name gpt-3.5-turbo \
     --judge_model_name gpt-4 \
     --api_key "your-api-key" \
@@ -72,41 +74,125 @@ python src/eval.py \
     --parallel 4
 ```
 
-### 2. 常用参数说明
+**仅生成回答：**
+
+```bash
+PYTHONPATH=. python src/eval_cli.py \
+    --dataset mathchat \
+    --raw_data_dir ./raw_data/MathChat \
+    --model_name deepseek-chat \
+    --base_url https://api.deepseek.com/v1 \
+    --api_key "sk-xxx" \
+    --do_generation
+```
+
+**仅运行评测（需已有生成结果）：**
+
+```bash
+PYTHONPATH=. python src/eval_cli.py \
+    --dataset mathchat \
+    --model_name deepseek-chat \
+    --judge_model_name gpt-4 \
+    --api_key "sk-xxx" \
+    --do_evaluation
+```
+
+### 2. Python 编程调用
+
+通过 `EvalPipeline` 和 `EvalPipelineConfig`，可在脚本或 Notebook 中灵活调用，支持分阶段精细控制。
+
+```python
+from src.eval_pipeline import EvalPipeline, EvalPipelineConfig
+
+cfg = EvalPipelineConfig(
+    dataset="mt_eval",
+    raw_data_dir="./raw_data/MT-Eval",
+    model_name="gpt-3.5-turbo",
+    judge_model_name="gpt-4",
+    api_key="sk-xxx",
+    do_generation=True,
+    do_evaluation=True,
+    parallel=4,
+)
+
+# 一键执行
+pipeline = EvalPipeline(cfg)
+pipeline.run()
+
+# 或分阶段调用（支持中间自定义处理）
+# dialogs   = pipeline.prepare_data()
+# generated = pipeline.run_generation(dialogs)
+# results   = pipeline.run_evaluation(generated)
+# summary   = pipeline.run_aggregation(results)
+```
+
+### 3. 使用 vLLM 部署本地模型
+
+对于开源模型，可通过 [vLLM](https://docs.vllm.ai/) 部署 OpenAI 兼容的推理服务，然后直接对接本框架进行评测。
+
+**第一步：启动 vLLM 服务**（参见 `script/vllm_server.sh`）
+
+```bash
+python3 -m vllm.entrypoints.openai.api_server \
+    --model ./Models/Qwen3-8B \
+    --served-model-name "Qwen3-8B"
+```
+
+服务默认监听 `http://localhost:8000`。
+
+**第二步：运行评测**，通过 `--base_url` 指向本地 vLLM 服务（参见 `script/test_vllm_client.sh`）
+
+```bash
+PYTHONPATH=. python src/eval_cli.py \
+    --dataset locomo \
+    --raw_data_dir ./raw_data/LoCoMo \
+    --model_name Qwen3-8B \
+    --base_url http://localhost:8000/v1/ \
+    --do_generation
+```
+
+> 💡 vLLM 提供的是 OpenAI 兼容接口，因此 `--model_type` 保持默认 `openai` 即可，只需将 `--base_url` 指向本地地址，`--model_name` 设为 `--served-model-name` 对应的名称。
+
+### 4. 常用参数说明
 
 | 参数名 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
 | `--dataset` | str | `mt_eval` | 指定评测数据集名称 (如 `mathchat`, `longmemeval`) |
-| `--model_name` | str | `deepseek-chat` | 待评测模型名称 |
+| `--raw_data_dir` | str | `./raw_data/MT-Eval` | 原始数据文件路径 |
+| `--model_name` | str | `deepseek-ai/DeepSeek-V3.2` | 待评测模型名称 |
 | `--model_type` | str | `openai` | 模型后端类型，支持 OpenAI SDK 兼容接口 |
-| `--judge_model_name` | str | `deepseek-chat` | 用于 LLM-as-a-Judge 的裁判模型名称 |
+| `--judge_model_name` | str | `gpt-4.1-2025-04-14` | 用于 LLM-as-a-Judge 的裁判模型名称 |
 | `--do_generation` | flag | `False` | 是否执行模型回答生成阶段 |
 | `--do_evaluation` | flag | `False` | 是否执行指标打分阶段 |
 | `--output_dir` | str | `./output` | 结果输出目录 |
 | `--parallel` | int | `4` | 并行线程数 |
-| `--base_url` | str | `None` | 自定义 API Base URL (例如用于本地 vLLM 或 DeepSeek API) |
-
-### 3. 分阶段运行
-
-**仅生成回答：**
-```bash
-python src/eval.py --dataset mathchat --model_name xxx --base_url xxx --api_key xxx --do_generation
-```
-
-**仅运行评测（需已有生成结果）：**
-```bash
-python src/eval.py --dataset mathchat --model_name xxx --base_url xxx --api_key xxx --do_evaluation
-```
+| `--base_url` | str | `None` | 自定义 API Base URL（用于本地 vLLM 或第三方 API） |
+| `--temperature` | float | `0.7` | 生成温度 |
+| `--max_tokens` | int | `1024` | 最大生成 token 数 |
 
 ## 📂 项目结构
 
 ```text
 src/
-├── dataset/      # 数据集加载与预处理 (支持 mt_eval, mathchat 等)
-├── metric/       # 评测指标实现 (Code Match, LLM Judge 等)
-├── model/        # 模型接口封装 (OpenAI 等)
-└── eval.py       # 评测主程序入口
+├── dataset/          # 数据集加载与预处理 (支持 mt_eval, mathchat 等)
+├── metric/           # 评测指标实现 (Code Match, LLM Judge 等)
+├── model/            # 模型接口封装 (OpenAI 等)
+├── eval_config.py    # EvalPipelineConfig 配置 dataclass
+├── eval_phases.py    # 四阶段逻辑 (Data / Generation / Evaluation / Aggregation)
+├── eval_pipeline.py  # EvalPipeline 主控类 & 工厂函数
+└── eval_cli.py       # CLI 命令行入口
+script/
+├── vllm_server.sh    # vLLM 本地模型部署示例
+└── test_vllm_client.sh  # vLLM 评测调用示例
 ```
+
+## 🤝 Get Involved
+
+欢迎对对话评测感兴趣的研究者和开发者参与贡献！如有任何问题、建议或合作意向，欢迎通过以下方式联系我们：
+
+- 📧 Email: qijia0217@gmail.com, aibench.service@gmail.com
+- 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniConv-EvalKit/issues)
+- 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniConv-EvalKit/pulls)
 
 ## 🖊️ Citation
 
@@ -114,10 +200,18 @@ src/
 
 ```bibtex
 @misc{UniConv-EvalKit2026,
-  title={UniConv-EvalKit: Multi-Turn Evaluation Toolkit for Comprehensive Dialogue Abilities},
+  title={UniConv-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
   author={},
   year={2026},
   howpublished={\url{https://github.com/JiaQiSJTU/UniConv-EvalKit}}
 }
 ```
+
+我们也在多轮对话评测方向开展了系列研究工作，以下评测基准也将陆续集成到本工具中：
+
+- **EvolIF** — 面向多轮指令遵循能力的动态评测基准 [[arxiv](https://arxiv.org/abs/2511.03508v2)] [[code](https://github.com/JiaQiSJTU/EvolIF)]
+- **EvolMem** — 面向多轮对话多方面记忆能力的评测基准 [[arxiv](https://arxiv.org/abs/2601.03543)] [[code](https://github.com/shenye7436/EvolMem)]
+
+
+
 
