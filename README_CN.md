@@ -1,8 +1,8 @@
-# MTEvalKit
+# UniConv-EvalKit
 
-**MTEvalKit** 是一个专注于 **大模型多轮交互评测** 的统一框架。我们致力于构建覆盖 **记忆、理解、安全、数学、代码** 等多维度的长期交互综合能力评价体系。通过集成多个主流Benchmark进行综合对比，MTEvalKit为大语言模型及 Agent系统的多轮人机交互技术演进提供全方位、标准化的能力画像。
+**UniConv-EvalKit** 是一个专注于 **大模型多轮交互评测** 的统一框架。我们致力于构建覆盖 **记忆、理解、安全、数学、代码** 等多维度的长期交互综合能力评价体系。通过集成多个主流Benchmark进行综合对比，UniConv-EvalKit为大语言模型及 Agent系统的多轮人机交互技术演进提供全方位、标准化的能力画像。
 
-作为一款模块化、可扩展的评测工具，MTEvalKit 将数据加载、模型生成与指标评测解耦，支持断点续传与并行加速，能够高效地对各类开源及闭源模型进行全方位能力评估。
+作为一款模块化、可扩展的评测工具，UniConv-EvalKit 将数据加载、模型生成与指标评测解耦，支持断点续传与并行加速，能够高效地对各类开源及闭源模型进行全方位能力评估。
 
 ## ✨ 项目亮点
 
@@ -20,8 +20,8 @@
 
 1. 克隆本项目代码：
    ```bash
-   git clone https://github.com/JiaQiSJTU/MTEvalKit.git
-   cd MTEvalKit
+   git clone https://github.com/JiaQiSJTU/UniConv-EvalKit.git
+   cd UniConv-EvalKit
    ```
 
 2. 安装依赖环境：
@@ -110,14 +110,14 @@ src/
 
 ## 🖊️ Citation
 
-如果您在研究中使用了 MTEvalKit，请引用以下 BibTeX：
+如果您在研究中使用了 UniConv-EvalKit，请引用以下 BibTeX：
 
 ```bibtex
-@misc{MTEvalKit2026,
-  title={MTEvalKit: Multi-Turn Evaluation Toolkit for Comprehensive Dialogue Abilities},
+@misc{UniConv-EvalKit2026,
+  title={UniConv-EvalKit: Multi-Turn Evaluation Toolkit for Comprehensive Dialogue Abilities},
   author={},
   year={2026},
-  howpublished={\url{https://github.com/JiaQiSJTU/MTEvalKit}}
+  howpublished={\url{https://github.com/JiaQiSJTU/UniConv-EvalKit}}
 }
 ```
 
