@@ -43,7 +43,13 @@
    cd UniConv-EvalKit
    ```
 
-2. 安装依赖环境：
+2. 创建并激活 conda 环境：
+   ```bash
+   conda create -n uniconv python=3.10
+   conda activate uniconv
+   ```
+
+3. 安装依赖环境：
    ```bash
    pip install -r requirements.txt
    ```
@@ -207,6 +213,12 @@ script/
 ├── vllm_server.sh    # vLLM 本地模型部署示例
 └── test_vllm_client.sh  # vLLM 评测调用示例
 ```
+
+## 📝 TODO / Roadmap
+
+- [ ] 增加 User Simulator，支持更灵活的对话过程
+- [ ] 增加 Agent 接口，支持 Agent 系统评测
+- [ ] 扩展多模态评测数据集
 
 ## 🤝 Get Involved
 

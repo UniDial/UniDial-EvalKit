@@ -42,7 +42,14 @@ Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using U
    cd UniConv-EvalKit
    ```
 
-2. Install dependencies:
+2. Create and activate a conda environment:
+
+    ```bash
+    conda create -n uniconv python=3.10
+    conda activate uniconv
+    ```
+
+3. Install dependencies:
 
     ```bash
     pip install -r requirements.txt
@@ -150,7 +157,6 @@ pipeline.run()
 # summary   = pipeline.run_aggregation(results)
 ```
 
-
 ### 3. Deploying Local Models with vLLM
 
 For open-source models, you can deploy an OpenAI-compatible inference service via [vLLM](https://docs.vllm.ai/) and then connect it directly to this framework for evaluation.
@@ -213,6 +219,12 @@ script/
 ├── vllm_server.sh    # Example for local vLLM model deployment
 └── test_vllm_client.sh  # Example for vLLM evaluation call
 ```
+
+## 📝 TODO / Roadmap
+
+- [ ] Add User Simulator
+- [ ] Add Agent backend to support agent-based evaluation
+- [ ] Extend multimodal evaluation benchmarks
 
 ## 🤝 Get Involved
 
