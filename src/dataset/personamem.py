@@ -19,8 +19,8 @@ class PersonaMemDataset(BenchmarkDataset):
         # If raw_path is a directory, iterate through all splits
         if raw_path.is_dir():
             for split in splits:
-                # if split=="128k":
-                #     break
+                if split=="128k":
+                    break
                 questions_path = raw_path / f"questions_{split}.csv"
                 context_path = raw_path / f"shared_contexts_{split}.jsonl"
                 
