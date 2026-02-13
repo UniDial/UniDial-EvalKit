@@ -66,7 +66,7 @@ Before running the evaluation, you need to place the raw data files for the corr
 | PersonaMem | `personamem` | Personalization | [🤗 Hugging Face](https://huggingface.co/datasets/bowen-upenn/PersonaMem)(`questions_*.csv`, `shared_contexts_*.jsonl`) | [2025COLM](https://arxiv.org/abs/2504.14225) |
 | SafeDialBench | `safedialbench` | Safety | [🤗 Hugging Face](https://huggingface.co/datasets/HongyeCao/SafeDialBench)(`datasets_*.jsonl`& prompt file `*.jsonl`) | [2026ICLR](https://arxiv.org/abs/2502.11090) |
 
-After placing the corresponding files into raw_data/<directory_name>/, specify the path using the --raw_data_dir parameter, for example:
+After placing the corresponding files into `raw_data/<directory_name>/`, specify the path using the `--raw_data_dir` parameter, for example:
 
 ```bash
 --raw_data_dir "./raw_data/MT-Eval"
