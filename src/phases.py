@@ -1,10 +1,10 @@
 """
-评测流水线的四个阶段 (Phases)
+Four Phases of the Evaluation Pipeline
 
-  1. DataPhase        — 数据预处理与加载
-  2. GenerationPhase  — 模型推理生成（支持断点续跑）
-  3. EvaluationPhase  — 指标评测（支持断点续跑）
-  4. AggregationPhase — 结果聚合与输出
+  1. DataPhase        — Data preprocessing & loading
+  2. GenerationPhase  — Model inference / generation (with checkpoint resume)
+  3. EvaluationPhase  — Metric evaluation (with checkpoint resume)
+  4. AggregationPhase — Result aggregation & output
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# 单 Dialog 处理函数 (无状态, 方便并发)
+# Single-Dialog processing functions (stateless, concurrency-friendly)
 # ---------------------------------------------------------------------------
 
 def _generate_single_dialog(
@@ -38,7 +38,7 @@ def _generate_single_dialog(
     temperature: float = 0.7,
     max_tokens: int = 1024,
 ) -> Dialog:
-    """为单个 Dialog 生成模型回复, 返回更新后的 Dialog。"""
+    """Generate model responses for a single Dialog, return the updated Dialog."""
     processed_turns = []
     messages: List[Dict[str, str]] = []
 
@@ -53,12 +53,12 @@ def _generate_single_dialog(
 
         elif turn.role == "assistant":
 
-            # 判断本轮是否需要评测，若需要，则generate；若不需要，则加入content
+            # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
             if turn.eval_config.do_eval:
                 response = model.generate(
                     messages=messages, temperature=temperature, max_tokens=max_tokens
                 )
-                # 构建历史: 根据 dialog 配置决定用参考答案还是生成结果
+                # Build history: use reference or generated response based on dialog config
                 if dialog.dialog_eval_config.use_reference_history:
                     messages.append({
                         "role": "assistant",
@@ -85,7 +85,7 @@ def _evaluate_single_dialog(
     metrics_map: Dict[str, Any],
     dataset: BenchmarkDataset,
 ) -> List[Dict[str, Any]]:
-    """对单个 Dialog 执行评测, 返回评测记录列表。"""
+    """Evaluate a single Dialog, return a list of evaluation records."""
     results: List[Dict[str, Any]] = []
     history_messages: List[Dict[str, str]] = []
 
@@ -113,7 +113,7 @@ def _evaluate_single_dialog(
                         **metric_cfg.args,
                     )
 
-                    # 构造可读的 metric 名称
+                    # Build a human-readable metric name
                     record_metric_name = metric_name
                     for key, value in metric_cfg.args.items():
                         if "name" in key.lower() and isinstance(value, str):
@@ -138,11 +138,11 @@ def _evaluate_single_dialog(
 
 
 # ---------------------------------------------------------------------------
-# 四大阶段 (Phase)
+# Four Pipeline Phases
 # ---------------------------------------------------------------------------
 
 class DataPhase:
-    """阶段 1: 数据预处理 & 加载"""
+    """Phase 1: Data preprocessing & loading"""
 
     @staticmethod
     def run(dataset: BenchmarkDataset, cfg: EvalPipelineConfig) -> List[Dialog]:
@@ -157,7 +157,7 @@ class DataPhase:
 
 
 class GenerationPhase:
-    """阶段 2: 模型生成, 支持断点续跑"""
+    """Phase 2: Model generation with checkpoint resume"""
 
     @staticmethod
     def run(
@@ -216,7 +216,7 @@ class GenerationPhase:
 
 
 class EvaluationPhase:
-    """阶段 3: 指标评测, 支持断点续跑"""
+    """Phase 3: Metric evaluation with checkpoint resume"""
 
     @staticmethod
     def run(
@@ -281,14 +281,14 @@ class EvaluationPhase:
 
 
 class AggregationPhase:
-    """阶段 4: 结果聚合 & 输出"""
+    """Phase 4: Result aggregation & output"""
 
     @staticmethod
     def run(
         all_results: List[Dict[str, Any]],
         cfg: EvalPipelineConfig,
     ) -> Optional[Dict[str, Any]]:
-        # 若内存中无结果, 尝试从磁盘加载
+        # If no results in memory, try loading from disk
         if not all_results and cfg.eval_output_dir.exists():
             for p in cfg.eval_output_dir.glob("*.json"):
                 try:
@@ -312,13 +312,13 @@ class AggregationPhase:
             by_metric=cfg.agg_by_metric,
         )
 
-        # 打印摘要
+        # Print summary
         print("\n" + "=" * 40)
         print("Global Results:")
         print(json.dumps(aggregated["global"], indent=2))
         print("=" * 40 + "\n")
 
-        # 持久化
+        # Persist to disk
         summary_path = cfg.summary_output_path
         summary_path.parent.mkdir(parents=True, exist_ok=True)
         with open(summary_path, "w", encoding="utf-8") as f:

@@ -106,7 +106,7 @@ class LongMemEvalDataset(BenchmarkDataset):
     def _normalize_raw_data(self, ctx: BenchmarkContext) -> Iterable[Dialog]:
         raw_path = ctx.raw_path
         if raw_path.is_dir():
-             target_file = raw_path / "longmemeval_s_cleaned.json" # _m_文件太大了，先不读了
+             target_file = raw_path / "longmemeval_s_cleaned.json" # _m_ file is too large, skip for now
              if target_file.exists():
                  data_file = target_file
              else:
@@ -161,7 +161,7 @@ class LongMemEvalDataset(BenchmarkDataset):
 
                 
         dialogue_eval_config = DialogEvalConfig(
-            use_reference_history=True, # 决定了历史assistant语句是选择reference还是选择content
+            use_reference_history=True, # Determines whether history assistant messages use reference or content
         )
         
         dialog_turns: List[Turn] = []

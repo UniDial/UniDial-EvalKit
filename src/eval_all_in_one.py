@@ -104,7 +104,7 @@ def process_single_dialog_generation(
         
         elif turn.role == "assistant":
             
-            # 判断本轮是否需要评测，若需要，则generate；若不需要，则加入content
+            # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
             if turn.eval_config.do_eval:
                 # Generate response (let exception propagate so no file is written on error)
                 response = model.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
@@ -358,7 +358,7 @@ def main():
             model_name=args.model_name, 
             api_key=args.api_key, 
             base_url=args.base_url,
-        )# TODO: 可能agent还需要load其他embedding model
+        )# TODO: agents may also need to load other embedding models
         
         # Run Generation
         generated_dialogs = run_generation_phase(

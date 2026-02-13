@@ -304,7 +304,7 @@ class MTEvalDataset(BenchmarkDataset):
                                 metrics=[MetricConfig(class_name="precision")]
                             )
             
-            elif task_name in ["recollection_multi_global-inst", "recollection_single_global-inst"]: # 指向相应的指令，并准备好入参
+            elif task_name in ["recollection_multi_global-inst", "recollection_single_global-inst"]: # Map to the corresponding instruction and prepare arguments
                 cur_task_type = data.get("inst_name")
 
                 eval_config = TurnEvalConfig(
@@ -320,7 +320,7 @@ class MTEvalDataset(BenchmarkDataset):
                 Turn(
                     turn_id=turn_id,
                     role="assistant",
-                    content=assistant_text if not do_eval else None, # 需要测试，则为空；不需要测试，则为参考语句
+                    content=assistant_text if not do_eval else None, # If evaluation needed, leave empty; otherwise, use reference text
                     reference=assistant_text,
                     reference_document=reference_document,
                     eval_config=eval_config,
@@ -331,7 +331,7 @@ class MTEvalDataset(BenchmarkDataset):
 
         
         dialogue_eval_config = DialogEvalConfig(
-            use_reference_history=False, # 决定了历史assistant语句是选择reference还是选择content
+            use_reference_history=False, # Determines whether history assistant messages use reference or content
         )
 
         return Dialog(dialog_id=dialog_id, 
