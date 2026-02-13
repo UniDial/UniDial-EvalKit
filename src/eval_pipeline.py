@@ -24,8 +24,8 @@ from src.metric import get_metric_class, METRIC_REGISTRY
 from src.model import get_model_class, BaseModel
 
 # Re-export: Config & Phases
-from .eval_config import EvalPipelineConfig
-from .eval_phases import (
+from src.config import EvalPipelineConfig
+from src.phases import (
     DataPhase,
     GenerationPhase,
     EvaluationPhase,

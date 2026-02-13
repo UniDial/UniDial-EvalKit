@@ -23,7 +23,7 @@ from src.dataset.schema import Dialog
 from src.metric.aggregator import aggregate_results
 from src.model import BaseModel
 
-from .eval_config import EvalPipelineConfig
+from src.config import EvalPipelineConfig
 
 logger = logging.getLogger(__name__)
 

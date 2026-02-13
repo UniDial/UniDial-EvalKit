@@ -166,7 +166,8 @@ For open-source models, you can deploy an OpenAI-compatible inference service vi
 ```bash
 python3 -m vllm.entrypoints.openai.api_server \
     --model ./Models/Qwen3-8B \
-    --served-model-name "Qwen3-8B"
+    --served-model-name "Qwen3-8B" \
+    --port 8000
 ```
 
 The service listens on `http://localhost:8000` by default.
@@ -179,10 +180,11 @@ PYTHONPATH=. python src/eval_cli.py \
     --raw_data_dir ./raw_data/LoCoMo \
     --model_name Qwen3-8B \
     --base_url http://localhost:8000/v1/ \
-    --do_generation
+    --do_generation \
+    --api_key 'x'
 ```
 
-> 💡 Since vLLM provides an OpenAI-compatible interface, you can keep the default `--model_type` as `openai.` Just point `--base_url` to your local address and set `--model_name` to the corresponding `--served-model-name`.
+> 💡 Since vLLM provides an OpenAI-compatible interface, you can keep the default `--model_type` as `openai.` Just point `--base_url` to your local address and set `--model_name` to the corresponding `--served-model-name`, and you can pass any non-empty string as the api_key.
 
 
 ### 4. Common Parameter Descriptions

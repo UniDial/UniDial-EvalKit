@@ -163,7 +163,8 @@ pipeline.run()
 ```bash
 python3 -m vllm.entrypoints.openai.api_server \
     --model ./Models/Qwen3-8B \
-    --served-model-name "Qwen3-8B"
+    --served-model-name "Qwen3-8B" \
+    --port 8000
 ```
 
 服务默认监听 `http://localhost:8000`。
@@ -176,10 +177,11 @@ PYTHONPATH=. python src/eval_cli.py \
     --raw_data_dir ./raw_data/LoCoMo \
     --model_name Qwen3-8B \
     --base_url http://localhost:8000/v1/ \
-    --do_generation
+    --do_generation \
+    --api_key 'x'
 ```
 
-> 💡 vLLM 提供的是 OpenAI 兼容接口，因此 `--model_type` 保持默认 `openai` 即可，只需将 `--base_url` 指向本地地址，`--model_name` 设为 `--served-model-name` 对应的名称。
+> 💡 vLLM 提供的是 OpenAI 兼容接口，因此 `--model_type` 保持默认 `openai` 即可，只需将 `--base_url` 指向本地地址，`--model_name` 设为 `--served-model-name` 对应的名称，api_key传递任意非空字符串即可。
 
 ### 4. 常用参数说明
 
