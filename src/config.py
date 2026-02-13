@@ -1,7 +1,7 @@
 """
-评测流水线配置 (EvalPipelineConfig)
+Evaluation Pipeline Configuration (EvalPipelineConfig)
 
-与 CLI 完全解耦的 dataclass，支持在脚本和 Notebook 中直接构造。
+A CLI-decoupled dataclass that can be constructed directly in scripts and notebooks.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import Optional
 
 @dataclass
 class EvalPipelineConfig:
-    """评测流水线的全局配置。"""
+    """Global configuration for the evaluation pipeline."""
 
     # Dataset
     dataset: str = "mt_eval"

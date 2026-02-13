@@ -1,15 +1,15 @@
 """
-模块化评测流水线 (Evaluation Pipeline)
+Modular Evaluation Pipeline
 
-将评测流程拆分为四个独立阶段:
-  1. DataPhase        — 数据预处理与加载
-  2. GenerationPhase  — 模型推理生成
-  3. EvaluationPhase  — 指标评测
-  4. AggregationPhase — 结果聚合
+Splits the evaluation workflow into four independent phases:
+  1. DataPhase        — Data preprocessing & loading
+  2. GenerationPhase  — Model inference / generation
+  3. EvaluationPhase  — Metric evaluation
+  4. AggregationPhase — Result aggregation
 
-每个阶段可独立调用, 也可通过 EvalPipeline.run() 一键串联执行。
+Each phase can be invoked independently, or chained via EvalPipeline.run().
 
-本文件是统一入口, 外部使用只需:
+This file is the unified entry point; external usage only needs:
     from src.eval_pipeline import EvalPipeline, EvalPipelineConfig
 """
 
@@ -23,7 +23,7 @@ from src.dataset.schema import Dialog
 from src.metric import get_metric_class, METRIC_REGISTRY
 from src.model import get_model_class, BaseModel
 
-# Re-export: 配置 & 阶段
+# Re-export: Config & Phases
 from .eval_config import EvalPipelineConfig
 from .eval_phases import (
     DataPhase,
@@ -35,27 +35,27 @@ from .eval_phases import (
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    # 配置
+    # Config
     "EvalPipelineConfig",
-    # 阶段
+    # Phases
     "DataPhase",
     "GenerationPhase",
     "EvaluationPhase",
     "AggregationPhase",
-    # 工厂
+    # Factories
     "create_generation_model",
     "create_metrics_map",
-    # 主控
+    # Orchestrator
     "EvalPipeline",
 ]
 
 
 # ---------------------------------------------------------------------------
-# 模型 & 指标工厂 (集中管理初始化逻辑)
+# Model & Metric Factories (centralized initialization logic)
 # ---------------------------------------------------------------------------
 
 def create_generation_model(cfg: EvalPipelineConfig) -> BaseModel:
-    """根据配置创建生成模型实例。"""
+    """Create a generation model instance based on the config."""
     logger.info(f"Initializing generation model: {cfg.model_name} (type={cfg.model_type})")
     ModelClass = get_model_class(cfg.model_type)
     return ModelClass(
@@ -69,10 +69,10 @@ def create_metrics_map(
     dataset: BenchmarkDataset,
     cfg: EvalPipelineConfig,
 ) -> Dict[str, Any]:
-    """根据数据集配置和评测参数, 初始化所有所需的 Metric 实例。"""
+    """Initialize all required Metric instances based on dataset config and eval parameters."""
     metric_configs = dataset.metric_configs()
 
-    # 兼容 list / dict 两种返回格式
+    # Support both list and dict return formats
     if isinstance(metric_configs, list):
         metric_configs = {name: {} for name in metric_configs}
 
@@ -99,18 +99,18 @@ def create_metrics_map(
 
 
 # ---------------------------------------------------------------------------
-# Pipeline 主控类
+# Pipeline Orchestrator
 # ---------------------------------------------------------------------------
 
 class EvalPipeline:
     """
-    评测流水线主控类。
+    Evaluation pipeline orchestrator.
 
-    用法 1 — 一键执行:
+    Usage 1 — Run all at once:
         pipeline = EvalPipeline(cfg)
         pipeline.run()
 
-    用法 2 — 按阶段调用:
+    Usage 2 — Run phase by phase:
         pipeline = EvalPipeline(cfg)
         dialogs = pipeline.prepare_data()
         generated = pipeline.run_generation(dialogs)
@@ -122,44 +122,44 @@ class EvalPipeline:
         self.cfg = cfg
         self.dataset: BenchmarkDataset = self._init_dataset()
 
-    # ---- 初始化 ----
+    # ---- Initialization ----
     def _init_dataset(self) -> BenchmarkDataset:
         logger.info(f"Initialize dataset: {self.cfg.dataset}")
         DatasetClass = get_dataset_class(self.cfg.dataset)
         return DatasetClass()
 
-    # ---- 阶段方法 ----
+    # ---- Phase Methods ----
     def prepare_data(self) -> List[Dialog]:
-        """阶段 1: 数据预处理 & 加载。"""
+        """Phase 1: Data preprocessing & loading."""
         return DataPhase.run(self.dataset, self.cfg)
 
     def run_generation(self, dialogs: List[Dialog]) -> List[Dialog]:
-        """阶段 2: 模型生成。"""
+        """Phase 2: Model generation."""
         model = create_generation_model(self.cfg)
         return GenerationPhase.run(dialogs, model, self.cfg)
 
     def run_evaluation(self, generated_dialogs: List[Dialog]) -> List[Dict[str, Any]]:
-        """阶段 3: 指标评测。"""
+        """Phase 3: Metric evaluation."""
         metrics_map = create_metrics_map(self.dataset, self.cfg)
         return EvaluationPhase.run(generated_dialogs, metrics_map, self.dataset, self.cfg)
 
     def run_aggregation(self, all_results: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-        """阶段 4: 结果聚合。"""
+        """Phase 4: Result aggregation."""
         return AggregationPhase.run(all_results, self.cfg)
 
-    # ---- 一键执行 ----
+    # ---- Run All ----
     def run(self) -> None:
-        """根据配置中的 do_generation / do_evaluation 标志串联执行。"""
+        """Chain phases based on do_generation / do_evaluation flags in config."""
         generated_dialogs: List[Dialog] = []
 
-        # ── 生成阶段 ──
+        # ── Generation Phase ──
         if self.cfg.do_generation:
             raw_dialogs = self.prepare_data()
             generated_dialogs = self.run_generation(raw_dialogs)
 
-        # ── 评测阶段 ──
+        # ── Evaluation Phase ──
         if self.cfg.do_evaluation:
-            # 若生成阶段未执行, 尝试从磁盘加载
+            # If generation was not run, try loading from disk
             if not generated_dialogs:
                 generated_dialogs = self._load_generated_dialogs()
             if not generated_dialogs:
@@ -169,9 +169,9 @@ class EvalPipeline:
             all_results = self.run_evaluation(generated_dialogs)
             self.run_aggregation(all_results)
 
-    # ---- 辅助 ----
+    # ---- Helpers ----
     def _load_generated_dialogs(self) -> List[Dialog]:
-        """从磁盘加载已生成的 Dialog 文件。"""
+        """Load previously generated Dialog files from disk."""
         gen_dir = self.cfg.gen_output_dir
         if not gen_dir.exists():
             return []

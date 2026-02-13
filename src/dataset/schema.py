@@ -6,28 +6,26 @@ from pydantic import BaseModel, Field
 
 
 class MetricConfig(BaseModel):
-    """单个指标的配置：class_name 对应 Registry 名称，args 传给指标。"""
+    """Configuration for a single metric: class_name maps to registry name, args are passed to the metric."""
 
     class_name: str
     args: Dict[str, Any] = Field(default_factory=dict)
 
 
 class TurnEvalConfig(BaseModel):
-    """每一轮 assistant turn 的评测配置。"""
+    """Evaluation configuration for each assistant turn."""
 
     do_eval: bool = False
     metrics: List[MetricConfig] = Field(default_factory=list)
 
-    # 动态评测配置源数据：用于运行时生成 metrics
-    # 如果 metrics 为空但 do_eval=True，则尝试从 dynamic_config_source 中获取配置
+    # Dynamic evaluation config source: used to generate metrics at runtime.
+    # If metrics is empty but do_eval=True, the system will try to derive config from dynamic_config_source.
     dynamic_config_source: Dict[str, Any] = Field(default_factory=dict)
 
 
 class Turn(BaseModel):
     """
-    统一的 Turn 定义（对称结构）：
-    - JSON 中缺失字段会被 Pydantic 用默认值补齐
-    - eval_config 默认永远存在，避免 AttributeError
+    Unified Turn definition (symmetric structure):
     """
 
     turn_id: int
@@ -41,7 +39,7 @@ class Turn(BaseModel):
 
 
 class DialogEvalConfig(BaseModel):
-    """Session 级配置（可扩展）。"""
+    """Session-level configuration (extensible)."""
 
     use_reference_history: bool = False
 

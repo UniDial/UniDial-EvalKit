@@ -108,14 +108,14 @@ class SafeDialBenchDataset(BenchmarkDataset):
     def prompt_templates(self, template_name) -> Dict[str, str]:
         """Provide prompt templates for SafeDialBench evaluation.
         
-        根据 template_name 读取对应的单个 prompt 文件并返回模板。
+        Read the corresponding prompt file based on template_name and return the template.
         """
-        # 查找 template_name 对应的文件名
+        # Look up the filename for the given template_name
         filename = TEMPLATE_TO_FILE.get(template_name)
         if not filename:
             raise ValueError(f"Template {template_name} not found in TEMPLATE_TO_FILE")
 
-        # 定位 prompts 目录
+        # Locate the prompts directory
         base_path = Path(__file__).resolve().parent.parent.parent
         prompts_dir = base_path / "raw_data" / "SafeDialBench"
         if not prompts_dir.exists():
@@ -125,7 +125,7 @@ class SafeDialBenchDataset(BenchmarkDataset):
         if not file_path.exists():
             raise FileNotFoundError(f"Prompt file not found: {file_path}")
 
-        # 读取 jsonl 文件中第一条有效记录
+        # Read the first valid record from the jsonl file
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
