@@ -1,11 +1,26 @@
-datasets==4.5.0
-emoji==2.15.0
-evaluate==0.4.6
-huggingface_hub==1.4.0
-multiprocess==0.70.18
-nltk
-numpy==2.4.2
-openai==2.16.0
-pandas==3.0.0
+# Core dependencies (directly imported)
+openai
 pydantic
-tqdm 
+tqdm
+pandas
+numpy
+evaluate
+nltk
+emoji
+requests
+pyyaml
+filelock
+datasets
+huggingface_hub
+evaluate
+multiprocess
+
+# ML / Inference runtime (vLLM serving & model loading)
+vllm
+torch
+transformers
+tokenizers
+safetensors
+sentencepiece
+
+
