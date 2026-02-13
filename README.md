@@ -38,7 +38,7 @@ Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using U
 
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/JiaQiSJTU/UniConv-EvalKit.git](https://github.com/JiaQiSJTU/UniConv-EvalKit.git)
+   git clone https://github.com/JiaQiSJTU/UniConv-EvalKit.git
    cd UniConv-EvalKit
    ```
 
