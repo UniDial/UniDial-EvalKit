@@ -20,7 +20,7 @@
 
 以下为使用 UniConv-EvalKit 对 **DeepSeek-V3.2** 进行多维度评测的结果（Judge Model: GPT-4.1）：
 
-|               | Metric                       | DeepSeek-V3.2 |
+|               | 评测指标                       | DeepSeek-V3.2 |
 |---------------|------------------------------|---------------|
 | LoCoMo        | `f1_score`, `recall`         | 59.25         |
 | MathChat      | `llm_judge`, `numeric_match` | 77.87         |
