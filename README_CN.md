@@ -16,6 +16,25 @@
   - **特定任务**：`mathchat` (数学), `memorycode`(代码), `multi_if`（指令遵循）, `personamem`(个性化)
 - **灵活的聚合统计**：支持从 Turn (轮次) 到 Dialog (对话) 再到 Dataset (数据集) 的多级分数聚合策略（Mean/Min/Max）。
 
+## 📊 Leaderboard
+
+以下为使用 UniConv-EvalKit 对 **DeepSeek-V3.2** 进行多维度评测的结果（Judge Model: GPT-4.1）：
+
+|               | Metric                       | DeepSeek-V3.2 |
+|---------------|------------------------------|---------------|
+| LoCoMo        | `f1_score`, `recall`         | 59.25         |
+| MathChat      | `llm_judge`, `numeric_match` | 77.87         |
+| MemoryCode    | `code_math`                  | 25.40         |
+| MT-Bench-101  | `llm_judge`                  | 91.17         |
+| PersonaMem    | `exact_match`                | 60.88         |
+| MultiIF       | `instruction_following`      |               |
+| SafeDialBench | `llm_judge`                  |               |
+
+
+> ⚠️ 全部评测均以多轮 user-assistant 交互形式进行，评测设定可能与原文存在差异。分数结果按 `turn_stat=mean`, `dialog_stat=min`, `dataset_level=dialog` 进行汇总。
+
+> 🔄 更多模型的评测结果与深入分析将逐步 release，敬请关注！
+
 ## 🛠️ 安装方法
 
 1. 克隆本项目代码：
@@ -207,10 +226,10 @@ script/
 }
 ```
 
-我们也在多轮对话评测方向开展了系列研究工作，以下评测基准也将陆续集成到本工具中：
+<!-- 我们也在多轮对话评测方向开展了系列研究工作，以下评测基准也将陆续集成到本工具中：
 
 - **EvolIF** — 面向多轮指令遵循能力的动态评测基准 [[arxiv](https://arxiv.org/abs/2511.03508v2)] [[code](https://github.com/JiaQiSJTU/EvolIF)]
-- **EvolMem** — 面向多轮对话多方面记忆能力的评测基准 [[arxiv](https://arxiv.org/abs/2601.03543)] [[code](https://github.com/shenye7436/EvolMem)]
+- **EvolMem** — 面向多轮对话多方面记忆能力的评测基准 [[arxiv](https://arxiv.org/abs/2601.03543)] [[code](https://github.com/shenye7436/EvolMem)] -->
 
 
 
