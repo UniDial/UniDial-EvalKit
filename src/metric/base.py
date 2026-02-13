@@ -8,7 +8,7 @@ import evaluate
 
 class BaseMetric(abc.ABC):
     """
-    Metric 只包含逻辑，不持有数据；数据与运行时信息通过 kwargs 注入。
+    Metric contains only logic, not data; data and runtime info are injected via kwargs.
     """
     @abc.abstractmethod
     def compute(

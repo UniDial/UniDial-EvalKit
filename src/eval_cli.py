@@ -1,7 +1,7 @@
 """
-CLI 入口: 解析命令行参数并调用 EvalPipeline 执行评测流水线。
+CLI entry point: parse command-line arguments and invoke EvalPipeline to run the evaluation pipeline.
 
-用法:
+Usage:
     python src/eval_cli.py --dataset mt_eval --do_generation --do_evaluation
 """
 
@@ -48,7 +48,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def args_to_config(args: argparse.Namespace) -> EvalPipelineConfig:
-    """将 argparse Namespace 转换为 EvalPipelineConfig。"""
+    """Convert argparse Namespace to EvalPipelineConfig."""
     return EvalPipelineConfig(
         dataset=args.dataset,
         raw_data_dir=args.raw_data_dir,

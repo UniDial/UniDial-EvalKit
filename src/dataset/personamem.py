@@ -117,7 +117,7 @@ class PersonaMemDataset(BenchmarkDataset):
                             }
                             
                             dialogue_eval_config = DialogEvalConfig(
-                                use_reference_history=True, # 决定了历史assistant语句是选择reference还是选择content
+                                use_reference_history=True, # Determines whether history assistant messages use reference or content
                             )
 
                             dialog = Dialog(

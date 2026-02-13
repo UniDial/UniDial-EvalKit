@@ -33,15 +33,15 @@ class BenchmarkDataset(abc.ABC):
 
     @classmethod
     def meta_version(cls) -> int:
-        # 版本控制
+        # Version control
         return 1
 
     def prompt_templates(self) -> Dict[str, str]:
-        # prompt_templates()：提供该数据集的提示模板集合，形如 {name: template_str}，供评测或推理时复用。
+        # Provide the prompt template collection for this dataset, e.g. {name: template_str}, for reuse during evaluation or inference.
         pass
 
     def metric_configs(self) -> Dict[str, Any]:
-        # 提供该数据集默认的评测指标配置，形如 {metric_name: config}，让评测程序能按数据集默认设置初始化指标。
+        # Provide default metric configurations for this dataset, e.g. {metric_name: config}, so the evaluation pipeline can initialize metrics with dataset defaults.
         return {}
 
     @abc.abstractmethod

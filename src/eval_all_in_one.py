@@ -104,7 +104,7 @@ def process_single_dialog_generation(
         
         elif turn.role == "assistant":
             
-            # 判断本轮是否需要评测，若需要，则generate；若不需要，则加入content
+            # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
             if turn.eval_config.do_eval:
                 # Generate response (let exception propagate so no file is written on error)
                 response = model.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
@@ -200,52 +200,55 @@ def process_single_dialog_evaluation(
     results = []
     history_messages = []
     
-    for turn in dialog.dialog_turns:
-        if turn.role == "user":
-            history_messages.append({"role": "user", "content": turn.content})
-        elif turn.role == "assistant":
-            if turn.eval_config and turn.eval_config.do_eval:
-                
-                # Dynamic Config Resolution
-                metrics_to_run = dataset.get_eval_config_for_turn(turn)
-                
-                for metric_cfg in metrics_to_run:
-                    metric_name = metric_cfg.class_name
-                    metric_inst = metrics_map.get(metric_name)
+    try:
+        for turn in dialog.dialog_turns:
+            if turn.role == "user":
+                history_messages.append({"role": "user", "content": turn.content})
+            elif turn.role == "assistant":
+                if turn.eval_config and turn.eval_config.do_eval:
                     
-                    if not metric_inst:
-                        continue
+                    # Dynamic Config Resolution
+                    metrics_to_run = dataset.get_eval_config_for_turn(turn)
+                    
+                    for metric_cfg in metrics_to_run:
+                        metric_name = metric_cfg.class_name
+                        metric_inst = metrics_map.get(metric_name)
                         
-                    # Let exception propagate so no file is written on error
-                    score_dict = metric_inst.compute(
-                        prediction=turn.content,
-                        reference=turn.reference, 
-                        history_messages=history_messages,
-                        dataset=dataset, 
-                        **metric_cfg.args 
-                    )
-                    
-                    record_metric_name = metric_name
-                    for key, value in metric_cfg.args.items():
-                        if "name" in key.lower() and isinstance(value, str):
-                            record_metric_name = f"{metric_name}->{value}"
-                            break
+                        if not metric_inst:
+                            continue
+                            
+                        score_dict = metric_inst.compute(
+                            prediction=turn.content,
+                            reference=turn.reference, 
+                            history_messages=history_messages,
+                            dataset=dataset, 
+                            **metric_cfg.args 
+                        )
+                        
+                        record_metric_name = metric_name
+                        for key, value in metric_cfg.args.items():
+                            if "name" in key.lower() and isinstance(value, str):
+                                record_metric_name = f"{metric_name}->{value}"
+                                break
 
-                    result_record = {
-                        "dialog_id": dialog.dialog_id,
-                        "turn_id": turn.turn_id,
-                        "metric_name": record_metric_name,
-                        "score": score_dict.get("score", 0.0),
-                        "details": score_dict,
-                        # Keep both separately for analysis/debugging.
-                        "dialog_labels": dialog.dialog_labels,
-                        "turn_labels": {k: v for k, v in turn.turn_labels.items() if not k.startswith("raw")},
-                    }
-                    results.append(result_record)
+                        result_record = {
+                            "dialog_id": dialog.dialog_id,
+                            "turn_id": turn.turn_id,
+                            "metric_name": record_metric_name,
+                            "score": score_dict.get("score", 0.0),
+                            "details": score_dict,
+                            # Keep both separately for analysis/debugging.
+                            "dialog_labels": dialog.dialog_labels,
+                            "turn_labels": {k: v for k, v in turn.turn_labels.items() if not k.startswith("raw")},
+                        }
+                        results.append(result_record)
+                
+                history_messages.append({"role": "assistant", "content": turn.content})
             
-            history_messages.append({"role": "assistant", "content": turn.content})
-            
-    return results
+        return results
+    except Exception as e:
+        logger.error(f"Evaluation generated an exception for dialog {dialog.dialog_id}: {e}")
+        return []
 
 def run_evaluation_phase(
     generated_dialogs: List[Dialog],
@@ -355,7 +358,7 @@ def main():
             model_name=args.model_name, 
             api_key=args.api_key, 
             base_url=args.base_url,
-        )# TODO: 可能agent还需要load其他embedding model
+        )# TODO: agents may also need to load other embedding models
         
         # Run Generation
         generated_dialogs = run_generation_phase(
@@ -389,6 +392,8 @@ def main():
         if not generated_dialogs:
             logger.error("No generated dialogs found. Cannot proceed with evaluation.")
             return
+        else:
+            logger.info(f"Loaded {len(generated_dialogs)} generated dialogs")
 
 
         logger.info("Starting evaluation phase...")
