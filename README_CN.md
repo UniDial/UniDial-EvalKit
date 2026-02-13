@@ -31,7 +31,7 @@
 | SafeDialBench | `llm_judge`                  |               |
 
 
-> ⚠️ 全部评测均以多轮 user-assistant 交互形式进行，评测设定可能与原文存在差异。分数结果按 `turn_stat=mean`, `dialog_stat=min`, `dataset_level=dialog` 进行汇总。
+> ⚠️ 全部评测均以多轮 user-assistant 交互形式进行，评测设定可能与原文存在差异。分数结果按 `agg_turn_stat=mean`, `agg_dialog_stat=min`, `agg_dataset_level=dialog` 进行汇总。
 
 > 🔄 更多模型的评测结果与深入分析将逐步 release，敬请关注！
 
@@ -86,7 +86,8 @@ PYTHONPATH=. python src/eval_cli.py \
     --dataset mt_eval \
     --raw_data_dir ./raw_data/MT-Eval \
     --model_name gpt-3.5-turbo \
-    --judge_model_name gpt-4 \
+    --judge_model_name gpt-4.1 \
+    --base_url xxx \
     --api_key "your-api-key" \
     --do_generation \
     --do_evaluation \
@@ -100,8 +101,8 @@ PYTHONPATH=. python src/eval_cli.py \
     --dataset mathchat \
     --raw_data_dir ./raw_data/MathChat \
     --model_name deepseek-chat \
-    --base_url https://api.deepseek.com/v1 \
-    --api_key "sk-xxx" \
+    --base_url xxx \
+    --api_key "your-api-key" \
     --do_generation
 ```
 
@@ -111,8 +112,9 @@ PYTHONPATH=. python src/eval_cli.py \
 PYTHONPATH=. python src/eval_cli.py \
     --dataset mathchat \
     --model_name deepseek-chat \
-    --judge_model_name gpt-4 \
-    --api_key "sk-xxx" \
+    --judge_model_name gpt-4.1 \
+    --base_url xxx \
+    --api_key "your-api-key" \
     --do_evaluation
 ```
 
@@ -128,7 +130,8 @@ cfg = EvalPipelineConfig(
     raw_data_dir="./raw_data/MT-Eval",
     model_name="gpt-3.5-turbo",
     judge_model_name="gpt-4",
-    api_key="sk-xxx",
+    base_url="xxx",
+    api_key="your-api-key",
     do_generation=True,
     do_evaluation=True,
     parallel=4,
@@ -213,6 +216,9 @@ script/
 - 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniConv-EvalKit/issues)
 - 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniConv-EvalKit/pulls)
 
+更多评测相关资源，欢迎关注 [https://aiben.ch/home](https://aiben.ch/home)
+
+
 ## 🖊️ Citation
 
 如果您在研究中使用了 UniConv-EvalKit，请引用以下 BibTeX：
@@ -220,7 +226,7 @@ script/
 ```bibtex
 @misc{UniConv-EvalKit2026,
   title={UniConv-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
-  author={},
+  author={xxx},
   year={2026},
   howpublished={\url{https://github.com/JiaQiSJTU/UniConv-EvalKit}}
 }

@@ -30,7 +30,7 @@ Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using U
 | MultiIF       | `instruction_following`      | -             |
 | SafeDialBench | `llm_judge`                  | -             |
 
-> ⚠️ All evaluations are conducted in a multi-turn user-assistant interaction format; evaluation settings may differ from the original papers. Results are summarized using `turn_stat=mean`, `dialog_stat=min`, and `dataset_level=dialog`.
+> ⚠️ All evaluations are conducted in a multi-turn user-assistant interaction format; evaluation settings may differ from the original papers. Results are summarized using `agg_turn_stat=mean`, `agg_dialog_stat=min`, and `agg_dataset_level=dialog`.
 
 > 🔄 Evaluation results and in-depth analysis for more models will be released gradually. Stay tuned!
 
@@ -86,7 +86,8 @@ PYTHONPATH=. python src/eval_cli.py \
     --dataset mt_eval \
     --raw_data_dir ./raw_data/MT-Eval \
     --model_name gpt-3.5-turbo \
-    --judge_model_name gpt-4 \
+    --judge_model_name gpt-4.1 \
+    --base_url xxx \
     --api_key "your-api-key" \
     --do_generation \
     --do_evaluation \
@@ -100,8 +101,8 @@ PYTHONPATH=. python src/eval_cli.py \
     --dataset mathchat \
     --raw_data_dir ./raw_data/MathChat \
     --model_name deepseek-chat \
-    --base_url https://api.deepseek.com/v1 \
-    --api_key "sk-xxx" \
+    --base_url xxx \
+    --api_key "your-api-key" \
     --do_generation
 ```
 
@@ -112,7 +113,8 @@ PYTHONPATH=. python src/eval_cli.py \
     --dataset mathchat \
     --model_name deepseek-chat \
     --judge_model_name gpt-4 \
-    --api_key "sk-xxx" \
+    --base_url xxx \
+    --api_key "your-api-key" \
     --do_evaluation
 ```
 
@@ -130,7 +132,8 @@ cfg = EvalPipelineConfig(
     raw_data_dir="./raw_data/MT-Eval",
     model_name="gpt-3.5-turbo",
     judge_model_name="gpt-4",
-    api_key="sk-xxx",
+    base_url="xxx",
+    api_key="your-api-key",
     do_generation=True,
     do_evaluation=True,
     parallel=4,
@@ -211,8 +214,6 @@ script/
 └── test_vllm_client.sh  # Example for vLLM evaluation call
 ```
 
-
-
 ## 🤝 Get Involved
 
 We welcome researchers and developers interested in dialogue evaluation to contribute! If you have any questions, suggestions, or collaboration intentions, please feel free to contact us:
@@ -221,6 +222,9 @@ We welcome researchers and developers interested in dialogue evaluation to contr
 - 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniConv-EvalKit/issues)
 - 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniConv-EvalKit/pulls)
 
+For more evaluation-related resources, please follow [https://aiben.ch/home](https://aiben.ch/home)
+
+
 ## 🖊️ Citation
 
 If you use UniConv-EvalKit in your research, please cite the following BibTeX:
@@ -228,7 +232,7 @@ If you use UniConv-EvalKit in your research, please cite the following BibTeX:
 ```bibtex
 @misc{UniConv-EvalKit2026,
   title={UniConv-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
-  author={},
+  author={xxx},
   year={2026},
   howpublished={\url{https://github.com/JiaQiSJTU/UniConv-EvalKit}}
 }
