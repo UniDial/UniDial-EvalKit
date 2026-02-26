@@ -79,7 +79,7 @@
 
 ## 🚀 使用方法
 
-评测流程主要分为 **数据加载**、**模型生成 (Generation)**、**指标评测 (Evaluation)** 和 **结果聚合** 四个阶段。支持 **CLI 命令行** 和 **Python 编程** 两种调用方式（详见 [`eval_pipeline.md`](eval_pipeline.md)）。
+评测流程主要分为 **数据加载**、**模型生成 (Generation)**、**指标评测 (Evaluation)** 和 **结果聚合** 四个阶段。支持 **CLI 命令行** 和 **Python 编程** 两种调用方式。
 
 ### 1. CLI 命令行
 

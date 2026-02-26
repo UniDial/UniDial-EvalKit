@@ -81,7 +81,7 @@ After placing the corresponding files into `raw_data/<directory_name>/`, specify
 
 ## 🚀 Usage
 
-The evaluation workflow is primarily divided into four stages: **Data Loading**, **Model Generation**, **Metric Evaluation**, and **Result Aggregation**. It supports both **CLI** and **Python API** (see [`eval_pipeline.md`](eval_pipeline.md) for details).
+The evaluation workflow is primarily divided into four stages: **Data Loading**, **Model Generation**, **Metric Evaluation**, and **Result Aggregation**. It supports both **CLI** and **Python API**.
 
 ### 1. CLI Command Line
 The entry script is `src/eval_cli.py`, which is flexibly controlled via command-line arguments.
