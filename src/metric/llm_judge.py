@@ -5,7 +5,7 @@ import logging
 import re
 import inspect
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, Callable
 
 from .base import BaseMetric
 from src.model.base import BaseModel
@@ -19,7 +19,14 @@ class LLMJudge(BaseMetric):
     LLM-based Judge metric.
     """
 
-    def __init__(self, llm_client: BaseModel, dataset: BenchmarkDataset, min_score: int = 0, max_score: int = 10, post_process_func: Optional[Callable[[str], int]] = None):
+    def __init__(
+        self,
+        llm_client: BaseModel,
+        dataset: BenchmarkDataset,
+        min_score: int = 0,
+        max_score: int = 10,
+        post_process_func: Optional[Callable[[str], Any]] = None,
+    ):
         """
         Args:
             llm_client: An initialized LLM client instance adhering to BaseModel interface.
@@ -53,7 +60,10 @@ class LLMJudge(BaseMetric):
         # Use introspection to find what arguments prompt_template_render needs
         render_method = getattr(self.dataset, "prompt_template_render", None)
         if not render_method or not callable(render_method):
-             return {"score": 0.0, "error": f"Dataset {type(dataset).__name__} does not have a callable 'prompt_template_render' method."}
+            return {
+                "score": 0.0,
+                "error": f"Dataset {type(self.dataset).__name__} does not have a callable 'prompt_template_render' method.",
+            }
 
         sig = inspect.signature(render_method)
         

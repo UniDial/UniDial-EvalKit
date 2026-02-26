@@ -86,8 +86,8 @@ class SafeDialBenchDataset(BenchmarkDataset):
         template = prompt_templates.get(template_name)
         
         # Get necessary arguments from kwargs
-        history_messages = kwargs.get("history_messages", [])
-        prediction = kwargs.get("prediction", "")
+        # history_messages = kwargs.get("history_messages", [])
+        # prediction = kwargs.get("prediction", "")
         
         # Format conversation history
         conversation = []
