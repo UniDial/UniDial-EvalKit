@@ -20,15 +20,15 @@
 
 以下为使用 UniConv-EvalKit 对 **DeepSeek-V3.2** 进行多维度评测的结果（Judge Model: GPT-4.1）：
 
-|               | 评测指标                       | DeepSeek-V3.2 |
-|---------------|------------------------------|---------------|
-| LoCoMo        | `f1_score`, `recall`         | 59.25         |
+|               | 评测指标                       | DeepSeek-V3.2 | Qwen3-max |
+|---------------|------------------------------|---------------|------------|
+| LoCoMo        | `f1_score`, `recall`         | 59.25         | 62.11      |
 | MathChat      | `llm_judge`, `numeric_match` | 77.87         |
 | MemoryCode    | `code_math`                  | 25.40         |
 | MT-Bench-101  | `llm_judge`                  | 91.17         |
 | PersonaMem    | `exact_match`                | 60.88         |
-| MultiIF       | `instruction_following`      |               |
-| SafeDialBench | `llm_judge`                  |               |
+| MultiIF       | `instruction_following`      | 56.61         |
+| SafeDialBench | `llm_judge`                  | 53.95         |
 
 
 > ⚠️ 全部评测均以多轮 user-assistant 交互形式进行，评测设定可能与原文存在差异。分数结果按 `agg_turn_stat=mean`, `agg_dialog_stat=min`, `agg_dataset_level=dialog` 进行汇总。

@@ -1,0 +1,48 @@
+{
+  "dialog_id": 6,
+  "dialog_raw_info": {
+    "raw_id": "1#4_0",
+    "source_file": "recollection_single_cls.jsonl",
+    "line_index": 0
+  },
+  "dialog_labels": {
+    "task_type": "recollection",
+    "task_subtype": "single"
+  },
+  "dialog_eval_config": {
+    "use_reference_history": false
+  },
+  "dialog_turns": [
+    {
+      "turn_id": 0,
+      "role": "user",
+      "content": "You are given a document below which belongs to one of the following categories: \nethics\nsports\nmusic\nart\nscience\nliterature\neconomics\nmedicine\nfood\ntechnology\nhistory\ntravel\neducation\n\nYou task is to classify the document. You should only output the category and nothing else.\nDocument: In a groundbreaking development that feels like it’s straight out of a science fiction novel, Dr. Elara Mivon and her team at the futuristic Helios Medical Center in the sky city of Stratonimbus have announced the successful creation of the \"Cure-All\" Nanobot. This revolutionary medical technology promises to treat a wide range of diseases, from common colds to chronic illnesses, effectively rewriting the rules of modern medicine.\nThe \"Cure-All\" Nanobot, a microscopic robot barely the size of a dust particle, operates by entering the human body and identifying illness-causing agents. Once detected, it utilizes a combination of advanced AI algorithms and a compact molecular toolkit to neutralize these agents. Remarkably, these nanobots can adapt to various bodily environments, making them effective against a vast array of diseases.\nDr. Mivon, a renowned bioengineer and AI specialist, unveiled this innovation at the annual Global Health Symposium held in the floating gardens of Stratonimbus. \"Our goal was always to revolutionize healthcare,\" Dr. Mivon stated. \"We aimed to create a solution that is both universally accessible and exceptionally effective. With the 'Cure-All' Nanobot, we are a step closer to a world where illness is a relic of the past.\"\nCategory:",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": [],
+        "dynamic_config_source": {}
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 1,
+      "role": "assistant",
+      "content": null,
+      "reference": "medicine",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "precision",
+            "args": {}
+          }
+        ],
+        "dynamic_config_source": {}
+      },
+      "turn_labels": {}
+    }
+  ]
+}

@@ -27,8 +27,8 @@ Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using U
 | MemoryCode    | `code_math`                  | 25.40         |
 | MT-Bench-101  | `llm_judge`                  | 91.17         |
 | PersonaMem    | `exact_match`                | 60.88         |
-| MultiIF       | `instruction_following`      | -             |
-| SafeDialBench | `llm_judge`                  | -             |
+| MultiIF       | `instruction_following`      | 56.61         |
+| SafeDialBench | `llm_judge`                  | 53.95         |
 
 > ⚠️ All evaluations are conducted in a multi-turn user-assistant interaction format; evaluation settings may differ from the original papers. Results are summarized using `agg_turn_stat=mean`, `agg_dialog_stat=min`, and `agg_dataset_level=dialog`.
 
