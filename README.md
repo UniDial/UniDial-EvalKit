@@ -1,8 +1,8 @@
-# UniConv-EvalKit
+# UniDial-EvalKit
 
-**UniConv-EvalKit** is a unified framework focusing on the **evaluation of multi-turn interactions in Large Language Models (LLMs)**. We are committed to building a comprehensive evaluation system for long-term interactions covering dimensions such as **memory, understanding, safety, mathematics, and code**. By integrating multiple mainstream benchmarks for comprehensive comparison, UniConv-EvalKit provides a full-scale, standardized capability profile for the evolution of multi-turn human-AI interaction technologies in LLMs and Agent systems.
+**UniDial-EvalKit** is a unified framework focusing on the **evaluation of multi-turn interactions in Large Language Models (LLMs)**. We are committed to building a comprehensive evaluation system for long-term interactions covering dimensions such as **memory, understanding, safety, mathematics, and code**. By integrating multiple mainstream benchmarks for comprehensive comparison, UniDial-EvalKit provides a full-scale, standardized capability profile for the evolution of multi-turn human-AI interaction technologies in LLMs and Agent systems.
 
-As a modular and extensible evaluation tool, UniConv-EvalKit decouples data loading, model generation, and metric evaluation. It supports breakpoint resume and parallel acceleration, enabling efficient all-round assessment of various open-source and closed-source models.
+As a modular and extensible evaluation tool, UniDial-EvalKit decouples data loading, model generation, and metric evaluation. It supports breakpoint resume and parallel acceleration, enabling efficient all-round assessment of various open-source and closed-source models.
 
 ## ✨ Project Highlights
 
@@ -18,7 +18,7 @@ As a modular and extensible evaluation tool, UniConv-EvalKit decouples data load
 
 ## 📊 Leaderboard
 
-Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using UniConv-EvalKit (Judge Model: GPT-4.1):
+Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using UniDial-EvalKit (Judge Model: GPT-4.1):
 
 | Benchmark     | Metrics                      | DeepSeek-V3.2 |
 |---------------|------------------------------|---------------|
@@ -38,8 +38,8 @@ Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using U
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/JiaQiSJTU/UniConv-EvalKit.git
-   cd UniConv-EvalKit
+   git clone https://github.com/JiaQiSJTU/UniDial-EvalKit.git
+   cd UniDial-EvalKit
    ```
 
 2. Create and activate a conda environment:
@@ -233,21 +233,21 @@ script/
 We welcome researchers and developers interested in dialogue evaluation to contribute! If you have any questions, suggestions, or collaboration intentions, please feel free to contact us:
 
 - 📧 Email: jiaqi@pjlab.org.cn
-- 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniConv-EvalKit/issues)
-- 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniConv-EvalKit/pulls)
+- 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniDial-EvalKit/issues)
+- 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniDial-EvalKit/pulls)
 
 For more evaluation-related resources, please follow [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)!
 
 
 ## 🖊️ Citation
 
-If you use UniConv-EvalKit in your research, please cite the following BibTeX:
+If you use UniDial-EvalKit in your research, please cite the following BibTeX:
 
 ```bibtex
-@misc{UniConv-EvalKit2026,
-  title={UniConv-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
+@misc{UniDial-EvalKit2026,
+  title={UniDial-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
   author={xxx},
   year={2026},
-  howpublished={\url{https://github.com/JiaQiSJTU/UniConv-EvalKit}}
+  howpublished={\url{https://github.com/JiaQiSJTU/UniDial-EvalKit}}
 }
 ```

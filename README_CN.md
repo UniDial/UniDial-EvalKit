@@ -1,8 +1,8 @@
-# UniConv-EvalKit
+# UniDial-EvalKit
 
-**UniConv-EvalKit** 是一个专注于 **大模型多轮交互评测** 的统一框架。我们致力于构建覆盖 **记忆、理解、安全、数学、代码** 等多维度的长期交互综合能力评价体系。通过集成多个主流Benchmark进行综合对比，UniConv-EvalKit为大语言模型及 Agent系统的多轮人机交互技术演进提供全方位、标准化的能力画像。
+**UniDial-EvalKit** 是一个专注于 **大模型多轮交互评测** 的统一框架。我们致力于构建覆盖 **记忆、理解、安全、数学、代码** 等多维度的长期交互综合能力评价体系。通过集成多个主流Benchmark进行综合对比，UniDial-EvalKit为大语言模型及 Agent系统的多轮人机交互技术演进提供全方位、标准化的能力画像。
 
-作为一款模块化、可扩展的评测工具，UniConv-EvalKit 将数据加载、模型生成与指标评测解耦，支持断点续传与并行加速，能够高效地对各类开源及闭源模型进行全方位能力评估。
+作为一款模块化、可扩展的评测工具，UniDial-EvalKit 将数据加载、模型生成与指标评测解耦，支持断点续传与并行加速，能够高效地对各类开源及闭源模型进行全方位能力评估。
 
 ## ✨ 项目亮点
 
@@ -18,7 +18,7 @@
 
 ## 📊 Leaderboard
 
-以下为使用 UniConv-EvalKit 对 **DeepSeek-V3.2** 进行多维度评测的结果（Judge Model: GPT-4.1）：
+以下为使用 UniDial-EvalKit 对 **DeepSeek-V3.2** 进行多维度评测的结果（Judge Model: GPT-4.1）：
 
 |               | 评测指标                       | DeepSeek-V3.2 | Qwen3-max |
 |---------------|------------------------------|---------------|------------|
@@ -39,8 +39,8 @@
 
 1. 克隆本项目代码：
    ```bash
-   git clone https://github.com/JiaQiSJTU/UniConv-EvalKit.git
-   cd UniConv-EvalKit
+   git clone https://github.com/JiaQiSJTU/UniDial-EvalKit.git
+   cd UniDial-EvalKit
    ```
 
 2. 创建并激活 conda 环境：
@@ -227,22 +227,22 @@ script/
 欢迎对对话评测感兴趣的研究者和开发者参与贡献！如有任何问题、建议或合作意向，欢迎通过以下方式联系我们：
 
 - 📧 Email: jiaqi@pjlab.org.cn
-- 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniConv-EvalKit/issues)
-- 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniConv-EvalKit/pulls)
+- 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniDial-EvalKit/issues)
+- 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniDial-EvalKit/pulls)
 
 更多评测相关信息，欢迎关注 [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)!
 
 
 ## 🖊️ Citation
 
-如果您在研究中使用了 UniConv-EvalKit，请引用以下 BibTeX：
+如果您在研究中使用了 UniDial-EvalKit，请引用以下 BibTeX：
 
 ```bibtex
-@misc{UniConv-EvalKit2026,
-  title={UniConv-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
+@misc{UniDial-EvalKit2026,
+  title={UniDial-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
   author={xxx},
   year={2026},
-  howpublished={\url{https://github.com/JiaQiSJTU/UniConv-EvalKit}}
+  howpublished={\url{https://github.com/JiaQiSJTU/UniDial-EvalKit}}
 }
 ```
 
