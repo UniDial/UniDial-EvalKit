@@ -232,11 +232,11 @@ script/
 
 We welcome researchers and developers interested in dialogue evaluation to contribute! If you have any questions, suggestions, or collaboration intentions, please feel free to contact us:
 
-- 📧 Email: qijia0217@gmail.com, aibench.service@gmail.com
+- 📧 Email: jiaqi@pjlab.org.cn
 - 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniConv-EvalKit/issues)
 - 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniConv-EvalKit/pulls)
 
-For more evaluation-related resources, please follow [https://aiben.ch/home](https://aiben.ch/home)
+For more evaluation-related resources, please follow [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)!
 
 
 ## 🖊️ Citation

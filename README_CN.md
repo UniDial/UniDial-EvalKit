@@ -226,11 +226,11 @@ script/
 
 欢迎对对话评测感兴趣的研究者和开发者参与贡献！如有任何问题、建议或合作意向，欢迎通过以下方式联系我们：
 
-- 📧 Email: qijia0217@gmail.com, aibench.service@gmail.com
+- 📧 Email: jiaqi@pjlab.org.cn
 - 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniConv-EvalKit/issues)
 - 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniConv-EvalKit/pulls)
 
-更多评测相关资源，欢迎关注 [https://aiben.ch/home](https://aiben.ch/home)
+更多评测相关信息，欢迎关注 [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)!
 
 
 ## 🖊️ Citation
