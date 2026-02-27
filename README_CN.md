@@ -1,6 +1,9 @@
-# UniDial-EvalKit
+<div align="center" style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <img src="/assets/logo.jpg" alt="UDE Logo" width="80" height="80" style="margin: 0;">
+  <h1 style="border-bottom: none; margin: 0; padding: 0; font-size: 32px;">UniDial-EvalKit</h1>
+</div>
 
-**UniDial-EvalKit** 是一个专注于 **大模型多轮交互评测** 的统一框架。我们致力于构建覆盖 **记忆、理解、安全、数学、代码** 等多维度的长期交互综合能力评价体系。通过集成多个主流Benchmark进行综合对比，UniDial-EvalKit为大语言模型及 Agent系统的多轮人机交互技术演进提供全方位、标准化的能力画像。
+**UniDial-EvalKit**(UDE)是一个专注于 **大模型多轮交互评测** 的统一框架。我们致力于构建覆盖 **记忆、理解、安全、数学、代码** 等多维度的长期交互综合能力评价体系。通过集成多个主流Benchmark进行综合对比，UniDial-EvalKit为大语言模型及 Agent系统的多轮人机交互技术演进提供全方位、标准化的能力画像。
 
 作为一款模块化、可扩展的评测工具，UniDial-EvalKit 将数据加载、模型生成与指标评测解耦，支持断点续传与并行加速，能够高效地对各类开源及闭源模型进行全方位能力评估。
 
