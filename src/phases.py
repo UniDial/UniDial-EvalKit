@@ -151,7 +151,7 @@ class DataPhase:
             raw_path=cfg.raw_data_dir,
             processed_root=cfg.processed_data_dir,
         )
-        dialogs = list(dataset.load_eval_dialogs(data_root=processed_path, recursive=True))
+        dialogs = list(dataset.load_eval_dialogs(data_root=processed_path, recursive=True, require_alternative_roles=cfg.require_alternative_roles))
         logger.info(f"Loaded {len(dialogs)} dialogs.")
         return dialogs
 

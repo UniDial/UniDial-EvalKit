@@ -31,6 +31,7 @@ def parse_args():
     parser.add_argument("--raw_data_dir", type=str, default="./raw_data/MT-Eval", help="Path to raw dataset files")
     parser.add_argument("--processed_data_dir", type=str, default="./data", help="Path to store/load processed dialogs")
     parser.add_argument("--output_dir", type=str, default="./output", help="Directory to save evaluation results")
+    parser.add_argument("--require_alternative_roles", action="store_true", help="Whether to require alternative roles, depending on the chat template")
     parser.add_argument("--model_type", type=str, default="openai", help="Type of model to use (openai, etc.)")
     parser.add_argument("--model_name", type=str, default="deepseek-ai/DeepSeek-V3.2", help="Model to evaluate (e.g., gpt-3.5-turbo)")
     parser.add_argument("--temperature", type=float, default=0.7, help="Temperature for model generation")

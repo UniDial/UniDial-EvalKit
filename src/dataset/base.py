@@ -94,7 +94,7 @@ class BenchmarkDataset(abc.ABC):
         return str(out_dir)
 
 
-    def load_eval_dialogs(self, *, data_root: Optional[str] = None, recursive: bool = False) -> Iterable[Dialog]:
+    def load_eval_dialogs(self, *, data_root: Optional[str] = None, recursive: bool = False, require_alternative_roles: bool = False) -> Iterable[Dialog]:
         """
         Load dialogs for evaluation:
         - data/{benchmark_id}/
@@ -114,9 +114,60 @@ class BenchmarkDataset(abc.ABC):
             if not p.is_file() or p.name.startswith(".") or p.name.startswith("_"):
                 continue
             with p.open("r", encoding="utf-8") as f:
-                yield Dialog(**json.load(f))
+                dialog = Dialog(**json.load(f))
+                if require_alternative_roles:
+                    dialog = self._ensure_alternating_roles(dialog)
+                yield dialog
 
     
+    @staticmethod
+    def _ensure_alternating_roles(dialog: Dialog) -> Dialog:
+        """
+        Ensure dialog turns strictly alternate: user → assistant → user → assistant → ...
+        A leading "system" turn is preserved as-is before the alternation starts.
+        If two consecutive turns share the same role, insert an empty Turn
+        with the missing role in between.
+        
+        Original turn_ids are preserved to avoid breaking reference_document references.
+        Inserted placeholder turns use turn_id=-1.
+        """
+        if not dialog.dialog_turns:
+            return dialog
+
+        fixed_turns: List[Turn] = []
+        turns_iter = iter(dialog.dialog_turns)
+
+        # Preserve leading system turn(s)
+        for turn in turns_iter:
+            if turn.role == "system":
+                fixed_turns.append(turn)
+            else:
+                # Put the first non-system turn back for processing
+                remaining = [turn] + list(turns_iter)
+                break
+        else:
+            # All turns are system turns
+            return dialog
+
+        expected_role = "user"  # after system, conversation starts with user
+
+        for turn in remaining:
+            if turn.role != expected_role:
+                # Insert a placeholder turn with turn_id=-1 to avoid breaking references
+                fixed_turns.append(Turn(
+                    turn_id=-1,
+                    role=expected_role,
+                    content="",
+                ))
+                expected_role = "assistant" if expected_role == "user" else "user"
+
+            # Keep the original turn as-is (preserve turn_id)
+            fixed_turns.append(turn)
+            expected_role = "assistant" if turn.role == "user" else "user"
+
+        dialog = dialog.model_copy(update={"dialog_turns": fixed_turns})
+        return dialog
+
     def _write_dialog(self, out_dir: Path, dialog: Dialog, *, idx: int, used: Dict[str, int]) -> str:
         sid = dialog.dialog_id if dialog.dialog_id is not None else f"dialog_{idx:06d}"
         base = self._safe_filename(str(sid))

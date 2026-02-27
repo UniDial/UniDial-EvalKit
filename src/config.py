@@ -20,6 +20,7 @@ class EvalPipelineConfig:
     raw_data_dir: str = "./raw_data/MT-Eval"
     processed_data_dir: str = "./data"
     output_dir: str = "./output"
+    require_alternative_roles: bool = False
 
     # Generation model
     model_type: str = "openai"
