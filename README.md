@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="assets/logo.jpg" alt="UDE Logo" width="45" height="45" align="absmiddle">
+  <img src="assets/logo.jpg" alt="UDE Logo" width="100" height="100" align="absmiddle">
   UniDial-EvalKit
 </h1>
 
