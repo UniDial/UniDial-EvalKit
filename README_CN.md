@@ -1,7 +1,7 @@
-<div align="center" style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <img src="/assets/logo.jpg" alt="UDE Logo" width="80" height="80" style="margin: 0;">
-  <h1 style="border-bottom: none; margin: 0; padding: 0; font-size: 32px;">UniDial-EvalKit</h1>
-</div>
+<h1 align="center">
+  <img src="assets/logo.jpg" alt="UDE Logo" width="45" height="45" align="absmiddle">
+  UniDial-EvalKit
+</h1>
 
 **UniDial-EvalKit**(UDE)是一个专注于 **大模型多轮交互评测** 的统一框架。我们致力于构建覆盖 **记忆、理解、安全、数学、代码** 等多维度的长期交互综合能力评价体系。通过集成多个主流Benchmark进行综合对比，UniDial-EvalKit为大语言模型及 Agent系统的多轮人机交互技术演进提供全方位、标准化的能力画像。
 
