@@ -108,6 +108,8 @@ def process_single_dialog_generation(
             # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
             if turn.eval_config.do_eval:
                 # Generate response (let exception propagate so no file is written on error)
+                # print("messages", messages)
+                # exit(0)
                 response = model.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
                 
                 # Update history with generated response
@@ -373,7 +375,8 @@ def main():
             model=gen_model,
             output_dir=gen_output_dir,
             parallel=args.parallel,
-            temperature=args.temperature
+            temperature=args.temperature,
+            max_tokens=args.max_tokens
         )
     
     # --- 2. Evaluation Phase ---

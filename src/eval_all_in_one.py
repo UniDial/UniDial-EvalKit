@@ -367,7 +367,8 @@ def main():
             model=gen_model,
             output_dir=gen_output_dir,
             parallel=args.parallel,
-            temperature=args.temperature
+            temperature=args.temperature,
+            max_tokens=args.max_tokens
         )
     
     # --- 2. Evaluation Phase ---

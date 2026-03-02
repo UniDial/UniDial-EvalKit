@@ -96,7 +96,12 @@ class OpenAIModel(BaseModel):
             
             content = response.choices[0].message.content
             if not content:
-                raise ValueError("OpenAI API returned empty content in response")
+                try:
+                    reasoning_content = response.choices[0].message.reasoning_content
+                    if reasoning_content:
+                        return reasoning_content
+                except Exception as e:
+                    raise ValueError("OpenAI API returned empty content in response")
             
             return content
             
