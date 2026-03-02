@@ -91,9 +91,14 @@ class OpenAIModel(BaseModel):
                 **kwargs
             )
             
-            if response.choices:
-                return response.choices[0].message.content or ""
-            return ""
+            if not response.choices:
+                raise ValueError("OpenAI API returned no choices in response")
+            
+            content = response.choices[0].message.content
+            if not content:
+                raise ValueError("OpenAI API returned empty content in response")
+            
+            return content
             
         except openai.OpenAIError as e:
             logger.error(f"OpenAI API error: {e}")

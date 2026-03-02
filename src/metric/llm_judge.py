@@ -159,7 +159,13 @@ class LLMJudge(BaseMetric):
             }
         except json.JSONDecodeError:
             # Fallback: Try to find score using regex if JSON fails
-            score_match = re.search(r'"score":\s*(\d+(\.\d+)?)', text, re.IGNORECASE)
+            # Support both {"score": 15} and {"score": "15"} (and floats / negative numbers).
+            # Also tolerate single quotes in malformed "JSON-like" outputs.
+            score_match = re.search(
+                r'["\']score["\']\s*:\s*["\']?(-?\d+(?:\.\d+)?)["\']?',
+                text,
+                re.IGNORECASE,
+            )
             # print(text)
             # exit(0)
             if score_match:
