@@ -1,0 +1,55 @@
+{
+  "dialog_id": 7,
+  "dialog_raw_info": {
+    "raw_id": "1_1-212",
+    "source_file": "recollection_single_global-inst.jsonl",
+    "line_index": 0
+  },
+  "dialog_labels": {
+    "task_type": "recollection",
+    "task_subtype": "single"
+  },
+  "dialog_eval_config": {
+    "use_reference_history": false
+  },
+  "dialog_turns": [
+    {
+      "turn_id": 0,
+      "role": "user",
+      "content": "Instruction: Begin all your responses in the upcoming conversation with the letter o. Keep all your responses under 200 words.\nQuestion: Is it morally wrong to break a law you consider unjust?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": [],
+        "dynamic_config_source": {}
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 1,
+      "role": "assistant",
+      "content": "Only if we accept that morality and legality are identical. Many just societies were built by challenging unjust laws, like segregation. The key is the method and intent. Civil disobedience, as practiced by figures like Gandhi or King, involves openly breaking an unjust law to highlight its injustice, accepting the penalty to demonstrate sincerity. This differs from covert lawbreaking for personal gain. The moral weight depends on the law's true injustice, the harm of upholding it, and the use of non-violent, conscientious protest to appeal to a higher moral principle.",
+      "reference": "",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ],
+        "dynamic_config_source": {}
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char"
+      }
+    }
+  ]
+}

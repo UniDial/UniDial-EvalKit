@@ -1,0 +1,18 @@
+[
+  {
+    "dialog_id": 1,
+    "turn_id": 1,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 0.9,
+    "details": {
+      "score": 0.9,
+      "rationale": "The response accurately translates the first paragraph of the article. It captures the main elements: the city atmosphere, the chef's legendary skills, the restaurant name and its hidden location, and the exclusivity for adventurous food lovers. The translation is idiomatic and natural, with minor stylistic differences such as '都市美食城' for '加斯托波利斯市' and '串串彩灯' for '仙女灯', but these do not alter the meaning significantly. There is no extra output or explanation, meeting the constraint. Overall, the translation is both helpful, relevant, and accurate.",
+      "raw_output": "{\n  \"Rationale\": \"The response accurately translates the first paragraph of the article. It captures the main elements: the city atmosphere, the chef's legendary skills, the restaurant name and its hidden location, and the exclusivity for adventurous food lovers. The translation is idiomatic and natural, with minor stylistic differences such as '都市美食城' for '加斯托波利斯市' and '串串彩灯' for '仙女灯', but these do not alter the meaning significantly. There is no extra output or explanation, meeting the constraint. Overall, the translation is both helpful, relevant, and accurate.\",\n  \"Score\": 9\n}"
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "single"
+    },
+    "turn_labels": {}
+  }
+]

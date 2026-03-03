@@ -1,0 +1,20 @@
+[
+  {
+    "dialog_id": 6,
+    "turn_id": 1,
+    "metric_name": "precision",
+    "score": 0.0,
+    "details": {
+      "score": 0.0,
+      "precision": 0.0,
+      "overlap": 0,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "single"
+    },
+    "turn_labels": {}
+  }
+]

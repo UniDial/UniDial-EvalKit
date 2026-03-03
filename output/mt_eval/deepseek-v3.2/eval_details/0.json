@@ -1,0 +1,114 @@
+[
+  {
+    "dialog_id": 0,
+    "turn_id": 1,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "rationale": "The response accurately and fluently translates the first paragraph of the given article into Chinese, as required by the constraints. The translation captures the essence and details of the original text, such as the bustling city, the aroma of spices, the legendary chef Luminara, and the hidden restaurant known only to adventurous food lovers. There are minor differences in word choice (e.g., '魔法锅' translated as '魔法炖锅', '仙女灯' as '串灯'), but these do not significantly impact the accuracy or meaning. The response did not add any extra explanations or output beyond the translation, adhering strictly to the constraints.",
+      "raw_output": "{\n  \"Rationale\": \"The response accurately and fluently translates the first paragraph of the given article into Chinese, as required by the constraints. The translation captures the essence and details of the original text, such as the bustling city, the aroma of spices, the legendary chef Luminara, and the hidden restaurant known only to adventurous food lovers. There are minor differences in word choice (e.g., '魔法锅' translated as '魔法炖锅', '仙女灯' as '串灯'), but these do not significantly impact the accuracy or meaning. The response did not add any extra explanations or output beyond the translation, adhering strictly to the constraints.\",\n  \"Score\": 10\n}"
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 3,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "rationale": "The response accurately identifies both the magical ingredient (Moonberry) and the mythical creature (Gastrogriff) as specified in the article. It provides concise and relevant information, directly answering the question without unnecessary details. The response is helpful, relevant, and accurate according to the constraints. Therefore, it deserves a high score.",
+      "raw_output": "{\n  \"Rationale\": \"The response accurately identifies both the magical ingredient (Moonberry) and the mythical creature (Gastrogriff) as specified in the article. It provides concise and relevant information, directly answering the question without unnecessary details. The response is helpful, relevant, and accurate according to the constraints. Therefore, it deserves a high score.\",\n  \"Score\": 10\n}"
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 5,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 0.7,
+    "details": {
+      "score": 0.7,
+      "rationale": "The response is concise and captures the main elements of the article: Luminara's status as a legendary chef, her quest for the Moonberry, and the Gastrogriff as the guardian. It also mentions her goal to create an extraordinary dish reflecting her adventure. However, it omits some key details, such as the name of her restaurant (The Enchanted Pot), her magical ability to blend ingredients according to diners' moods, the presence of her talking spatula companion, the specific locations (Whispering Woods and Mount Savor), and the transformation of the restaurant into a gateway to culinary wonders. While the summary is relevant, accurate, and helpful, it leaves out several important aspects and nuances, resulting in a slightly incomplete picture.",
+      "raw_output": "{\n  \"Rationale\": \"The response is concise and captures the main elements of the article: Luminara's status as a legendary chef, her quest for the Moonberry, and the Gastrogriff as the guardian. It also mentions her goal to create an extraordinary dish reflecting her adventure. However, it omits some key details, such as the name of her restaurant (The Enchanted Pot), her magical ability to blend ingredients according to diners' moods, the presence of her talking spatula companion, the specific locations (Whispering Woods and Mount Savor), and the transformation of the restaurant into a gateway to culinary wonders. While the summary is relevant, accurate, and helpful, it leaves out several important aspects and nuances, resulting in a slightly incomplete picture.\",\n  \"Score\": 7\n}"
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 7,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "rationale": "The response correctly lists all the explicitly stated relations from the article: Luminara lives in Gastropolis, works for The Enchanted Pot, and The Enchanted Pot is located in Gastropolis. The format matches the required (entity 1, relation, entity 2) structure, and there are no extra explanations or output. All relations of the specified types among the entities are included, and none are missing or incorrectly added. Therefore, the response is fully accurate, relevant, and helpful.",
+      "raw_output": "{\n  \"Rationale\": \"The response correctly lists all the explicitly stated relations from the article: Luminara lives in Gastropolis, works for The Enchanted Pot, and The Enchanted Pot is located in Gastropolis. The format matches the required (entity 1, relation, entity 2) structure, and there are no extra explanations or output. All relations of the specified types among the entities are included, and none are missing or incorrectly added. Therefore, the response is fully accurate, relevant, and helpful.\",\n  \"Score\": 10\n}"
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 9,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 0.7,
+    "details": {
+      "score": 0.7,
+      "rationale": "The response lists all the persons and places from the article, but it incorrectly includes 'Spatulon' as a person, which was not mentioned in the article. While all the required entries are present, the inclusion of an extra, incorrect person reduces accuracy. Therefore, the response is helpful and mostly relevant, but not fully accurate.",
+      "raw_output": "{\n  \"Rationale\": \"The response lists all the persons and places from the article, but it incorrectly includes 'Spatulon' as a person, which was not mentioned in the article. While all the required entries are present, the inclusion of an extra, incorrect person reduces accuracy. Therefore, the response is helpful and mostly relevant, but not fully accurate.\",\n  \"Score\": 7\n}"
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 11,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 0.4,
+    "details": {
+      "score": 0.4,
+      "rationale": "The response includes many adjectives, but it contains several errors when compared to the article. There are adjectives present in the response that do not appear in the article (e.g., Enchanted, tucked, draped, delighted, astonished, autumn, any, closer, mythical, single, next, first, just, wondrous), and it also repeats some adjectives (legendary, whispering). Furthermore, some adjectives from the article are missing in the response (aromatic, sizzling, traditional, whimsical (case sensitivity issue), shimmering, enchanting, Savor, respectful, transported, warm, imaginative, talking). The presence of extra adjectives, missing adjectives, and case mismatches significantly reduce the accuracy, although some correct adjectives are present. Overall, the response only partially meets the constraints.",
+      "raw_output": "{\n  \"Rationale\": \"The response includes many adjectives, but it contains several errors when compared to the article. There are adjectives present in the response that do not appear in the article (e.g., Enchanted, tucked, draped, delighted, astonished, autumn, any, closer, mythical, single, next, first, just, wondrous), and it also repeats some adjectives (legendary, whispering). Furthermore, some adjectives from the article are missing in the response (aromatic, sizzling, traditional, whimsical (case sensitivity issue), shimmering, enchanting, Savor, respectful, transported, warm, imaginative, talking). The presence of extra adjectives, missing adjectives, and case mismatches significantly reduce the accuracy, although some correct adjectives are present. Overall, the response only partially meets the constraints.\",\n  \"Score\": 4\n}"
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 13,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "rationale": "The response accurately classifies the article 'food' under the 'food' label, which is both relevant and correct. The response is concise and meets the constraints by providing only the required label without any extra output or explanation.",
+      "raw_output": "{\n  \"Rationale\": \"The response accurately classifies the article 'food' under the 'food' label, which is both relevant and correct. The response is concise and meets the constraints by providing only the required label without any extra output or explanation.\",\n  \"Score\": 10\n}"
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  }
+]

@@ -1,0 +1,182 @@
+[
+  {
+    "dialog_id": 4,
+    "turn_id": 3,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 4,
+    "turn_id": 5,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 4,
+    "turn_id": 7,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 4,
+    "turn_id": 9,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 4,
+    "turn_id": 11,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 4,
+    "turn_id": 13,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 4,
+    "turn_id": 15,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 4,
+    "turn_id": 17,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 4,
+    "turn_id": 19,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 4,
+    "turn_id": 21,
+    "metric_name": "precision",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
+      "pred_len": 1,
+      "ref_len": 1
+    },
+    "dialog_labels": {
+      "task_type": "recollection",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  }
+]
