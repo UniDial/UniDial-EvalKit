@@ -32,6 +32,9 @@ class EvalPipelineConfig:
     judge_model_type: str = "openai"
     judge_model_name: str = "gpt-4.1-2025-04-14"
 
+    # Embedding model for Agents
+    embedding_model_name: str = "text-embedding-ada-002"
+    
     # Common
     api_key: Optional[str] = None
     base_url: Optional[str] = None

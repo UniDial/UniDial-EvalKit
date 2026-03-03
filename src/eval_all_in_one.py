@@ -41,7 +41,8 @@ def parse_args():
     parser.add_argument("--parallel", type=int, default=4, help="Number of parallel threads/processes")
     parser.add_argument("--api_key", type=str, default=None, help="OpenAI API key (or set OPENAI_API_KEY)")
     parser.add_argument("--base_url", type=str, default=None, help="OpenAI API Base URL")
-    
+    parser.add_argument("--embedding_model_name", type=str, default="text-embedding-ada-002", help="Embedding model to use for RAG")
+
     # Task control flags
     parser.add_argument("--do_generation", action="store_true", help="Run the generation phase")
     parser.add_argument("--do_evaluation", action="store_true", help="Run the evaluation phase")
