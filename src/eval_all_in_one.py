@@ -389,11 +389,13 @@ def main():
                 generated_dialogs.sort(key=lambda x: x.dialog_id)
             except Exception as e:
                 logger.error(f"Failed to load generated dialogs: {e}")
-                return
+                import traceback
+                traceback.print_exc()
+                # return
 
         if not generated_dialogs:
             logger.error("No generated dialogs found. Cannot proceed with evaluation.")
-            return
+            # return
         else:
             logger.info(f"Loaded {len(generated_dialogs)} generated dialogs")
 

@@ -2,11 +2,17 @@ from typing import Dict, Type
 
 from .base import BaseModel
 from .openai import OpenAIModel
+from .hipporag import HippoRAGModel
+from .memoryos import MemoryOSModel
+from .amem import AMemModel
 
 # Registry mapping model type names to model classes
 # Note: "openai" handles both standard OpenAI and Azure OpenAI via configuration
 MODEL_REGISTRY: Dict[str, Type[BaseModel]] = {
     "openai": OpenAIModel,
+    "hipporag": HippoRAGModel,
+    "memoryos": MemoryOSModel,
+    "amem": AMemModel,
 }
 
 def get_model_class(model_type: str) -> Type[BaseModel]:
@@ -30,6 +36,9 @@ def get_model_class(model_type: str) -> Type[BaseModel]:
 __all__ = [
     "BaseModel",
     "OpenAIModel",
+    "HippoRAGModel",
+    "MemoryOSModel",
+    "AMemModel",
     "MODEL_REGISTRY",
     "get_model_class",
 ]
