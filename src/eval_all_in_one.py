@@ -94,38 +94,49 @@ def process_single_dialog_generation(
     """
     processed_turns = []
     messages = []
-    
-    for turn in dialog.dialog_turns:
-        if turn.role == "system":
-            messages.append({"role": "system", "content": turn.content})
-            processed_turns.append(turn)
-        
-        elif turn.role == "user":
-            messages.append({"role": "user", "content": turn.content})
-            processed_turns.append(turn)
-        
-        elif turn.role == "assistant":
-            
-            # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
-            if turn.eval_config.do_eval:
-                # Generate response (let exception propagate so no file is written on error)
-                response = model.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
-                
-                # Update history with generated response
-                if dialog.dialog_eval_config.use_reference_history:                    
-                    messages.append({"role": "assistant", "content": turn.reference if turn.reference is not None else turn.content})
-                else:     
-                    messages.append({"role": "assistant", "content": response})
-                
-                # Create new turn with generated content
-                new_turn = turn.model_copy()
-                new_turn.content = response
-                processed_turns.append(new_turn)
-            else:
-                messages.append({"role": "assistant", "content": turn.content})
-                new_turn = turn.model_copy()
-                processed_turns.append(new_turn)
-            
+    dialog_id = dialog.dialog_id
+
+    model.begin_dialog(dialog_id=dialog_id)
+    try:
+        for turn in dialog.dialog_turns:
+            if turn.role == "system":
+                messages.append({"role": "system", "content": turn.content})
+                processed_turns.append(turn)
+
+            elif turn.role == "user":
+                messages.append({"role": "user", "content": turn.content})
+                processed_turns.append(turn)
+
+            elif turn.role == "assistant":
+
+                # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
+                if turn.eval_config.do_eval:
+                    # Generate response (let exception propagate so no file is written on error)
+                    response = model.generate(
+                        messages=messages,
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                        dialog_id=dialog_id,
+                    )
+
+                    # Update history with generated response
+                    if dialog.dialog_eval_config.use_reference_history:
+                        messages.append({"role": "assistant", "content": turn.reference if turn.reference is not None else turn.content})
+                    else:
+                        messages.append({"role": "assistant", "content": response})
+
+                    # Create new turn with generated content
+                    new_turn = turn.model_copy()
+                    new_turn.content = response
+                    processed_turns.append(new_turn)
+                else:
+                    messages.append({"role": "assistant", "content": turn.content})
+                    new_turn = turn.model_copy()
+                    processed_turns.append(new_turn)
+    finally:
+        # Always cleanup dialog-scoped state for stateful agent models.
+        model.end_dialog(dialog_id=dialog_id)
+
     new_dialog = dialog.model_copy()
     new_dialog.dialog_turns = processed_turns
     return new_dialog

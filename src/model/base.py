@@ -20,6 +20,20 @@ class BaseModel(abc.ABC):
         self.model_name = model_name
         self.config = kwargs
 
+    def begin_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
+        """
+        Optional hook called before generating a dialog.
+        Stateful agent models can override this to allocate dialog-scoped resources.
+        """
+        return None
+
+    def end_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
+        """
+        Optional hook called after generating a dialog (success or failure).
+        Stateful agent models can override this to release dialog-scoped resources.
+        """
+        return None
+
     @abc.abstractmethod
     def generate(self, messages: List[Dict[str, str]], **kwargs: Any) -> str:
         """

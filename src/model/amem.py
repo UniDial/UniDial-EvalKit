@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 import json
+import threading
 from typing import Any, Dict, List, Optional
 
 from .base import BaseModel
@@ -108,6 +109,36 @@ class AMemModel(BaseModel):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.base_url = base_url or os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
         self.retrieve_k = retrieve_k
+        # dialog_id -> {"agent": AdvancedMemAgent, "last_ingested_idx": int}
+        self._dialog_states: Dict[int, Dict[str, Any]] = {}
+        self._state_lock = threading.Lock()
+
+    def _create_agent(self, temperature: float) -> AdvancedMemAgent:
+        return AdvancedMemAgent(
+            model=self.llm_model,
+            backend=self.llm_backend,
+            api_key=self.api_key,
+            api_base=self.base_url,
+            retrieve_k=self.retrieve_k,
+            temperature=temperature,
+        )
+
+    def begin_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
+        if dialog_id is None:
+            return
+        temperature = float(kwargs.get("temperature", 0.7))
+        with self._state_lock:
+            if dialog_id not in self._dialog_states:
+                self._dialog_states[dialog_id] = {
+                    "agent": self._create_agent(temperature=temperature),
+                    "last_ingested_idx": 0,
+                }
+
+    def end_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
+        if dialog_id is None:
+            return
+        with self._state_lock:
+            self._dialog_states.pop(dialog_id, None)
 
     def generate(
         self,
@@ -128,37 +159,49 @@ class AMemModel(BaseModel):
                     
             if not final_query:
                 return ""
+            dialog_id = kwargs.get("dialog_id")
+            if dialog_id is not None:
+                with self._state_lock:
+                    state = self._dialog_states.get(dialog_id)
+                    if state is None:
+                        state = {
+                            "agent": self._create_agent(temperature=temperature),
+                            "last_ingested_idx": 0,
+                        }
+                        self._dialog_states[dialog_id] = state
+            else:
+                # Keep backward compatibility for callers that do not pass dialog_id:
+                # use an ephemeral per-call agent/state.
+                state = {
+                    "agent": self._create_agent(temperature=temperature),
+                    "last_ingested_idx": 0,
+                }
 
-            # Need to initialize the agent specific to this conversation
-            # because the evaluation expects isolated conversation memory per generate call
-            agent = AdvancedMemAgent(
-                model=self.llm_model,
-                backend=self.llm_backend,
-                api_key=self.api_key,
-                api_base=self.base_url,
-                retrieve_k=self.retrieve_k,
-                temperature=temperature
-            )
-            
-            # Reconstruct history
-            last_user_idx = -1
-            for i in range(len(messages) - 1, -1, -1):
-                if messages[i].get("role", "").lower() == "user":
-                    last_user_idx = i
-                    break
-                    
-            for i in range(last_user_idx):
+            agent = state["agent"]
+            agent.temperature = temperature
+
+            # By dataset/pipeline contract, the last input message is always the current user query.
+            last_user_idx = len(messages) - 1
+
+            # Only ingest newly added history before current final user query.
+            # Current generation output is intentionally NOT ingested here because
+            # the caller may choose generated/reference history outside this model.
+            start_idx = int(state.get("last_ingested_idx", 0))
+            if start_idx < 0 or start_idx > last_user_idx:
+                start_idx = 0
+
+            for i in range(start_idx, last_user_idx):
                 msg = messages[i]
-                role = msg.get("role", "").lower()
+                role = str(msg.get("role", "")).lower()
                 content = str(msg.get("content", ""))
-                
                 if not content:
                     continue
-                    
                 if role == "user":
                     agent.add_memory(content=f"User input: {content}")
                 elif role == "assistant":
                     agent.add_memory(content=f"AI response: {content}")
+
+            state["last_ingested_idx"] = last_user_idx
 
             prediction = agent.answer_question(final_query)
             

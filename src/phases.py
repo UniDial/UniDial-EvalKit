@@ -41,39 +41,48 @@ def _generate_single_dialog(
     """Generate model responses for a single Dialog, return the updated Dialog."""
     processed_turns = []
     messages: List[Dict[str, str]] = []
+    dialog_id = dialog.dialog_id
 
-    for turn in dialog.dialog_turns:
-        if turn.role == "system":
-            messages.append({"role": "system", "content": turn.content})
-            processed_turns.append(turn)
+    model.begin_dialog(dialog_id=dialog_id)
+    try:
+        for turn in dialog.dialog_turns:
+            if turn.role == "system":
+                messages.append({"role": "system", "content": turn.content})
+                processed_turns.append(turn)
 
-        elif turn.role == "user":
-            messages.append({"role": "user", "content": turn.content})
-            processed_turns.append(turn)
+            elif turn.role == "user":
+                messages.append({"role": "user", "content": turn.content})
+                processed_turns.append(turn)
 
-        elif turn.role == "assistant":
+            elif turn.role == "assistant":
 
-            # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
-            if turn.eval_config.do_eval:
-                response = model.generate(
-                    messages=messages, temperature=temperature, max_tokens=max_tokens
-                )
-                # Build history: use reference or generated response based on dialog config
-                if dialog.dialog_eval_config.use_reference_history:
-                    messages.append({
-                        "role": "assistant",
-                        "content": turn.reference if turn.reference is not None else turn.content,
-                    })
+                # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
+                if turn.eval_config.do_eval:
+                    response = model.generate(
+                        messages=messages,
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                        dialog_id=dialog_id,
+                    )
+                    # Build history: use reference or generated response based on dialog config
+                    if dialog.dialog_eval_config.use_reference_history:
+                        messages.append({
+                            "role": "assistant",
+                            "content": turn.reference if turn.reference is not None else turn.content,
+                        })
+                    else:
+                        messages.append({"role": "assistant", "content": response})
+
+                    # Create new turn with generated content
+                    new_turn = turn.model_copy()
+                    new_turn.content = response
+                    processed_turns.append(new_turn)
                 else:
-                    messages.append({"role": "assistant", "content": response})
-
-                # Create new turn with generated content
-                new_turn = turn.model_copy()
-                new_turn.content = response
-                processed_turns.append(new_turn)
-            else:
-                messages.append({"role": "assistant", "content": turn.content})
-                processed_turns.append(turn.model_copy())
+                    messages.append({"role": "assistant", "content": turn.content})
+                    processed_turns.append(turn.model_copy())
+    finally:
+        # Always cleanup dialog-scoped state for stateful agent models.
+        model.end_dialog(dialog_id=dialog_id)
 
     new_dialog = dialog.model_copy()
     new_dialog.dialog_turns = processed_turns
