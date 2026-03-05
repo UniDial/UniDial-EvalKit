@@ -63,6 +63,9 @@ class PersonaMemDataset(BenchmarkDataset):
                             # Let's add context as the first User turn
                             if history_text:
                                 for turn in history_text:    
+                                    
+                                    if turn_counter != 0 and turn["role"] == "system":
+                                        continue
                             
                                     dialog_turns.append(Turn(
                                         turn_id=turn_counter,
