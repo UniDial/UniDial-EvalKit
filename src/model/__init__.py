@@ -2,9 +2,9 @@ from typing import Dict, Type
 
 from .base import BaseModel
 from .openai import OpenAIModel
-from .hipporag import HippoRAGModel
-from .memoryos import MemoryOSModel
-from .amem import AMemModel
+from .hipporag_agent import HippoRAGModel
+from .memoryos_agent import MemoryOSModel
+from .amem_agent import AMemModel
 
 # Registry mapping model type names to model classes
 # Note: "openai" handles both standard OpenAI and Azure OpenAI via configuration
@@ -42,4 +42,3 @@ __all__ = [
     "MODEL_REGISTRY",
     "get_model_class",
 ]
-
