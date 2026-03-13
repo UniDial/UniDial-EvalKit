@@ -78,9 +78,6 @@ class MemoryOSModel(BaseModel):
         """
         Create a MemoryOS client.
 
-        We intentionally generate a fresh uuid once per client creation.
-        Since one dialog reuses one client, memory is shared within the dialog.
-        Different dialogs create different clients, so memories stay isolated.
         """
         session_id = str(uuid.uuid4())[:8]
         temp_dir = tempfile.mkdtemp(prefix=f"memoryos_eval_{session_id}_")
@@ -120,9 +117,6 @@ class MemoryOSModel(BaseModel):
         """
         Cleanup MemoryOS resources.
 
-        Note:
-            We intentionally do NOT delete temp_dir here, so intermediate
-            files remain available for debugging / inspection.
         """
         if dialog_id is None:
             return
@@ -140,11 +134,6 @@ class MemoryOSModel(BaseModel):
         """
         Generate a response using MemoryOS with dialog-scoped state.
 
-        Logic:
-        1. Find the final user query from the last user message.
-        2. Reuse the dialog's existing client if present; otherwise auto-create one.
-        3. Incrementally ingest newly completed user-assistant pairs from history.
-        4. Query MemoryOS with the final user prompt.
         """
         try:
             if not messages:
@@ -215,17 +204,6 @@ class MemoryOSModel(BaseModel):
                 i += 1
 
             # Update state cursor
-            # We set last_ingested_idx to len(messages) (which includes current User turn)
-            # instead of last_user_idx.
-            # Why?
-            # 1. get_response() internally adds (Current User, Generated Assistant) to memory.
-            # 2. In the next turn, 'messages' will contain [..., Current User, Generated Assistant, Next User].
-            # 3. If we set idx to last_user_idx (Current User), the next loop will start from Current User.
-            #    It will see (Current User, Generated Assistant) again and add it AGAIN.
-            # 4. By setting idx to len(messages), the next loop starts from Generated Assistant.
-            #    Since the loop logic requires a preceding User message to trigger add_memory,
-            #    starting at Assistant means 'current_user_msg' is None, so it won't be added.
-            #    This correctly prevents duplication.
             if dialog_id is not None:
                 self._dialog_states[dialog_id]["last_ingested_idx"] = len(messages)
 
