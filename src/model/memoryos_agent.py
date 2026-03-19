@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import os
-import sys
 import tempfile
 import uuid
 import threading
@@ -13,11 +12,7 @@ from .base import BaseModel
 logger = logging.getLogger(__name__)
 
 try:
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    if project_root not in sys.path:
-        sys.path.insert(0, project_root)
-        
-    from memoryos.memoryos import Memoryos
+    from .memoryos.memoryos import Memoryos
 except ImportError as e:
     logger.error(f"ImportError for memoryos: {e}. ")
     Memoryos = None
@@ -72,7 +67,7 @@ class MemoryOSModel(BaseModel):
         self.memoryos_config = {
             "short_term_capacity": kwargs.get("short_term_capacity", 10),
             "mid_term_heat_threshold": kwargs.get("mid_term_heat_threshold", 2000),
-            "retrieval_queue_capacity": kwargs.get("retrieval_queue_capacity", 7),
+            "retrieval_queue_capacity": kwargs.get("retrieval_queue_capacity", 3),
             "long_term_knowledge_capacity": kwargs.get("long_term_knowledge_capacity", 100),
             "mid_term_similarity_threshold": kwargs.get("mid_term_similarity_threshold", 0.6),
             "embedding_model_name": kwargs.get("embedding_model_name", "all-MiniLM-L6-v2"),

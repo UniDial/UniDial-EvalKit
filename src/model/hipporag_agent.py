@@ -12,8 +12,8 @@ from .base import BaseModel
 logger = logging.getLogger(__name__)
 
 try:
-    from hipporag import HippoRAG
-    from hipporag.utils.config_utils import BaseConfig
+    from .hipporag import HippoRAG
+    from .hipporag.utils.config_utils import BaseConfig
     logger.info("Successfully imported HippoRAG")
 except ImportError as e:
     import logging

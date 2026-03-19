@@ -11,11 +11,7 @@ logger = logging.getLogger(__name__)
 
 # Try importing the components
 try:
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    if project_root not in sys.path:
-        sys.path.insert(0, project_root)
-        
-    from AgenticMemory.memory_layer import AgenticMemorySystem, LLMController
+    from .AgenticMemory.memory_layer import AgenticMemorySystem, LLMController
 except ImportError as e:
     logger.error(f"Failed to import AgenticMemory components: {e}")
     import traceback
@@ -102,7 +98,7 @@ class AMemModel(BaseModel):
         self.llm_model = model_name
         
         if AgenticMemorySystem is None:
-            raise ImportError("AgenticMemory modules not found. Ensure AgenticMemory/A-mem-main is available.")
+            raise ImportError("AgenticMemory modules not found. Ensure AgenticMemory is available under src/model/.")
             
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.base_url = base_url or os.environ.get("OPENAI_BASE_URL", "")
