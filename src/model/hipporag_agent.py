@@ -11,9 +11,23 @@ from .base import BaseModel
 
 logger = logging.getLogger(__name__)
 
+
+def _ensure_hipporag_import_paths() -> None:
+    """Make bundled HippoRAG importable for its internal absolute imports."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    hipporag_root = os.path.join(current_dir, "HippoRAG")
+    hipporag_src = os.path.join(hipporag_root, "src")
+
+    for path in (hipporag_root, hipporag_src):
+        if os.path.isdir(path) and path not in sys.path:
+            sys.path.insert(0, path)
+
+
+_ensure_hipporag_import_paths()
+
 try:
-    from .hipporag import HippoRAG
-    from .hipporag.utils.config_utils import BaseConfig
+    from .HippoRAG.src.hipporag import HippoRAG
+    from .HippoRAG.src.hipporag.utils.config_utils import BaseConfig
     logger.info("Successfully imported HippoRAG")
 except ImportError as e:
     import logging

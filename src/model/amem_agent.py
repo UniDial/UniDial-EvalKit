@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # Try importing the components
 try:
-    from .AgenticMemory.memory_layer import AgenticMemorySystem, LLMController
+    from .A_Mem.memory_layer import AgenticMemorySystem, LLMController
 except ImportError as e:
     logger.error(f"Failed to import AgenticMemory components: {e}")
     import traceback
@@ -53,12 +53,29 @@ class AdvancedMemAgent:
                 keyword1, keyword2, keyword3"""
             
         try:
-            response = self.retriever_llm.llm.get_completion(prompt, temperature=0.1)
-            return response.strip()
+            response = self.retriever_llm.llm.get_completion(prompt, response_format={"type": "json_schema", "json_schema": {
+                            "name": "response",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "keywords": {
+                                        "type": "string",
+                                    }
+                                },
+                                "required": ["keywords"],
+                                "additionalProperties": False
+                            },
+                            "strict": True
+                        }}, temperature=self.temperature)
+            try:
+                response = json.loads(response)["keywords"]
+            except:
+                response = response.strip()
+            return response
         except Exception as e:
             logger.error(f"Error in generate_query_llm: {e}")
-            return question.strip()
-
+            raise e
+        
     def answer_question(self, question: str) -> str:
         try:
             keywords = self.generate_query_llm(question)
@@ -75,12 +92,26 @@ class AdvancedMemAgent:
             
             response = self.memory_system.llm_controller.llm.get_completion(
                 user_prompt,
+                response_format={"type": "json_schema", "json_schema": {
+                        "name": "response",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "answer": {
+                                    "type": "string",
+                                }
+                            },
+                            "required": ["answer"],
+                            "additionalProperties": False
+                        },
+                        "strict": True
+                    }},
                 temperature=self.temperature
             )
-            return response
+            return response.strip()
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
-            return ""
+            raise e
 
 class AMemModel(BaseModel):
     def __init__(
@@ -141,7 +172,7 @@ class AMemModel(BaseModel):
         max_tokens: int = 1024,
         **kwargs: Any
     ) -> str:
-        try:
+        # try:
             if not messages:
                 return ""
                 
@@ -214,7 +245,7 @@ class AMemModel(BaseModel):
                 
             return str(prediction).strip()
             
-        except Exception as e:
-            logger.error(f"AMem generation error: {e}")
-            raise e
+        # except Exception as e:
+        #     logger.error(f"AMem generation error: {e}")
+        #     raise e
 

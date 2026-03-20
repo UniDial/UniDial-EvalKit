@@ -1,11 +1,12 @@
-# 🤖 Agent 评测部署与使用说明
+# Agent 评测部署与使用说明
 
 本评测框架目前内置了对多种多轮对话 Agent（**HippoRAG**, **MemoryOS**, **AMem**）的适配支持。
+
 **注意：** 因为这些 Agent 本身是独立的代码工程，本框架为了最大程度解耦，需要你将对应的核心源码手动放置在指定位置，再由本框架中的适配器进行调用。
 
 ---
 
-## 1. 🦛 HippoRAG Agent
+## 1. HippoRAG Agent
 HippoRAG 是基于图谱优化的检索增强生成 Agent。
 
 ### 1.1 下载与目录配置
@@ -15,15 +16,15 @@ HippoRAG 是基于图谱优化的检索增强生成 Agent。
    ```bash
    git clone https://github.com/OSU-NLP-Group/HippoRAG.git
    ```
-2. 将克隆下来的仓库中的 `src/hipporag` 文件夹（整个文件夹）复制到本项目的 **`src/model/`** 目录下。放置后，目录结构如下：
+2. 将克隆下来的仓库中复制到本项目的 **`src/model/`** 目录下。放置后，目录结构如下：
    ```text
    UniDial-EvalKit/
    ├── src/
    │   ├── model/
    │   │   ├── hipporag_agent.py   # 我们封装的 Agent 接口
-   │   │   └── hipporag/           # <--- 放置在这里 (从外部仓库复制来的)
-   │   │       ├── __init__.py
-   │   │       ├── HippoRAG.py
+   │   │   └── HippoRAG/           # <--- 放置在这里 (从外部仓库复制来的)
+   │   │       ├── main.py
+   │   │       ├── src/
    │   │       └── ...
    ```
 
@@ -32,20 +33,19 @@ HippoRAG 是基于图谱优化的检索增强生成 Agent。
 ```bash
 conda activate uniconv
 # 假设你在临时目录下载了仓库，安装其依赖：
-pip install -r /path/to/HippoRAG/requirements.txt
+# pip install -r /path/to/HippoRAG/requirements.txt
+pip install litellm gritlm igraph tenacity boto3 outlines==0.1.11
 ```
 
 ### 1.3 命令行评测
 配置完成后，将 `--model_type` 设置为 `hipporag` 即可评测。底座调用的模型通过 `--model_name` 指定。
 ```bash
-
-
 PYTHONPATH=. python src/eval_cli.py \
     --dataset personamem \
     --raw_data_dir ./raw_data/PersonaMem \
     --model_type hipporag \
     --model_name "deepseek-v3.2" \
-    --base_url "https://api.your-proxy.com/v1" \
+    --base_url "xxx" \
     --api_key "your_api_key" \
     --do_generation \
     --do_evaluation \
@@ -54,7 +54,7 @@ PYTHONPATH=. python src/eval_cli.py \
 
 ---
 
-## 2. 🧠 MemoryOS Agent
+## 2. MemoryOS Agent
 MemoryOS 是一个具有短期、中期和长期层级记忆的 Agent 框架。
 
 ### 2.1 下载与目录配置
@@ -62,13 +62,13 @@ MemoryOS 是一个具有短期、中期和长期层级记忆的 Agent 框架。
    ```bash
    git clone https://github.com/BAI-LAB/MemoryOS.git
    ```
-2. 将克隆下来的项目中 `memoryos-pypi` 文件夹内的内容（包含 `memoryos.py`, `retriever.py`, `utils.py` 等），**重命名为 `memoryos`**，并放置到本项目的 **`src/model/`** 目录下：
+2. 将克隆下来的项目中 `memoryos-pypi` 文件夹内的内容（包含 `memoryos.py`, `retriever.py`, `utils.py` 等），**重命名为 `MemoryOS`**，并放置到本项目的 **`src/model/`** 目录下：
    ```text
    UniDial-EvalKit/
    ├── src/
    │   ├── model/
    │   │   ├── memoryos_agent.py   # 框架适配器
-   │   │   └── memoryos/           # <--- 从官方仓库 memoryos-pypi 复制并重命名而来
+   │   │   └── MemoryOS/           # <--- 从官方仓库 memoryos-pypi 复制并重命名而来
    │   │       ├── __init__.py
    │   │       ├── memoryos.py
    │   │       ├── utils.py        # (务必确保 utils.py 存在，否则会报 Import 错误)
@@ -76,10 +76,11 @@ MemoryOS 是一个具有短期、中期和长期层级记忆的 Agent 框架。
    ```
 
 ### 2.2 环境依赖安装
-在项目根目录下安装 `src/model/memoryos` 的专属依赖：
+在项目根目录下安装 `src/model/MemoryOS` 的专属依赖：
 ```bash
 conda activate uniconv
-pip install -r src/model/memoryos/requirements.txt
+# pip install -r src/model/MemoryOS/requirements.txt
+pip install faiss-gpu faiss-cpu
 ```
 
 ### 2.3 命令行评测
@@ -90,7 +91,7 @@ PYTHONPATH=. python src/eval_cli.py \
     --raw_data_dir ./raw_data/PersonaMem \
     --model_type memoryos \
     --model_name "deepseek-chat" \
-    --base_url "https://api.deepseek.com" \
+    --base_url "xxx" \
     --api_key "your-api-key" \
     --do_generation \
     --do_evaluation \
@@ -99,33 +100,34 @@ PYTHONPATH=. python src/eval_cli.py \
 
 ---
 
-## 3. 🤖 AMem Agent
+## 3. AMem Agent
 AgenticMemory (AMem) 是一个轻量级代理化记忆管理系统。
 
 ### 3.1 下载与目录配置
 你需要获取 A-mem 项目的原始代码并放置到正确的位置。
 
-1. 从对应的 GitHub 仓库（或源码压缩包中）获取 `A-mem` 核心代码。
+1. 从对应的 GitHub 仓库（或源码压缩包中）获取 `A-mem` 核心代码：
    ```bash
    # 假设你通过 Git 克隆了原始项目：
    git clone https://github.com/WujiangXu/A-mem.git
    ```
-2. 将获取到的项目中的核心记忆代码包（即包含 `memory_layer.py` 的文件夹，比如 `A-mem-main` 或者 `A-mem` 下的代码），**重命名为 `AgenticMemory`**，并将其放置于本项目的 **`src/model/`** 目录下：
+2. 将获取到的仓库**重命名为 `A_Mem`**，并将其放置于本项目的 **`src/model/`** 目录下：
    ```text
    UniDial-EvalKit/
    ├── src/
    │   ├── model/
    │   │   ├── amem_agent.py       # 框架适配器
-   │   │   └── AgenticMemory/      # <--- 放置在这里，文件夹必须叫这个名字
+   │   │   └── A_Mem/              # <--- 放置在这里
    │   │       ├── memory_layer.py # 确保里面包含这个核心逻辑文件
    │   │       └── ...
    ```
 
 ### 3.2 环境依赖安装
-AMem 的执行依赖于特定的第三方库，请在项目根目录下安装 `src/model/AgenticMemory` 的依赖：
+AMem 的执行依赖于特定的第三方库，请在项目根目录下安装 `src/model/A_Mem` 的依赖：
 ```bash
 conda activate uniconv
-pip install -r src/model/AgenticMemory/requirements.txt
+# pip install -r src/model/A_Mem/requirements.txt
+pip install rank_bm25
 ```
 
 ### 3.3 命令行评测
@@ -135,7 +137,7 @@ PYTHONPATH=. python src/eval_cli.py \
     --raw_data_dir ./raw_data/PersonaMem \
     --model_type amem \
     --model_name "deepseek-v3.2" \
-    --base_url "https://api.deepseek.com" \
+    --base_url "xxx" \
     --api_key "your-api-key" \
     --do_generation \
     --do_evaluation \
@@ -143,10 +145,3 @@ PYTHONPATH=. python src/eval_cli.py \
 ```
 
 ---
-
-
-
-
-
-
-

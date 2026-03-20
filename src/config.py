@@ -53,13 +53,13 @@ class EvalPipelineConfig:
     # ---------- derived paths (auto-computed) ----------
     @property
     def gen_output_dir(self) -> Path:
-        return Path(self.output_dir) / self.dataset / self.model_name / "generated"
+        return Path(self.output_dir) / self.dataset / Path(self.model_type + "-" + self.model_name) / "generated"
 
     @property
     def eval_output_dir(self) -> Path:
-        return Path(self.output_dir) / self.dataset / self.model_name / "eval_details"
+        return Path(self.output_dir) / self.dataset / Path(self.model_type + "-" + self.model_name) / "eval_details"
 
     @property
     def summary_output_path(self) -> Path:
-        return Path(self.output_dir) / self.dataset / self.model_name / "summary.json"
+        return Path(self.output_dir) / self.dataset / Path(self.model_type + "-" + self.model_name) / "summary.json"
 

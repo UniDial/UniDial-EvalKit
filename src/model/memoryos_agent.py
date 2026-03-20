@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+import sys
 import tempfile
 import uuid
 import threading
@@ -11,8 +12,20 @@ from .base import BaseModel
 
 logger = logging.getLogger(__name__)
 
+
+def _ensure_memoryos_import_paths() -> None:
+    """Make bundled MemoryOS importable for its internal fallback imports."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    memoryos_root = os.path.join(current_dir, "MemoryOS")
+
+    if os.path.isdir(memoryos_root) and memoryos_root not in sys.path:
+        sys.path.insert(0, memoryos_root)
+
+
+_ensure_memoryos_import_paths()
+
 try:
-    from .memoryos.memoryos import Memoryos
+    from .MemoryOS.memoryos import Memoryos
 except ImportError as e:
     logger.error(f"ImportError for memoryos: {e}. ")
     Memoryos = None
@@ -211,6 +224,6 @@ class MemoryOSModel(BaseModel):
 
             return response if response else ""
 
-        except Exception:
+        except Exception as e:
             logger.exception("MemoryOS generation error")
-            raise
+            raise e
