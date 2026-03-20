@@ -48,8 +48,8 @@
 
 2. 创建并激活 conda 环境：
    ```bash
-   conda create -n uniconv python=3.10
-   conda activate uniconv
+   conda create -n unidial python=3.10
+   conda activate unidial
    ```
 
 3. 安装依赖环境：

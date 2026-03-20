@@ -48,8 +48,8 @@ Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using U
 2. Create and activate a conda environment:
 
     ```bash
-    conda create -n uniconv python=3.10
-    conda activate uniconv
+    conda create -n unidial python=3.10
+    conda activate unidial
     ```
 
 3. Install dependencies:
