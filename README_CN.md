@@ -233,7 +233,8 @@ script/
 - 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniDial-EvalKit/issues)
 - 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniDial-EvalKit/pulls)
 
-更多评测相关信息，欢迎关注 [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)!
+<!-- 更多评测相关信息，欢迎关注 [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)! -->
+
 
 
 ## 🖊️ Citation

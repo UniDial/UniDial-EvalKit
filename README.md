@@ -21,17 +21,17 @@ As a modular and extensible evaluation tool, UniDial-EvalKit decouples data load
 
 ## 📊 Leaderboard
 
-Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using UniDial-EvalKit (Judge Model: GPT-4.1):
+Below are the multi-dimensional evaluation results for *DeepSeek-V3.2* and *Qwen3-Max-Thinking* using UniDial-EvalKit (Judge Model: GPT-4.1):
 
-| Benchmark     | Metrics                      | DeepSeek-V3.2 |
-|---------------|------------------------------|---------------|
-| LoCoMo        | `f1_score`, `recall`         | 59.25         |
-| MathChat      | `llm_judge`, `numeric_match` | 77.87         |
-| MemoryCode    | `code_math`                  | 25.40         |
-| MT-Bench-101  | `llm_judge`                  | 91.17         |
-| PersonaMem    | `exact_match`                | 60.88         |
-| MultiIF       | `instruction_following`      | 56.61         |
-| SafeDialBench | `llm_judge`                  | 53.95         |
+| Benchmark     | Metrics                      | DeepSeek-V3.2 | Qwen3-Max-Thinking |
+|---------------|------------------------------|---------------|--------------------|
+| LoCoMo        | `f1_score`, `recall`         | 59.25         |62.11               |
+| MathChat      | `llm_judge`, `numeric_match` | 77.87         |77.43               |
+| MemoryCode    | `code_math`                  | 25.99         |34.06               |
+| MT-Bench-101  | `llm_judge`                  | 91.17         |93.62               |
+| PersonaMem    | `exact_match`                | 64.52         |64.52               |
+| MultiIF       | `instruction_following`      | 64.23         |68.93               |
+| SafeDialBench | `llm_judge`                  | 53.95         |61.33               |
 
 > ⚠️ All evaluations are conducted in a multi-turn user-assistant interaction format; evaluation settings may differ from the original papers. Results are summarized using `agg_turn_stat=mean`, `agg_dialog_stat=min`, and `agg_dataset_level=dialog`.
 
@@ -239,7 +239,7 @@ We welcome researchers and developers interested in dialogue evaluation to contr
 - 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniDial-EvalKit/issues)
 - 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniDial-EvalKit/pulls)
 
-For more evaluation-related resources, please follow [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)!
+<!-- For more evaluation-related resources, please follow [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)! -->
 
 
 ## 🖊️ Citation
