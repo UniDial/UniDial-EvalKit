@@ -21,7 +21,7 @@
 
 ## 📊 Leaderboard
 
-以下为使用 UniDial-EvalKit 对 **DeepSeek-V3.2** 进行多维度评测的结果（Judge Model: GPT-4.1）：
+以下为使用 UniDial-EvalKit 进行多维度评测的结果（Judge Model: GPT-4.1）：
 
 | 评测基准        | 评测指标                      | DeepSeek-V3.2 | Qwen3-Max-Thinking |
 |---------------|------------------------------|---------------|--------------------|
@@ -29,7 +29,7 @@
 | MathChat      | `llm_judge`, `numeric_match` | 77.87         |77.43               |
 | MemoryCode    | `code_math`                  | 25.99         |34.06               |
 | MT-Bench-101  | `llm_judge`                  | 91.17         |93.62               |
-| PersonaMem    | `exact_match`                | 64.52         |64.52               |
+| PersonaMem    | `exact_match`                | 64.52         |65.20               |
 | MultiIF       | `instruction_following`      | 64.23         |68.93               |
 | SafeDialBench | `llm_judge`                  | 53.95         |61.33               |
 
@@ -229,11 +229,8 @@ script/
 
 欢迎对对话评测感兴趣的研究者和开发者参与贡献！如有任何问题、建议或合作意向，欢迎通过以下方式联系我们：
 
-- 📧 Email: jiaqi@pjlab.org.cn
-- 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniDial-EvalKit/issues)
-- 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniDial-EvalKit/pulls)
-
-<!-- 更多评测相关信息，欢迎关注 [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)! -->
+- 🐛 Issue: [GitHub Issues](https://github.com/UniDial/UniDial-EvalKit/issues)
+- 🔀 Pull Request: [GitHub PRs](https://github.com/UniDial/UniDial-EvalKit/pulls)
 
 
 
@@ -246,14 +243,9 @@ script/
   title={UniDial-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
   author={xxx},
   year={2026},
-  howpublished={\url{https://github.com/JiaQiSJTU/UniDial-EvalKit}}
+  howpublished={\url{https://github.com/UniDial/UniDial-EvalKit#}}
 }
 ```
-
-<!-- 我们也在多轮对话评测方向开展了系列研究工作，以下评测基准也将陆续集成到本工具中：
-
-- **EvolIF** — 面向多轮指令遵循能力的动态评测基准 [[arxiv](https://arxiv.org/abs/2511.03508v2)] [[code](https://github.com/JiaQiSJTU/EvolIF)]
-- **EvolMem** — 面向多轮对话多方面记忆能力的评测基准 [[arxiv](https://arxiv.org/abs/2601.03543)] [[code](https://github.com/shenye7436/EvolMem)] -->
 
 
 
