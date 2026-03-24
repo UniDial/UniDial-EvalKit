@@ -42,7 +42,7 @@
 
 1. 克隆本项目代码：
    ```bash
-   git clone https://github.com/JiaQiSJTU/UniDial-EvalKit.git
+   git clone https://github.com/UniDial/UniDial-EvalKit.git
    cd UniDial-EvalKit
    ```
 

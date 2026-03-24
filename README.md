@@ -41,7 +41,7 @@ Below are the multi-dimensional evaluation results using UniDial-EvalKit (Judge 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/JiaQiSJTU/UniDial-EvalKit.git
+   git clone https://github.com/UniDial/UniDial-EvalKit.git
    cd UniDial-EvalKit
    ```
 
