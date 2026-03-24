@@ -21,7 +21,7 @@ As a modular and extensible evaluation tool, UniDial-EvalKit decouples data load
 
 ## 📊 Leaderboard
 
-Below are the multi-dimensional evaluation results for *DeepSeek-V3.2* and *Qwen3-Max-Thinking* using UniDial-EvalKit (Judge Model: GPT-4.1):
+Below are the multi-dimensional evaluation results using UniDial-EvalKit (Judge Model: GPT-4.1):
 
 | Benchmark     | Metrics                      | DeepSeek-V3.2 | Qwen3-Max-Thinking |
 |---------------|------------------------------|---------------|--------------------|
@@ -29,7 +29,7 @@ Below are the multi-dimensional evaluation results for *DeepSeek-V3.2* and *Qwen
 | MathChat      | `llm_judge`, `numeric_match` | 77.87         |77.43               |
 | MemoryCode    | `code_math`                  | 25.99         |34.06               |
 | MT-Bench-101  | `llm_judge`                  | 91.17         |93.62               |
-| PersonaMem    | `exact_match`                | 64.52         |64.52               |
+| PersonaMem    | `exact_match`                | 64.52         |65.20               |
 | MultiIF       | `instruction_following`      | 64.23         |68.93               |
 | SafeDialBench | `llm_judge`                  | 53.95         |61.33               |
 
@@ -235,11 +235,8 @@ script/
 
 We welcome researchers and developers interested in dialogue evaluation to contribute! If you have any questions, suggestions, or collaboration intentions, please feel free to contact us:
 
-- 📧 Email: jiaqi@pjlab.org.cn
-- 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniDial-EvalKit/issues)
-- 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniDial-EvalKit/pulls)
-
-<!-- For more evaluation-related resources, please follow [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)! -->
+- 🐛 Issue: [GitHub Issues](https://github.com/UniDial/UniDial-EvalKit/issues)
+- 🔀 Pull Request: [GitHub PRs](https://github.com/UniDial/UniDial-EvalKit/pulls)
 
 
 ## 🖊️ Citation
@@ -251,6 +248,6 @@ If you use UniDial-EvalKit in your research, please cite the following BibTeX:
   title={UniDial-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
   author={xxx},
   year={2026},
-  howpublished={\url{https://github.com/JiaQiSJTU/UniDial-EvalKit}}
+  howpublished={\url{https://github.com/UniDial/UniDial-EvalKit.git}}
 }
 ```
