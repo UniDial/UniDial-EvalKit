@@ -3,6 +3,16 @@
   UniDial-EvalKit
 </h1>
 
+<div align="center">
+  <h2 align="center">
+  <a href="https://github.com/UniDial/UniDial-EvalKit" target='_blank' style="text-decoration: none;"><img src="https://visitor-badge.laobi.icu/badge?page_id=UniDial/UniDial-EvalKit"></a>
+  <a href="https://arxiv.org/abs/2603.23160" style="display: inline-block; text-align: center;">
+      <img alt="arXiv" src="https://img.shields.io/badge/arXiv-2603.23160-b31b1b.svg?style=flat">
+  </a>
+  <a href="https://github.com/UniDial/UniDial-EvalKit/stargazers" target='_blank' style="text-decoration: none;"><img src="https://img.shields.io/github/stars/UniDial/UniDial-EvalKit"></a>
+</div>
+
+
 **UniDial-EvalKit** (UDE) is a unified framework focusing on the **evaluation of multi-turn interactions in Large Language Models (LLMs)**. We are committed to building a comprehensive evaluation system for long-term interactions covering dimensions such as **memory, understanding, safety, mathematics, and code**. By integrating multiple mainstream benchmarks for comprehensive comparison, UniDial-EvalKit provides a full-scale, standardized capability profile for the evolution of multi-turn human-AI interaction technologies in LLMs and Agent systems.
 
 As a modular and extensible evaluation tool, UniDial-EvalKit decouples data loading, model generation, and metric evaluation. It supports breakpoint resume and parallel acceleration, enabling efficient all-round assessment of various open-source and closed-source models.
