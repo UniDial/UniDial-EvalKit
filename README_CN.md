@@ -186,7 +186,13 @@ PYTHONPATH=. python src/eval_cli.py \
 
 > 💡 vLLM 提供的是 OpenAI 兼容接口，因此 `--model_type` 保持默认 `openai` 即可，只需将 `--base_url` 指向本地地址，`--model_name` 设为 `--served-model-name` 对应的名称，api_key传递任意非空字符串即可。
 
-### 4. 常用参数说明
+### 4. 支持的 Memory Agent
+
+目前，框架已集成 A-Mem、HippoRAG 和 MemoryOS 等多轮对话 Agent。关于具体的安装与使用方法，请参阅 [`src/model/README_CN_agent.md`](src/model/README_CN_agent.md)。
+
+
+
+### 5. 常用参数说明
 
 | 参数名 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
@@ -219,13 +225,13 @@ script/
 └── test_vllm_client.sh  # vLLM 评测调用示例
 ```
 
-## 📝 TODO / Roadmap
+## 📝 任务列表 / 开发路线图
 
 - [ ] 增加 User Simulator，支持更灵活的对话过程
 - [ ] 增加 Agent 接口，支持 Agent 系统评测
 - [ ] 扩展多模态评测数据集
 
-## 🤝 Get Involved
+## 🤝 参与贡献
 
 欢迎对对话评测感兴趣的研究者和开发者参与贡献！如有任何问题、建议或合作意向，欢迎通过以下方式联系我们：
 
@@ -233,17 +239,19 @@ script/
 - 🔀 Pull Request: [GitHub PRs](https://github.com/UniDial/UniDial-EvalKit/pulls)
 
 
-
 ## 🖊️ Citation
 
 如果您在研究中使用了 UniDial-EvalKit，请引用以下 BibTeX：
 
 ```bibtex
-@misc{UniDial-EvalKit2026,
-  title={UniDial-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
-  author={xxx},
-  year={2026},
-  howpublished={\url{https://github.com/UniDial/UniDial-EvalKit#}}
+@misc{jia2026unidialevalkitunifiedtoolkitevaluating,
+      title={UniDial-EvalKit: A Unified Toolkit for Evaluating Multi-Faceted Conversational Abilities}, 
+      author={Qi Jia and Haodong Zhao and Dun Pei and Xiujie Song and Shibo Wang and Zijian Chen and Zicheng Zhang and Xiangyang Zhu and Guangtao Zhai},
+      year={2026},
+      eprint={2603.23160},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2603.23160}, 
 }
 ```
 

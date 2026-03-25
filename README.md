@@ -189,8 +189,12 @@ PYTHONPATH=. python src/eval_cli.py \
 
 > 💡 Since vLLM provides an OpenAI-compatible interface, you can keep the default `--model_type` as `openai.` Just point `--base_url` to your local address and set `--model_name` to the corresponding `--served-model-name`, and you can pass any non-empty string as the api_key.
 
+### 4. Supported Agents
 
-### 4. Common Parameter Descriptions
+Currently, the framework integrates A-Mem, HippoRAG, and MemoryOS agents. For detailed setup and usage instructions, please refer to [`src/model/README_agent.md`](src/model/README_agent.md).
+
+
+### 5. Common Parameter Descriptions
 
 
 | Parameter | Type | Default | Description |
@@ -244,10 +248,13 @@ We welcome researchers and developers interested in dialogue evaluation to contr
 If you use UniDial-EvalKit in your research, please cite the following BibTeX:
 
 ```bibtex
-@misc{UniDial-EvalKit2026,
-  title={UniDial-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
-  author={xxx},
-  year={2026},
-  howpublished={\url{https://github.com/UniDial/UniDial-EvalKit.git}}
+@misc{jia2026unidialevalkitunifiedtoolkitevaluating,
+      title={UniDial-EvalKit: A Unified Toolkit for Evaluating Multi-Faceted Conversational Abilities}, 
+      author={Qi Jia and Haodong Zhao and Dun Pei and Xiujie Song and Shibo Wang and Zijian Chen and Zicheng Zhang and Xiangyang Zhu and Guangtao Zhai},
+      year={2026},
+      eprint={2603.23160},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2603.23160}, 
 }
 ```
