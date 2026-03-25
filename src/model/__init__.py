@@ -2,17 +2,18 @@ from typing import Dict, Type
 
 from .base import BaseModel
 from .openai import OpenAIModel
-from .hipporag_agent import HippoRAGModel
-from .memoryos_agent import MemoryOSModel
-from .amem_agent import AMemModel
+
+# Lazy-loaded model classes
+_LAZY_MODEL_MAP = {
+    "hipporag": (".hipporag_agent", "HippoRAGModel"),
+    "memoryos": (".memoryos_agent", "MemoryOSModel"),
+    "amem": (".amem_agent", "AMemModel"),
+}
 
 # Registry mapping model type names to model classes
 # Note: "openai" handles both standard OpenAI and Azure OpenAI via configuration
 MODEL_REGISTRY: Dict[str, Type[BaseModel]] = {
     "openai": OpenAIModel,
-    "hipporag": HippoRAGModel,
-    "memoryos": MemoryOSModel,
-    "amem": AMemModel,
 }
 
 def get_model_class(model_type: str) -> Type[BaseModel]:
@@ -29,9 +30,24 @@ def get_model_class(model_type: str) -> Type[BaseModel]:
         ValueError: If the model type is not found in the registry.
     """
     model_type = model_type.lower()
-    if model_type not in MODEL_REGISTRY:
-        raise ValueError(f"Model type '{model_type}' not found. Available types: {list(MODEL_REGISTRY.keys())}")
-    return MODEL_REGISTRY[model_type]
+    if model_type in MODEL_REGISTRY:
+        return MODEL_REGISTRY[model_type]
+    if model_type in _LAZY_MODEL_MAP:
+        module_name, class_name = _LAZY_MODEL_MAP[model_type]
+        import importlib
+        module = importlib.import_module(module_name, package=__name__)
+        cls = getattr(module, class_name)
+        MODEL_REGISTRY[model_type] = cls
+        return cls
+    raise ValueError(f"Model type '{model_type}' not found. Available types: {list(MODEL_REGISTRY.keys()) + list(_LAZY_MODEL_MAP.keys())}")
+
+def __getattr__(name: str):
+    for _, (module_name, class_name) in _LAZY_MODEL_MAP.items():
+        if name == class_name:
+            import importlib
+            module = importlib.import_module(module_name, package=__name__)
+            return getattr(module, class_name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = [
     "BaseModel",
