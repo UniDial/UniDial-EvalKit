@@ -25,7 +25,8 @@ class EvalPipelineConfig:
     # Generation model
     model_type: str = "openai"
     model_name: str = "deepseek-ai/DeepSeek-V3.2"
-    temperature: float = 0.7
+    # If None, do NOT pass temperature to the LLM backend (use backend default).
+    temperature: Optional[float] = None
     max_tokens: int = 1024
 
     # Judge model
@@ -43,7 +44,10 @@ class EvalPipelineConfig:
     # Task control
     do_generation: bool = False
     do_evaluation: bool = False
+    
+    # Output control flags
     save_agent_logs: bool = True
+    save_llm_logs: bool = True
 
     # Aggregation
     agg_by_metric: bool = False  # generally true for instruction_following datasets

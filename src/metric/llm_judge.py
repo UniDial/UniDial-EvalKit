@@ -43,6 +43,8 @@ class LLMJudge(BaseMetric):
         prediction: str,
         reference: Optional[str],
         history_messages: Dict[str, Any],
+        temperature: float = 0.7,
+        max_tokens: int = 1024,
         **kwargs: Any,
     ) -> Dict[str, Any]:
         """
@@ -72,8 +74,8 @@ class LLMJudge(BaseMetric):
         # We explicitly map standard compute args to potential render args
         available_args = {
             "history_messages": history_messages,
-            "response": prediction,
-            "prediction": prediction, # Alias
+            # "response": prediction, # Alias # redundancy?
+            "prediction": prediction, 
             "reference": reference,
             **kwargs # Includes constraints, template_name, etc.
         }
@@ -105,7 +107,7 @@ class LLMJudge(BaseMetric):
                 messages = prompt
             
             # 4. Call LLM
-            gen_out = self.llm_client.generate(messages=messages)  # TODO: , **kwargs)
+            gen_out = self.llm_client.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
             if isinstance(gen_out, tuple) and len(gen_out) == 2:
                 llm_output, llm_output_details = gen_out
             else:

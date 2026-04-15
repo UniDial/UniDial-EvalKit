@@ -31,6 +31,7 @@ class OpenAIModel(BaseModel):
         base_url: Optional[str] = None,
         max_retries: int = 3,
         timeout: float = 60.0,
+        save_llm_logs: bool = False,
         **kwargs: Any
     ) -> None:
         """
@@ -53,6 +54,7 @@ class OpenAIModel(BaseModel):
         self.base_url = base_url
         self.max_retries = max_retries
         self.timeout = timeout
+        self.save_llm_logs = save_llm_logs
         
         self.client = OpenAI(
             api_key=self.api_key,
@@ -82,6 +84,10 @@ class OpenAIModel(BaseModel):
             The generated content string.
         """
         # time.sleep(15)
+        # Do not forward unset optional params (e.g., temperature=None) to the backend.
+        # This lets the backend use its own defaults when the user didn't specify.
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        print(kwargs)
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
@@ -120,12 +126,18 @@ class OpenAIModel(BaseModel):
                                 
                     if reasoning_content:
                         # print(reasoning_content)
-                        return reasoning_content, response
+                        if self.save_llm_logs:
+                            return reasoning_content, response
+                        else:
+                            return reasoning_content
                 except Exception as e:
                     pass
                 raise ValueError("OpenAI API returned empty content in response")
             
-            return content, response
+            if self.save_llm_logs:
+                return content, response
+            else:
+                return content
             
         except openai.OpenAIError as e:
             logger.error(f"OpenAI API error: {e}")
