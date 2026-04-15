@@ -82,6 +82,7 @@ class OpenAIModel(BaseModel):
         Returns:
             The generated content string.
         """
+        kwargs.pop("dialog_id", None)
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,

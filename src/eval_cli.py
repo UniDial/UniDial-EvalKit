@@ -32,6 +32,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--api_key", type=str, default=None, help="API key (or set OPENAI_API_KEY)")
     parser.add_argument("--base_url", type=str, default=None, help="API Base URL")
     parser.add_argument("--embedding_model_name", type=str, default="text-embedding-ada-002", help="Embedding model to use for RAG")
+    parser.add_argument("--save_agent_logs", type=lambda x: (str(x).lower() in ['true', '1', 'yes']), default=True, help="Whether to save detailed diagnostic logs for agents (default: True)")
 
     # Task control flags
     parser.add_argument("--do_generation", action="store_true", help="Run the generation phase")
@@ -68,6 +69,7 @@ def args_to_config(args: argparse.Namespace) -> EvalPipelineConfig:
         parallel=args.parallel,
         do_generation=args.do_generation,
         do_evaluation=args.do_evaluation,
+        save_agent_logs=args.save_agent_logs,
         agg_by_metric=args.agg_by_metric,
         agg_turn_stat=args.agg_turn_stat,
         agg_dialog_stat=args.agg_dialog_stat,

@@ -2,16 +2,52 @@ import os
 import sys
 import logging
 import json
+import time
 import threading
 from typing import Any, Dict, List, Optional
 
 from .base import BaseModel
 
+# Create thread-local storage for log capturing
+_thread_local = threading.local()
+
+class ThreadLocalLogHandler(logging.Handler):
+    def emit(self, record):
+        try:
+            # Check if we are currently capturing for a dialog
+            if hasattr(_thread_local, 'log_capture_list') and _thread_local.log_capture_list is not None:
+                # To prevent infinite recursion if format/emit causes logging
+                if not getattr(_thread_local, 'is_emitting', False):
+                    _thread_local.is_emitting = True
+                    try:
+                        msg = self.format(record)
+                        _thread_local.log_capture_list.append({
+                            "time": time.time(),
+                            "level": record.levelname,
+                            "logger": record.name,
+                            "message": msg
+                        })
+                    finally:
+                        _thread_local.is_emitting = False
+        except Exception:
+            self.handleError(record)
+
+# Initialize the handler once
+_capture_handler = ThreadLocalLogHandler()
+_capture_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logging.getLogger().addHandler(_capture_handler)
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # Try importing the components
 try:
-    from .A_Mem.memory_layer import AgenticMemorySystem, LLMController
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if project_root not in sys.path:
+        sys.path.insert(0, project_root)
+        
+    from AgenticMemory.memory_layer import AgenticMemorySystem, LLMController
 except ImportError as e:
     logger.error(f"Failed to import AgenticMemory components: {e}")
     import traceback
@@ -53,33 +89,19 @@ class AdvancedMemAgent:
                 keyword1, keyword2, keyword3"""
             
         try:
-            response = self.retriever_llm.llm.get_completion(prompt, response_format={"type": "json_schema", "json_schema": {
-                            "name": "response",
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "keywords": {
-                                        "type": "string",
-                                    }
-                                },
-                                "required": ["keywords"],
-                                "additionalProperties": False
-                            },
-                            "strict": True
-                        }}, temperature=self.temperature)
-            try:
-                response = json.loads(response)["keywords"]
-            except:
-                response = response.strip()
-            return response
+            response = self.retriever_llm.llm.get_completion(prompt, temperature=0.1)
+            return response.strip()
         except Exception as e:
             logger.error(f"Error in generate_query_llm: {e}")
-            raise e
-        
-    def answer_question(self, question: str) -> str:
+            return question.strip()
+
+    def answer_question(self, question: str) -> tuple[str, str, Any]:
         try:
             keywords = self.generate_query_llm(question)
+            logger.info(f"Generated keywords for retrieval: {keywords}")
+            
             raw_context = self.retrieve_memory(keywords, k=self.retrieve_k)
+            logger.info(f"Retrieved memories:\n{raw_context}")
             memories_str = raw_context
             
             user_prompt = f""" 
@@ -92,26 +114,13 @@ class AdvancedMemAgent:
             
             response = self.memory_system.llm_controller.llm.get_completion(
                 user_prompt,
-                response_format={"type": "json_schema", "json_schema": {
-                        "name": "response",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "answer": {
-                                    "type": "string",
-                                }
-                            },
-                            "required": ["answer"],
-                            "additionalProperties": False
-                        },
-                        "strict": True
-                    }},
                 temperature=self.temperature
             )
-            return response.strip()
+            logger.info(f"Final Generated Response: {response}")
+            return response, keywords, raw_context
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
-            raise e
+            return "", "", ""
 
 class AMemModel(BaseModel):
     def __init__(
@@ -119,7 +128,7 @@ class AMemModel(BaseModel):
         model_name: str,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        retrieve_k: int = 10,
+        retrieve_k: int = 3,
         **kwargs: Any
     ) -> None:
         super().__init__(model_name, **kwargs)
@@ -129,7 +138,7 @@ class AMemModel(BaseModel):
         self.llm_model = model_name
         
         if AgenticMemorySystem is None:
-            raise ImportError("AgenticMemory modules not found. Ensure AgenticMemory is available under src/model/.")
+            raise ImportError("AgenticMemory modules not found. ")
             
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.base_url = base_url or os.environ.get("OPENAI_BASE_URL", "")
@@ -172,7 +181,11 @@ class AMemModel(BaseModel):
         max_tokens: int = 1024,
         **kwargs: Any
     ) -> str:
-        # try:
+        try:
+            start_time = time.time()
+            # Enable log capture for this thread
+            _thread_local.log_capture_list = []
+            
             if not messages:
                 return ""
                 
@@ -209,29 +222,75 @@ class AMemModel(BaseModel):
             last_user_idx = len(messages) - 1
 
             # Only ingest newly added history before current final user query.
-            # Current generation output is intentionally NOT ingested here because
-            # the caller may choose generated/reference history outside this model.
             start_idx = int(state.get("last_ingested_idx", 0))
             if start_idx < 0 or start_idx > last_user_idx:
                 start_idx = 0
 
+            current_user_msg = None
+            new_texts = []
+            extracted_notes = []
             for i in range(start_idx, last_user_idx):
                 msg = messages[i]
                 role = str(msg.get("role", "")).lower()
-                content = str(msg.get("content", ""))
+                content = str(msg.get("content", "")).strip()
                 if not content:
                     continue
+                    
                 if role == "user":
-                    agent.add_memory(content=f"User input: {content}")
+                    if current_user_msg is not None:
+                        new_text = f"User input: {current_user_msg}"
+                        agent.add_memory(content=new_text)
+                        new_texts.append(new_text)
+                    current_user_msg = content
                 elif role == "assistant":
-                    agent.add_memory(content=f"AI response: {content}")
+                    if current_user_msg is not None:
+                        new_text = f"User input: {current_user_msg}\nAI response: {content}"
+                        agent.add_memory(content=new_text)
+                        new_texts.append(new_text)
+                        current_user_msg = None
+                    else:
+                        new_text = f"AI response: {content}"
+                        agent.add_memory(content=new_text)
+                        new_texts.append(new_text)
+
+            if current_user_msg is not None:
+                new_text = f"User input: {current_user_msg}"
+                agent.add_memory(content=new_text)
+                new_texts.append(new_text)
+
+            # Capture extracted knowledge from newly added memories
+            if new_texts:
+                logger.info(f"New memories to index:\n" + "\n".join(new_texts))
+                try:
+                    for note in agent.memory_system.memories.values():
+                        if note.content in new_texts:
+                            extracted_notes.append({
+                                "content": note.content,
+                                "context": note.context,
+                                "keywords": note.keywords,
+                                "tags": getattr(note, 'tags', [])
+                            })
+                except Exception as e:
+                    logger.warning(f"Failed to extract knowledge from AMem notes: {e}")
 
             state["last_ingested_idx"] = last_user_idx
 
-            prediction = agent.answer_question(final_query)
+            logger.info(f"Final Query sent to AMem: {final_query}")
+
+            keywords = ""
+            raw_context = ""
+            # 如果没有任何历史记忆被保存（比如第一轮），直接回答
+            if not state["agent"].memory_system.memories:
+                logger.info("No memories available. Direct LLM generation.")
+                prediction = agent.memory_system.llm_controller.llm.get_completion(
+                    final_query,
+                    temperature=temperature
+                )
+                logger.info(f"Final Generated Response: {prediction}")
+            else:
+                prediction, keywords, raw_context = agent.answer_question(final_query)
             
             try:
-                # Some implementations return a JSON with "answer" key
                 if "{" in prediction and "}" in prediction:
                     import re
                     # Try to extract pure JSON
@@ -243,9 +302,84 @@ class AMemModel(BaseModel):
             except Exception:
                 pass
                 
+            # --- Diagnostic Logging ---
+            if self.config.get('save_agent_logs', False):
+                try:
+                    dataset_name = self.dataset_name
+                    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+                    log_dir = os.path.join(project_root, "output", "amem_logs", dataset_name)
+                    os.makedirs(log_dir, exist_ok=True)
+                
+                    captured_logs = getattr(_thread_local, 'log_capture_list', [])
+                
+                    end_time = time.time()
+                    latency = end_time - start_time
+                
+                    retrieved_contexts = []
+                    if raw_context:
+                        retrieved_contexts.append({
+                            "source": "amem_vector_db",
+                            "content": str(raw_context),
+                            "score": None
+                        })
+
+                    diagnostic_data = {
+                        "metadata": {
+                            "dataset": dataset_name,
+                            "dialog_id": dialog_id,
+                            "turn_index": last_user_idx,
+                            "query": final_query,
+                            "timestamp": time.time(),
+                            "latency_seconds": round(latency, 3)
+                        },
+                        "memory_update": {
+                            "new_raw_inputs": new_texts,
+                            "chunked_documents": [{"content": text, "meta_info": {}} for text in new_texts],
+                            "extracted_knowledge": {
+                                "amem_notes": extracted_notes
+                            } if extracted_notes else {}
+                        },
+                        "retrieval": {
+                            "search_queries": [keywords] if keywords else [],
+                            "retrieved_contexts": retrieved_contexts
+                        },
+                        "generation": {
+                            "generated_response": str(prediction).strip()
+                        },
+                        "system_logs": captured_logs
+                    }
+                
+                    # Save into a per-dialog JSON file
+                    dialog_file_name = f"dialog_{dialog_id}.json" if dialog_id is not None else "dialog_stateless.json"
+                    dialog_file = os.path.join(log_dir, dialog_file_name)
+                
+                    if os.path.exists(dialog_file):
+                        try:
+                            with open(dialog_file, "r", encoding="utf-8") as f:
+                                dialog_data = json.load(f)
+                        except json.JSONDecodeError:
+                            dialog_data = []
+                    else:
+                        dialog_data = []
+                    
+                    dialog_data.append(diagnostic_data)
+                
+                    with open(dialog_file, "w", encoding="utf-8") as f:
+                        json.dump(dialog_data, f, ensure_ascii=False, indent=4)
+                    
+                except Exception as e:
+                    logger.warning(f"AMem diagnostic logging failed: {e}")
+                finally:
+                    # Cleanup thread-local log capture
+                    _thread_local.log_capture_list = None
+            # ---------------------------------------------
+            
             return str(prediction).strip()
             
-        # except Exception as e:
-        #     logger.error(f"AMem generation error: {e}")
-        #     raise e
+        except Exception as e:
+            # Ensure cleanup on error
+            if hasattr(_thread_local, 'log_capture_list'):
+                _thread_local.log_capture_list = None
+            logger.error(f"AMem generation error: {e}")
+            raise e
 

@@ -43,6 +43,7 @@ class EvalPipelineConfig:
     # Task control
     do_generation: bool = False
     do_evaluation: bool = False
+    save_agent_logs: bool = True
 
     # Aggregation
     agg_by_metric: bool = False  # generally true for instruction_following datasets
