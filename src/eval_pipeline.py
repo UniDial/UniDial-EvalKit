@@ -65,6 +65,7 @@ def create_generation_model(cfg: EvalPipelineConfig) -> BaseModel:
         dataset_name=cfg.dataset,
         save_agent_logs=cfg.save_agent_logs,
         embedding_model_name=cfg.embedding_model_name,
+        save_llm_logs=cfg.save_llm_logs,
     )
 
 
@@ -91,6 +92,7 @@ def create_metrics_map(
                 model_name=cfg.judge_model_name,
                 api_key=cfg.api_key,
                 base_url=cfg.base_url,
+                save_llm_logs=cfg.save_llm_logs,
             )
             metrics_map[name] = get_metric_class(name)(
                 llm_client=judge_model, dataset=dataset, **config

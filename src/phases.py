@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 def _generate_single_dialog(
     dialog: Dialog,
     model: BaseModel,
-    temperature: float = 0.7,
+    temperature: Optional[float] = None,
     max_tokens: int = 1024,
 ) -> Dialog:
     """Generate model responses for a single Dialog, return the updated Dialog."""
@@ -213,7 +213,11 @@ class GenerationPhase:
         with ThreadPoolExecutor(max_workers=cfg.parallel) as executor:
             future_map = {
                 executor.submit(
-                    _generate_single_dialog, d, model, cfg.temperature, cfg.max_tokens
+                    _generate_single_dialog,
+                    d,
+                    model,
+                    cfg.temperature,
+                    cfg.max_tokens,
                 ): d
                 for d in remaining
             }

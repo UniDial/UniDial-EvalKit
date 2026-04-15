@@ -57,14 +57,46 @@ class EvalPipelineConfig:
 
     # ---------- derived paths (auto-computed) ----------
     @property
+    def model_name_last(self) -> str:
+        """Use the last segment so '/' won't create nested dirs."""
+        return (self.model_name or "").split("/")[-1]
+
+    @property
     def gen_output_dir(self) -> Path:
-        return Path(self.output_dir) / self.dataset / Path(self.model_type + "-" + self.model_name) / "generated"
+        return (
+            Path(self.output_dir)
+            / self.dataset
+            / Path(self.model_type + "-" + self.model_name_last)
+            / "generated"
+        )
 
     @property
     def eval_output_dir(self) -> Path:
-        return Path(self.output_dir) / self.dataset / Path(self.model_type + "-" + self.model_name) / "eval_details"
+        return (
+            Path(self.output_dir)
+            / self.dataset
+            / Path(self.model_type + "-" + self.model_name_last)
+            / "eval_details"
+        )
 
     @property
     def summary_output_path(self) -> Path:
-        return Path(self.output_dir) / self.dataset / Path(self.model_type + "-" + self.model_name) / "summary.json"
+        return (
+            Path(self.output_dir)
+            / self.dataset
+            / Path(self.model_type + "-" + self.model_name_last)
+            / "summary.json"
+        )
+
+
+def apply_overrides(cfg: EvalPipelineConfig, **overrides) -> EvalPipelineConfig:
+    """
+    Apply overrides onto an existing config.
+
+    Rule: only keys with value is not None will be applied (so CLI can omit args).
+    """
+    for k, v in overrides.items():
+        if v is not None:
+            setattr(cfg, k, v)
+    return cfg
 
