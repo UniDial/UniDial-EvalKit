@@ -5,6 +5,7 @@ import os
 from typing import Any, Dict, List, Optional
 import time
 
+
 from .base import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ class OpenAIModel(BaseModel):
         Returns:
             The generated content string.
         """
-        kwargs.pop("dialog_id", None)
+        # time.sleep(15)
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
@@ -91,20 +92,44 @@ class OpenAIModel(BaseModel):
                 max_tokens=max_tokens,
                 **kwargs
             )
-            
+            # print(response)
+            # exit(0)
             if not response.choices:
                 raise ValueError("OpenAI API returned no choices in response")
             
             content = response.choices[0].message.content
             if not content:
                 try:
-                    reasoning_content = response.choices[0].message.reasoning_content
+                    msg = response.choices[0].message
+                    # Try different possible attribute names for reasoning
+                    reasoning_content = getattr(msg, "reasoning_content", None)
+                    if not reasoning_content:
+                        reasoning_content = getattr(msg, "reasoning", None)
+                    
+                    # Also check for reasoning_details
+                    if not reasoning_content:
+                        reasoning_details = getattr(msg, "reasoning_details", None)
+                        if isinstance(reasoning_details, list) and len(reasoning_details) > 0:
+                            reasoning_content = reasoning_details[0].get("text", "")
+                            
+                    # Pydantic models might require accessing the dict directly 
+                    # if the attribute is not defined in the model schema
+                    if not reasoning_content and hasattr(msg, "model_extra") and msg.model_extra:
+                        print("here:!!! model_extra")
+                        reasoning_content = msg.model_extra.get("reasoning") or msg.model_extra.get("reasoning_content")
+                        if not reasoning_content and "reasoning_details" in msg.model_extra:
+                            rd = msg.model_extra["reasoning_details"]
+                            if isinstance(rd, list) and len(rd) > 0:
+                                reasoning_content = rd[0].get("text", "")
+                                
                     if reasoning_content:
-                        return reasoning_content
+                        # print(reasoning_content)
+                        return reasoning_content, response
                 except Exception as e:
-                    raise ValueError("OpenAI API returned empty content in response")
+                    pass
+                raise ValueError("OpenAI API returned empty content in response")
             
-            return content
+            return content, response
             
         except openai.OpenAIError as e:
             logger.error(f"OpenAI API error: {e}")
