@@ -65,8 +65,6 @@ class OpenAIModel(BaseModel):
     def generate(
         self,
         messages: List[Dict[str, str]],
-        temperature: float = 0.7,
-        max_tokens: int = 1024,
         **kwargs: Any
     ) -> str:
         """
@@ -88,8 +86,6 @@ class OpenAIModel(BaseModel):
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens,
                 **kwargs
             )
             # print(response)
@@ -136,5 +132,4 @@ class OpenAIModel(BaseModel):
             raise e
         except Exception as e:
             logger.error(f"Unexpected error in OpenAIModel.generate: {e}")
-            raise e
-
+            raise e     

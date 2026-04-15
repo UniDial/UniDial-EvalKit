@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from src.dataset import get_dataset_class, BenchmarkDataset
 from src.dataset.schema import Dialog
+from src.dataset.data_utils import to_jsonable
 from src.metric import get_metric_class, METRIC_REGISTRY
 from src.metric.aggregator import aggregate_results
 from src.model import get_model_class, BaseModel
@@ -111,7 +112,11 @@ def process_single_dialog_generation(
                 # Generate response (let exception propagate so no file is written on error)
                 # print("messages", messages)
                 # exit(0)
-                response = model.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
+                gen_res = model.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
+                if isinstance(gen_res, tuple) and len(gen_res) == 2:
+                    response, response_details = gen_res
+                else:
+                    response, response_details = gen_res, None
                 
                 # Update history with generated response
                 if dialog.dialog_eval_config.use_reference_history:                    
@@ -122,6 +127,8 @@ def process_single_dialog_generation(
                 # Create new turn with generated content
                 new_turn = turn.model_copy()
                 new_turn.content = response
+                if response_details is not None:
+                    new_turn.turn_labels["raw_response_details"] = to_jsonable(response_details)
                 processed_turns.append(new_turn)
             else:
                 messages.append({"role": "assistant", "content": turn.content})
@@ -330,8 +337,13 @@ def main():
     args = parse_args()
     
     # Use directories instead of single files
-    gen_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_name}" / "generated"
-    eval_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_name}" / "eval_details"
+    tmp_model_name = args.model_name
+    if "glm-5" in args.model_name:
+        tmp_model_name = "glm-5"
+    if "moonshotai/kimi-k2.5" in args.model_name:
+        tmp_model_name = "kimi-k2.5"
+    gen_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{tmp_model_name}" / "generated"
+    eval_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{tmp_model_name}" / "eval_details"
     
     logger.info(f"Initialize dataset: {args.dataset}")
     DatasetClass = get_dataset_class(args.dataset)
@@ -477,7 +489,7 @@ def main():
             print("="*40 + "\n")
 
             # Save final aggregated summary
-            summary_output_path = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_name}" / "summary.json"
+            summary_output_path = Path(args.output_dir) / f"{args.dataset}" / f"{tmp_model_name}" / "summary.json"
             with open(summary_output_path, "w", encoding="utf-8") as f:
                 json.dump({
                     "summary": aggregated,

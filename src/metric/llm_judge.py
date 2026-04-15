@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Union, Callable
 from .base import BaseMetric
 from src.model.base import BaseModel
 from src.dataset.base import BenchmarkDataset
+from src.dataset.data_utils import to_jsonable
 
 logger = logging.getLogger(__name__)
 
@@ -104,23 +105,28 @@ class LLMJudge(BaseMetric):
                 messages = prompt
             
             # 4. Call LLM
-            llm_output = self.llm_client.generate(messages=messages) # TODO: , **kwargs)
-            
+            gen_out = self.llm_client.generate(messages=messages)  # TODO: , **kwargs)
+            if isinstance(gen_out, tuple) and len(gen_out) == 2:
+                llm_output, llm_output_details = gen_out
+            else:
+                llm_output, llm_output_details = gen_out, None
+
             if not self.post_process_func:
                 parsed_result = self._parse_json_output(llm_output)
-                 # 6. normalize score
-                parsed_result["score"] = (parsed_result["score"] - self.min_score) / (self.max_score - self.min_score)
-                
-                return parsed_result
-
+                # 6. normalize score
+                parsed_result["score"] = (parsed_result["score"] - self.min_score) / (
+                    self.max_score - self.min_score
+                )
             else:
                 parsed_result = self.post_process_func(llm_output)
-                return parsed_result
-                
-            # # 5. Parse Output
-            # parsed_result = self._parse_json_output(llm_output)
-            
-           
+
+            if llm_output_details is not None:
+                parsed_result["raw_judge_response_details"] = to_jsonable(
+                    llm_output_details
+                )
+
+            return parsed_result
+
         except Exception as e:
             logger.error(f"LLMJudge failed: {e}")
             raise ValueError(f"LLMJudge failed: {e}")

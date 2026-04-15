@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from src.dataset import get_dataset_class, BenchmarkDataset
 from src.dataset.schema import Dialog
+from src.dataset.data_utils import to_jsonable
 from src.metric import get_metric_class, METRIC_REGISTRY
 from src.metric.aggregator import aggregate_results
 from src.model import get_model_class, BaseModel
@@ -112,12 +113,16 @@ def process_single_dialog_generation(
                 # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
                 if turn.eval_config.do_eval:
                     # Generate response (let exception propagate so no file is written on error)
-                    response = model.generate(
+                    gen_res = model.generate(
                         messages=messages,
                         temperature=temperature,
                         max_tokens=max_tokens,
                         dialog_id=dialog_id,
                     )
+                    if isinstance(gen_res, tuple) and len(gen_res) == 2:
+                        response, response_details = gen_res
+                    else:
+                        response, response_details = gen_res, None
 
                     # Update history with generated response
                     if dialog.dialog_eval_config.use_reference_history:
@@ -128,6 +133,8 @@ def process_single_dialog_generation(
                     # Create new turn with generated content
                     new_turn = turn.model_copy()
                     new_turn.content = response
+                    if response_details is not None:
+                        new_turn.turn_labels["raw_response_details"] = to_jsonable(response_details)
                     processed_turns.append(new_turn)
                 else:
                     messages.append({"role": "assistant", "content": turn.content})
