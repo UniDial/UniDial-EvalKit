@@ -40,6 +40,8 @@ class AdvancedMemAgent:
         )
         self.retrieve_k = retrieve_k
         self.temperature = temperature
+        # print(backend, model, api_key, api_base)
+        # exit(0)
 
     def add_memory(self, content, time=None):
         self.memory_system.add_note(content, time=time)
@@ -145,7 +147,7 @@ class AMemModel(BaseModel):
         # dialog_id -> {"agent": AdvancedMemAgent, "last_ingested_idx": int}
         self._dialog_states: Dict[int, Dict[str, Any]] = {}
         self._state_lock = threading.Lock()
-
+        
         if self.config["save_agent_logs"]:
             self.logs_output_dir = self.config["agent_logs_output_dir"]
             os.makedirs(self.logs_output_dir, exist_ok=True)
@@ -176,10 +178,11 @@ class AMemModel(BaseModel):
         self,
         messages: List[Dict[str, Any]],
         temperature: float = 0.7,
-        max_tokens: int = 1024,
+        # max_tokens: int = 1024,
         **kwargs: Any
     ) -> str:
         # try:
+            temperature = temperature if temperature is not None else 0.7
             start_time = time.time()
             # Enable log capture for this thread
             # _thread_local.log_capture_list = []
@@ -292,7 +295,7 @@ class AMemModel(BaseModel):
                 
             # --- Diagnostic Logging ---
             if self.config.get('save_agent_logs', False):
-                dataset_name = self.dataset_name
+                # dataset_name = self.dataset_name
                         
                 end_time = time.time()
                 latency = end_time - start_time
@@ -307,9 +310,9 @@ class AMemModel(BaseModel):
 
                 diagnostic_data = {
                     "metadata": {
-                        "dataset": dataset_name,
+                        # "dataset": dataset_name,
                         "dialog_id": dialog_id,
-                        "turn_index": last_user_idx,
+                        "turn_index": last_user_idx + 1, # assistant turn index is the next turn index of the user turn
                         "query": final_query,
                         "timestamp": time.time(),
                         "latency_seconds": round(latency, 3)
@@ -332,7 +335,7 @@ class AMemModel(BaseModel):
             
                 # Save into a per-dialog JSON file
                 dialog_file_name = f"dialog_{dialog_id}.json"
-                dialog_file = os.path.join(self.logs_output_path, dialog_file_name)
+                dialog_file = os.path.join(self.logs_output_dir, dialog_file_name)
             
                 if os.path.exists(dialog_file):
                     try:
@@ -345,7 +348,7 @@ class AMemModel(BaseModel):
                 
                 dialog_data.append(diagnostic_data)
             
-                with open(dialog_file, "a+", encoding="utf-8") as f:
+                with open(dialog_file, "w", encoding="utf-8") as f:
                     json.dump(dialog_data, f, ensure_ascii=False, indent=4)
             
             return str(prediction).strip()

@@ -136,6 +136,7 @@ def process_single_dialog_generation(
                         messages=messages,
                         temperature=temperature,
                         max_tokens=max_tokens,
+                        dialog_id=dialog_id,
                     )
                     if isinstance(gen_res, tuple) and len(gen_res) == 2:
                         response, response_details = gen_res
@@ -399,7 +400,7 @@ def main():
             model_name=args.model_name, 
             api_key=args.api_key, 
             base_url=args.base_url,
-            dataset_name=args.dataset,
+            # dataset_name=args.dataset,
             save_llm_logs=effective_save_llm_logs,
             # agents
             save_agent_logs=args.save_agent_logs,

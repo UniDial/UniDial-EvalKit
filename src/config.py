@@ -27,7 +27,7 @@ class EvalPipelineConfig:
     model_name: str = "deepseek-v3.2"
     # If None, do NOT pass temperature to the LLM backend (use backend default).
     temperature: Optional[float] = None
-    max_tokens: int = 1024
+    max_tokens: Optional[int] = 1024
 
     # Judge model
     judge_model_type: str = "openai"

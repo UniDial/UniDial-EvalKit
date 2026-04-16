@@ -56,12 +56,13 @@ class OpenAIModel(BaseModel):
         self.timeout = timeout
         self.save_llm_logs = save_llm_logs
         
+        
         self.client = OpenAI(
             api_key=self.api_key,
             base_url=self.base_url,
             timeout=self.timeout,
             max_retries=self.max_retries,
-            **kwargs
+            # **kwargs
         )
 
     def generate(
@@ -87,7 +88,8 @@ class OpenAIModel(BaseModel):
         # Do not forward unset optional params (e.g., temperature=None) to the backend.
         # This lets the backend use its own defaults when the user didn't specify.
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        print(kwargs)
+        kwargs.pop("dialog_id", None)
+        # print(kwargs)
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
