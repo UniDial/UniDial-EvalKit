@@ -63,9 +63,10 @@ def create_generation_model(cfg: EvalPipelineConfig) -> BaseModel:
         api_key=cfg.api_key,
         base_url=cfg.base_url,
         dataset_name=cfg.dataset,
-        save_agent_logs=cfg.save_agent_logs,
         embedding_model_name=cfg.embedding_model_name,
         save_llm_logs=cfg.save_llm_logs,
+        save_agent_logs=cfg.save_agent_logs,
+        agent_logs_output_dir=cfg.agent_logs_output_dir
     )
 
 

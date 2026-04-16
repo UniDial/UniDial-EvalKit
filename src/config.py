@@ -24,7 +24,7 @@ class EvalPipelineConfig:
 
     # Generation model
     model_type: str = "openai"
-    model_name: str = "deepseek-ai/DeepSeek-V3.2"
+    model_name: str = "deepseek-v3.2"
     # If None, do NOT pass temperature to the LLM backend (use backend default).
     temperature: Optional[float] = None
     max_tokens: int = 1024
@@ -34,7 +34,7 @@ class EvalPipelineConfig:
     judge_model_name: str = "gpt-4.1-2025-04-14"
 
     # Embedding model for Agents
-    embedding_model_name: str = "text-embedding-ada-002"
+    embedding_model_name: str = "text-embedding-ada-002" # a-mem: sentence-transformers/all-MiniLM-L6-v2
     
     # Common
     api_key: Optional[str] = None
@@ -88,6 +88,16 @@ class EvalPipelineConfig:
             / "summary.json"
         )
 
+    @property
+    def agent_logs_output_dir(self) -> Path:
+        return (
+            Path(self.output_dir)
+            / self.dataset
+            / Path(self.model_type + "-" + self.model_name_last)
+            / "agent_logs"
+        )
+    
+    
 
 def apply_overrides(cfg: EvalPipelineConfig, **overrides) -> EvalPipelineConfig:
     """

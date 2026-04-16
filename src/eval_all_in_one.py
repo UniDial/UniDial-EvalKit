@@ -361,7 +361,7 @@ def main():
     gen_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_type}-{model_name_last}" / "generated"
     eval_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_type}-{model_name_last}" / "eval_details"
     summary_output_path = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_type}-{model_name_last}" / "summary.json"
-
+    agent_logs_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_type}-{model_name_last}" / "agent_logs"
     
     logger.info(f"Initialize dataset: {args.dataset}")
     DatasetClass = get_dataset_class(args.dataset)
@@ -399,8 +399,15 @@ def main():
             model_name=args.model_name, 
             api_key=args.api_key, 
             base_url=args.base_url,
+            dataset_name=args.dataset,
             save_llm_logs=effective_save_llm_logs,
-        )# TODO: agents may also need to load other embedding models
+            # agents
+            save_agent_logs=args.save_agent_logs,
+            embedding_model_name=args.embedding_model_name,
+            agent_logs_output_dir=agent_logs_output_dir,
+        )
+    
+        
         
         # Run Generation
         generated_dialogs = run_generation_phase(

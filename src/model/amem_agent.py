@@ -8,46 +8,13 @@ from typing import Any, Dict, List, Optional
 
 from .base import BaseModel
 
-# Create thread-local storage for log capturing
-_thread_local = threading.local()
-
-class ThreadLocalLogHandler(logging.Handler):
-    def emit(self, record):
-        try:
-            # Check if we are currently capturing for a dialog
-            if hasattr(_thread_local, 'log_capture_list') and _thread_local.log_capture_list is not None:
-                # To prevent infinite recursion if format/emit causes logging
-                if not getattr(_thread_local, 'is_emitting', False):
-                    _thread_local.is_emitting = True
-                    try:
-                        msg = self.format(record)
-                        _thread_local.log_capture_list.append({
-                            "time": time.time(),
-                            "level": record.levelname,
-                            "logger": record.name,
-                            "message": msg
-                        })
-                    finally:
-                        _thread_local.is_emitting = False
-        except Exception:
-            self.handleError(record)
-
-# Initialize the handler once
-_capture_handler = ThreadLocalLogHandler()
-_capture_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logging.getLogger().addHandler(_capture_handler)
-
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # Try importing the components
 try:
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    if project_root not in sys.path:
-        sys.path.insert(0, project_root)
-        
-    from AgenticMemory.memory_layer import AgenticMemorySystem, LLMController
+    from .A_Mem.memory_layer import AgenticMemorySystem, LLMController
 except ImportError as e:
     logger.error(f"Failed to import AgenticMemory components: {e}")
     import traceback
@@ -57,9 +24,9 @@ except ImportError as e:
 
 class AdvancedMemAgent:
     """Advanced memory agent that follows test_advanced.py approach"""
-    def __init__(self, model, backend, api_key, api_base, retrieve_k=10, temperature=0.7):
+    def __init__(self, embedding_model_name, model, backend, api_key, api_base, retrieve_k=10, temperature= 0.7):
         self.memory_system = AgenticMemorySystem(
-            model_name='all-MiniLM-L6-v2',
+            model_name=embedding_model_name,
             llm_backend=backend,
             llm_model=model,
             api_key=api_key,
@@ -89,19 +56,36 @@ class AdvancedMemAgent:
                 keyword1, keyword2, keyword3"""
             
         try:
-            response = self.retriever_llm.llm.get_completion(prompt, temperature=0.1)
-            return response.strip()
+            response = self.retriever_llm.llm.get_completion(prompt, response_format={"type": "json_schema", "json_schema": {
+                            "name": "response",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "keywords": {
+                                        "type": "string",
+                                    }
+                                },
+                                "required": ["keywords"],
+                                "additionalProperties": False
+                            },
+                            "strict": True
+                        }}, temperature=self.temperature)
+            try:
+                response = json.loads(response)["keywords"]
+            except:
+                response = response.strip()
+            return response
         except Exception as e:
             logger.error(f"Error in generate_query_llm: {e}")
-            return question.strip()
+            raise e
 
     def answer_question(self, question: str) -> tuple[str, str, Any]:
         try:
             keywords = self.generate_query_llm(question)
-            logger.info(f"Generated keywords for retrieval: {keywords}")
+            # logger.info(f"Generated keywords for retrieval: {keywords}")
             
             raw_context = self.retrieve_memory(keywords, k=self.retrieve_k)
-            logger.info(f"Retrieved memories:\n{raw_context}")
+            # logger.info(f"Retrieved memories:\n{raw_context}")
             memories_str = raw_context
             
             user_prompt = f""" 
@@ -114,13 +98,27 @@ class AdvancedMemAgent:
             
             response = self.memory_system.llm_controller.llm.get_completion(
                 user_prompt,
+                response_format={"type": "json_schema", "json_schema": {
+                        "name": "response",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "answer": {
+                                    "type": "string",
+                                }
+                            },
+                            "required": ["answer"],
+                            "additionalProperties": False
+                        },
+                        "strict": True
+                    }},
                 temperature=self.temperature
             )
-            logger.info(f"Final Generated Response: {response}")
+            # logger.info(f"Final Generated Response: {response}")
             return response, keywords, raw_context
         except Exception as e:
             logger.error(f"Error in answer_question: {e}")
-            return "", "", ""
+            raise e
 
 class AMemModel(BaseModel):
     def __init__(
@@ -128,14 +126,15 @@ class AMemModel(BaseModel):
         model_name: str,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        retrieve_k: int = 3,
+        retrieve_k: int = 10,
         **kwargs: Any
     ) -> None:
         super().__init__(model_name, **kwargs)
         
-        self.raw_model_name = model_name
         self.llm_backend = "openai"
         self.llm_model = model_name
+        self.embedding_model_name = self.config["embedding_model_name"]
+
         
         if AgenticMemorySystem is None:
             raise ImportError("AgenticMemory modules not found. ")
@@ -147,6 +146,10 @@ class AMemModel(BaseModel):
         self._dialog_states: Dict[int, Dict[str, Any]] = {}
         self._state_lock = threading.Lock()
 
+        if self.config["save_agent_logs"]:
+            self.logs_output_dir = self.config["agent_logs_output_dir"]
+            os.makedirs(self.logs_output_dir, exist_ok=True)
+
     def _create_agent(self, temperature: float) -> AdvancedMemAgent:
         return AdvancedMemAgent(
             model=self.llm_model,
@@ -155,20 +158,15 @@ class AMemModel(BaseModel):
             api_base=self.base_url,
             retrieve_k=self.retrieve_k,
             temperature=temperature,
+            embedding_model_name=self.embedding_model_name,
         )
 
-    def begin_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
+    def begin_dialog(self, dialog_id: Optional[int] = None) -> None:
         if dialog_id is None:
             return
-        temperature = float(kwargs.get("temperature", 0.7))
-        with self._state_lock:
-            if dialog_id not in self._dialog_states:
-                self._dialog_states[dialog_id] = {
-                    "agent": self._create_agent(temperature=temperature),
-                    "last_ingested_idx": 0,
-                }
+        # Per-dialog state is created lazily in generate() when dialog_id is set.
 
-    def end_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
+    def end_dialog(self, dialog_id: Optional[int] = None) -> None:
         if dialog_id is None:
             return
         with self._state_lock:
@@ -181,22 +179,24 @@ class AMemModel(BaseModel):
         max_tokens: int = 1024,
         **kwargs: Any
     ) -> str:
-        try:
+        # try:
             start_time = time.time()
             # Enable log capture for this thread
-            _thread_local.log_capture_list = []
+            # _thread_local.log_capture_list = []
             
             if not messages:
                 return ""
                 
-            final_query = ""
-            for msg in reversed(messages):
-                if msg.get("role", "").lower() == "user":
-                    final_query = str(msg.get("content", ""))
-                    break
-                    
+            # extract the final user query
+            final_query = "" 
+            last_msg = messages[-1]
+            if last_msg.get("role", "").lower() == "user":
+                final_query = str(last_msg.get("content", ""))
+     
+            # if no final query, return empty string
             if not final_query:
                 return ""
+            
             dialog_id = kwargs.get("dialog_id")
             if dialog_id is not None:
                 with self._state_lock:
@@ -216,7 +216,6 @@ class AMemModel(BaseModel):
                 }
 
             agent = state["agent"]
-            agent.temperature = temperature
 
             # By dataset/pipeline contract, the last input message is always the current user query.
             last_user_idx = len(messages) - 1
@@ -260,7 +259,7 @@ class AMemModel(BaseModel):
 
             # Capture extracted knowledge from newly added memories
             if new_texts:
-                logger.info(f"New memories to index:\n" + "\n".join(new_texts))
+                # logger.info(f"New memories to index:\n" + "\n".join(new_texts))
                 try:
                     for note in agent.memory_system.memories.values():
                         if note.content in new_texts:
@@ -275,20 +274,9 @@ class AMemModel(BaseModel):
 
             state["last_ingested_idx"] = last_user_idx
 
-            logger.info(f"Final Query sent to AMem: {final_query}")
+            # logger.info(f"Final Query sent to AMem: {final_query}")
 
-            keywords = ""
-            raw_context = ""
-            # 如果没有任何历史记忆被保存（比如第一轮），直接回答
-            if not state["agent"].memory_system.memories:
-                logger.info("No memories available. Direct LLM generation.")
-                prediction = agent.memory_system.llm_controller.llm.get_completion(
-                    final_query,
-                    temperature=temperature
-                )
-                logger.info(f"Final Generated Response: {prediction}")
-            else:
-                prediction, keywords, raw_context = agent.answer_question(final_query)
+            prediction, keywords, raw_context = agent.answer_question(final_query)
             
             try:
                 if "{" in prediction and "}" in prediction:
@@ -304,82 +292,61 @@ class AMemModel(BaseModel):
                 
             # --- Diagnostic Logging ---
             if self.config.get('save_agent_logs', False):
-                try:
-                    dataset_name = self.dataset_name
-                    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-                    log_dir = os.path.join(project_root, "output", "amem_logs", dataset_name)
-                    os.makedirs(log_dir, exist_ok=True)
-                
-                    captured_logs = getattr(_thread_local, 'log_capture_list', [])
-                
-                    end_time = time.time()
-                    latency = end_time - start_time
-                
-                    retrieved_contexts = []
-                    if raw_context:
-                        retrieved_contexts.append({
-                            "source": "amem_vector_db",
-                            "content": str(raw_context),
-                            "score": None
-                        })
+                dataset_name = self.dataset_name
+                        
+                end_time = time.time()
+                latency = end_time - start_time
+            
+                retrieved_contexts = []
+                if raw_context:
+                    retrieved_contexts.append({
+                        "source": "amem_vector_db",
+                        "content": str(raw_context),
+                        "score": None
+                    })
 
-                    diagnostic_data = {
-                        "metadata": {
-                            "dataset": dataset_name,
-                            "dialog_id": dialog_id,
-                            "turn_index": last_user_idx,
-                            "query": final_query,
-                            "timestamp": time.time(),
-                            "latency_seconds": round(latency, 3)
-                        },
-                        "memory_update": {
-                            "new_raw_inputs": new_texts,
-                            "chunked_documents": [{"content": text, "meta_info": {}} for text in new_texts],
-                            "extracted_knowledge": {
-                                "amem_notes": extracted_notes
-                            } if extracted_notes else {}
-                        },
-                        "retrieval": {
-                            "search_queries": [keywords] if keywords else [],
-                            "retrieved_contexts": retrieved_contexts
-                        },
-                        "generation": {
-                            "generated_response": str(prediction).strip()
-                        },
-                        "system_logs": captured_logs
-                    }
-                
-                    # Save into a per-dialog JSON file
-                    dialog_file_name = f"dialog_{dialog_id}.json" if dialog_id is not None else "dialog_stateless.json"
-                    dialog_file = os.path.join(log_dir, dialog_file_name)
-                
-                    if os.path.exists(dialog_file):
-                        try:
-                            with open(dialog_file, "r", encoding="utf-8") as f:
-                                dialog_data = json.load(f)
-                        except json.JSONDecodeError:
-                            dialog_data = []
-                    else:
+                diagnostic_data = {
+                    "metadata": {
+                        "dataset": dataset_name,
+                        "dialog_id": dialog_id,
+                        "turn_index": last_user_idx,
+                        "query": final_query,
+                        "timestamp": time.time(),
+                        "latency_seconds": round(latency, 3)
+                    },
+                    "memory_update": {
+                        "chunked_documents": new_texts,
+                        "extracted_knowledge": {
+                            "amem_notes": extracted_notes
+                        } if extracted_notes else {}
+                    },
+                    "retrieval": {
+                        "search_queries": [keywords] if keywords else [],
+                        "retrieved_contexts": retrieved_contexts
+                    },
+                    "generation": {
+                        "generated_response": str(prediction).strip()
+                    },
+                    # "system_logs": captured_logs
+                }
+            
+                # Save into a per-dialog JSON file
+                dialog_file_name = f"dialog_{dialog_id}.json"
+                dialog_file = os.path.join(self.logs_output_path, dialog_file_name)
+            
+                if os.path.exists(dialog_file):
+                    try:
+                        with open(dialog_file, "r", encoding="utf-8") as f:
+                            dialog_data = json.load(f)
+                    except json.JSONDecodeError:
                         dialog_data = []
-                    
-                    dialog_data.append(diagnostic_data)
+                else:
+                    dialog_data = []
                 
-                    with open(dialog_file, "w", encoding="utf-8") as f:
-                        json.dump(dialog_data, f, ensure_ascii=False, indent=4)
-                    
-                except Exception as e:
-                    logger.warning(f"AMem diagnostic logging failed: {e}")
-                finally:
-                    # Cleanup thread-local log capture
-                    _thread_local.log_capture_list = None
-            # ---------------------------------------------
+                dialog_data.append(diagnostic_data)
+            
+                with open(dialog_file, "a+", encoding="utf-8") as f:
+                    json.dump(dialog_data, f, ensure_ascii=False, indent=4)
             
             return str(prediction).strip()
-            
-        except Exception as e:
-            # Ensure cleanup on error
-            if hasattr(_thread_local, 'log_capture_list'):
-                _thread_local.log_capture_list = None
-            logger.error(f"AMem generation error: {e}")
-            raise e
 
