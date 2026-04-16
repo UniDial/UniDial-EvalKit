@@ -2,6 +2,8 @@ import os
 import sys
 import logging
 import json
+import ast
+import re
 import time
 import threading
 from typing import Any, Dict, List, Optional
@@ -174,6 +176,50 @@ class AMemModel(BaseModel):
         with self._state_lock:
             self._dialog_states.pop(dialog_id, None)
 
+    @staticmethod
+    def _parse_list_field(raw_value: str) -> List[Any]:
+        text = (raw_value or "").strip()
+        if not text:
+            return []
+        try:
+            value = ast.literal_eval(text)
+            if isinstance(value, list):
+                return value
+            return [value]
+        except Exception:
+            return [text]
+
+    @classmethod
+    def _parse_retrieved_contexts(cls, raw_context: Any) -> List[Dict[str, Any]]:
+        if not raw_context:
+            return []
+        if isinstance(raw_context, list):
+            return raw_context
+        if not isinstance(raw_context, str):
+            return [{"source": "amem_vector_db", "content": str(raw_context), "score": None}]
+
+        pattern = (
+            r"talk start time:(?P<talk_start_time>.*?)"
+            r"memory content:\s*(?P<memory_content>.*?)"
+            r"memory context:\s*(?P<memory_context>.*?)"
+            r"memory keywords:\s*(?P<memory_keywords>.*?)"
+            r"memory tags:\s*(?P<memory_tags>.*?)(?=talk start time:|$)"
+        )
+        parsed_items: List[Dict[str, Any]] = []
+        for match in re.finditer(pattern, raw_context, re.DOTALL):
+            parsed_items.append({
+                "talk_start_time": match.group("talk_start_time").strip(),
+                "memory_content": match.group("memory_content").strip(),
+                "memory_context": match.group("memory_context").strip(),
+                "memory_keywords": cls._parse_list_field(match.group("memory_keywords")),
+                "memory_tags": cls._parse_list_field(match.group("memory_tags")),
+                "score": None,
+            })
+
+        if parsed_items:
+            return parsed_items
+        return [{"source": "amem_vector_db", "content": raw_context, "score": None}]
+
     def generate(
         self,
         messages: List[Dict[str, Any]],
@@ -300,13 +346,7 @@ class AMemModel(BaseModel):
                 end_time = time.time()
                 latency = end_time - start_time
             
-                retrieved_contexts = []
-                if raw_context:
-                    retrieved_contexts.append({
-                        "source": "amem_vector_db",
-                        "content": str(raw_context),
-                        "score": None
-                    })
+                retrieved_contexts = self._parse_retrieved_contexts(raw_context)
 
                 diagnostic_data = {
                     "metadata": {

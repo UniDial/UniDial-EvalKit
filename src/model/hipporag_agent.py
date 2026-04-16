@@ -12,44 +12,59 @@ from typing import Any, Dict, List, Optional
 from .base import BaseModel
 
 # Create thread-local storage for log capturing
-_thread_local = threading.local()
+# _thread_local = threading.local()
 
-class ThreadLocalLogHandler(logging.Handler):
-    def emit(self, record):
-        try:
-            # Check if we are currently capturing for a dialog
-            if hasattr(_thread_local, 'log_capture_list') and _thread_local.log_capture_list is not None:
-                # To prevent infinite recursion if format/emit causes logging
-                if not getattr(_thread_local, 'is_emitting', False):
-                    _thread_local.is_emitting = True
-                    try:
-                        msg = self.format(record)
-                        _thread_local.log_capture_list.append({
-                            "time": time.time(),
-                            "level": record.levelname,
-                            "logger": record.name,
-                            "message": msg
-                        })
-                    finally:
-                        _thread_local.is_emitting = False
-        except Exception:
-            self.handleError(record)
+# class ThreadLocalLogHandler(logging.Handler):
+#     def emit(self, record):
+#         try:
+#             # Check if we are currently capturing for a dialog
+#             if hasattr(_thread_local, 'log_capture_list') and _thread_local.log_capture_list is not None:
+#                 # To prevent infinite recursion if format/emit causes logging
+#                 if not getattr(_thread_local, 'is_emitting', False):
+#                     _thread_local.is_emitting = True
+#                     try:
+#                         msg = self.format(record)
+#                         _thread_local.log_capture_list.append({
+#                             "time": time.time(),
+#                             "level": record.levelname,
+#                             "logger": record.name,
+#                             "message": msg
+#                         })
+#                     finally:
+#                         _thread_local.is_emitting = False
+#         except Exception:
+#             self.handleError(record)
 
-# Initialize the handler once
-_capture_handler = ThreadLocalLogHandler()
-_capture_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+# # Initialize the handler once
+# _capture_handler = ThreadLocalLogHandler()
+# _capture_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
-# Set up basic config first (with force=True to ensure console output is enabled)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', force=True)
-# Then add our capture handler
-logging.getLogger().addHandler(_capture_handler)
+# # Set up basic config first (with force=True to ensure console output is enabled)
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', force=True)
+# # Then add our capture handler
+# logging.getLogger().addHandler(_capture_handler)
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
+def _ensure_hipporag_import_paths() -> None:
+    """Make bundled HippoRAG importable for its internal absolute imports."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    hipporag_root = os.path.join(current_dir, "HippoRAG")
+    hipporag_src = os.path.join(hipporag_root, "src")
+
+    for path in (hipporag_root, hipporag_src):
+        if os.path.isdir(path) and path not in sys.path:
+            sys.path.insert(0, path)
+
+
+_ensure_hipporag_import_paths()
+
 try:
-    from hipporag import HippoRAG
-    from hipporag.utils.config_utils import BaseConfig
+    from .HippoRAG.src.hipporag import HippoRAG
+    from .HippoRAG.src.hipporag.utils.config_utils import BaseConfig
     logger.info("Successfully imported HippoRAG")
 except ImportError as e:
     import logging
@@ -82,11 +97,11 @@ class HippoRAGModel(BaseModel):
             **kwargs: Additional configuration parameters.
         """
         super().__init__(model_name, **kwargs)
-        self.raw_model_name = model_name
-        if "_" in model_name:
-            self.llm_model_name = model_name.split("_", 1)[1]
-        else:
-            self.llm_model_name = model_name
+        # self.raw_model_name = model_name
+        # if "_" in model_name:
+        #     self.llm_model_name = model_name.split("_", 1)[1]
+        # else:
+        self.llm_model_name = model_name
 
         if HippoRAG is None or BaseConfig is None:
             raise ImportError("HippoRAG package is missing. Install it or ensure it's in your Python path.")
@@ -110,6 +125,10 @@ class HippoRAGModel(BaseModel):
         # Maintain dialog_id to HippoRAG instance mapping
         self._dialog_states: Dict[int, Dict[str, Any]] = {}
         self._state_lock = threading.Lock()
+        
+        if self.config["save_agent_logs"]:
+            self.logs_output_dir = self.config["agent_logs_output_dir"]
+            os.makedirs(self.logs_output_dir, exist_ok=True)
 
     def begin_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
         """
@@ -181,24 +200,22 @@ class HippoRAGModel(BaseModel):
         try:
             start_time = time.time()
             # Enable log capture for this thread
-            _thread_local.log_capture_list = []
+            # _thread_local.log_capture_list = []
             
             if not messages:
                 return ""
             
-            # Find the last user message (the query)
-            last_user_idx = -1
-            for i in range(len(messages) - 1, -1, -1):
-                if messages[i].get("role", "").lower() == "user":
-                    last_user_idx = i
-                    break
-            
-            if last_user_idx == -1:
-                logger.warning("No user message found in messages")
+            # extract the final user query
+            final_query = "" 
+            last_msg = messages[-1]
+            if last_msg.get("role", "").lower() == "user":
+                final_query = str(last_msg.get("content", ""))
+     
+            # if no final query, return empty string
+            if not final_query:
                 return ""
             
-            final_query = str(messages[last_user_idx].get("content", ""))
-            logger.info(f"Final Query sent to HippoRAG: {final_query}")
+            # logger.info(f"Final Query sent to HippoRAG: {final_query}")
             
             # Identify dialog state
             dialog_id = kwargs.get("dialog_id")
@@ -223,6 +240,7 @@ class HippoRAGModel(BaseModel):
             
             
             start_idx = state["last_ingested_idx"]
+            last_user_idx = len(messages) - 1
             
             # Identify new history to ingest
             new_texts = []
@@ -231,12 +249,9 @@ class HippoRAGModel(BaseModel):
             if start_idx < 0 or start_idx > last_user_idx:
                 start_idx = 0
 
-            # Determine ingestion range
-            ingest_end_idx = last_user_idx
-            
             # Ingest new history
             current_user_msg = None
-            for i in range(start_idx, ingest_end_idx):
+            for i in range(start_idx, last_user_idx):
                 if i >= len(messages): break # Safety check
                 msg = messages[i]
                 role = str(msg.get("role", "")).lower()
@@ -262,13 +277,13 @@ class HippoRAGModel(BaseModel):
                 new_texts.append(f"User: {current_user_msg}")
             
             # Update state index
-            state["last_ingested_idx"] = ingest_end_idx
+            state["last_ingested_idx"] = last_user_idx
             
             # Initialize or update HippoRAG
             if state["hipporag"] is None:
                 # First time initialization
                 logger.info(f"Initializing HippoRAG for dialog {dialog_id} with {len(new_texts)} documents")
-                logger.info(f"New documents to index: {new_texts}")
+                # logger.info(f"New documents to index: {new_texts}")
                 
                 # Aggregate any accumulated texts
                 state["dialogue_texts"].extend(new_texts)
@@ -279,10 +294,11 @@ class HippoRAGModel(BaseModel):
                 # Update existing index with new texts
                 if new_texts:
                     logger.info(f"Incrementally indexing {len(new_texts)} new documents for dialog {dialog_id}")
-                    logger.info(f"New documents to index: {new_texts}")
+                    # logger.info(f"New documents to index: {new_texts}")
                     state["dialogue_texts"].extend(new_texts)
                     try:
-                        state["hipporag"].index(docs=new_texts) 
+                        state["hipporag"].index(docs=new_texts)
+                        state["hipporag"].ready_to_retrieve = False
                     except Exception as e:
                         logger.error(f"Error during incremental indexing: {e}. Falling back to full re-index.")
                         # Fallback: Re-create client with full history if incremental fails
@@ -302,8 +318,8 @@ class HippoRAGModel(BaseModel):
                                 "entities": info.get('extracted_entities', []),
                                 "triples": info.get('extracted_triples', [])
                             })
-                    if new_extracted_triples:
-                        logger.info(f"Extracted triples for new documents: {json.dumps(new_extracted_triples, ensure_ascii=False)}")
+                    # if new_extracted_triples:
+                    #     logger.info(f"Extracted triples for new documents: {json.dumps(new_extracted_triples, ensure_ascii=False)}")
                 except Exception as e:
                     logger.warning(f"Failed to fetch extracted triples from HippoRAG: {e}")
             
@@ -315,83 +331,81 @@ class HippoRAGModel(BaseModel):
                 if not state["dialogue_texts"]:
                     # Direct generation bypassing HippoRAG's retrieve/index steps
                     logger.info("No documents indexed. Falling back to direct LLM generation.")
-                    try:
-                        result = hipporag.llm_model.infer([{"role": "user", "content": final_query}])
-                        if isinstance(result, tuple):
-                            response = result[0]
-                        else:
-                            response = str(result)
-                    except AttributeError:
-                        logger.warning("hipporag.llm_model.infer failed, falling back to openai_client direct call.")
-                        raw_resp = hipporag.llm_model.openai_client.chat.completions.create(
-                            model=hipporag.llm_model.global_config.llm_name,
-                            messages=[{"role": "user", "content": final_query}],
-                            max_tokens=1024,
-                            temperature=0.7,
-                        )
-                        response = raw_resp.choices[0].message.content
+                    # try:
+                    result = hipporag.llm_model.infer([{"role": "user", "content": final_query}])
+                    if isinstance(result, tuple):
+                        response = result[0]
+                    else:
+                        response = str(result)
+                    # except AttributeError:
+                    #     logger.warning("hipporag.llm_model.infer failed, falling back to openai_client direct call.")
+                    #     raw_resp = hipporag.llm_model.openai_client.chat.completions.create(
+                    #         model=hipporag.llm_model.global_config.llm_name,
+                    #         messages=[{"role": "user", "content": final_query}],
+                    #         max_tokens=1024,
+                    #         temperature=0.7,
+                    #     )
+                    #     response = raw_resp.choices[0].message.content
                 else:
-                    queries_solutions, all_response_messages, _ = hipporag.rag_qa(queries=[final_query])
-                    
+                    queries_solutions, all_response_messages, all_metadata = hipporag.rag_qa(queries=[final_query])
+                    # print("queries_solutions: ", queries_solutions)
+                    # print("all_response_messages: ", all_response_messages)
+                    # print("all_metadata: ", all_metadata)
+                    # exit(0)
                     if queries_solutions and len(queries_solutions) > 0:
                         retrieved_docs = queries_solutions[0].docs
-                        logger.info(f"Retrieved top-K documents/contexts:\n{retrieved_docs}")
+                        # logger.info(f"Retrieved top-K documents/contexts:\n{retrieved_docs}")
 
                     if all_response_messages and len(all_response_messages) > 0:
-                        logger.info(f"Final Generated Response: {all_response_messages[0]}")
+                        # logger.info(f"Final Generated Response: {all_response_messages[0]}")
                         response = all_response_messages[0]
 
             # --- Diagnostic Logging ---
             if self.config.get('save_agent_logs', False):
-                try:
-                    dataset_name = self.dataset_name
-                    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-                    log_dir = os.path.join(project_root, "output", "hipporag_logs", dataset_name)
-                    os.makedirs(log_dir, exist_ok=True)
-                
-                    captured_logs = getattr(_thread_local, 'log_capture_list', [])
+                # try:
+                    
+                    # captured_logs = getattr(_thread_local, 'log_capture_list', [])
                 
                     end_time = time.time()
                     latency = end_time - start_time
                 
                     # Format retrieved contexts for HippoRAG
-                    formatted_contexts = []
-                    for doc in retrieved_docs:
-                        formatted_contexts.append({
-                            "source": "hipporag_graph",
-                            "content": str(doc),
-                            "score": None # If PPR score is available we could put it here, otherwise None
-                        })
+                    # formatted_contexts = []
+                    # for doc in retrieved_docs:
+                    #     formatted_contexts.append({
+                    #         "source": "hipporag_graph",
+                    #         "content": str(doc),
+                    #         "score": None # If PPR score is available we could put it here, otherwise None
+                    #     })
 
                     diagnostic_data = {
                         "metadata": {
-                            "dataset": dataset_name,
                             "dialog_id": dialog_id,
-                            "turn_index": last_user_idx,
+                            "turn_index": last_user_idx + 1, # assistant turn index is the next turn index of the user turn
                             "query": final_query,
                             "timestamp": time.time(),
-                            "latency_seconds": round(latency, 3)
+                            "latency_seconds": round(latency, 3),
+                            "all_metadata": all_metadata[0]
                         },
                         "memory_update": {
-                            "new_raw_inputs": new_texts,
-                            "chunked_documents": [{"content": text, "meta_info": {}} for text in new_texts],
+                            "chunked_documents": new_texts,
                             "extracted_knowledge": {
                                 "hipporag_triples": new_extracted_triples
                             } if new_extracted_triples else {}
                         },
                         "retrieval": {
                             "search_queries": [final_query],
-                            "retrieved_contexts": formatted_contexts
+                            "retrieved_contexts": retrieved_docs
                         },
                         "generation": {
                             "generated_response": response
                         },
-                        "system_logs": captured_logs
+                        # "system_logs": captured_logs
                     }
                 
                     # Save into a per-dialog JSON file
                     dialog_file_name = f"dialog_{dialog_id}.json" if dialog_id is not None else "dialog_stateless.json"
-                    dialog_file = os.path.join(log_dir, dialog_file_name)
+                    dialog_file = os.path.join(self.logs_output_dir, dialog_file_name)
                 
                     if os.path.exists(dialog_file):
                         try:
@@ -407,18 +421,18 @@ class HippoRAGModel(BaseModel):
                     with open(dialog_file, "w", encoding="utf-8") as f:
                         json.dump(dialog_data, f, ensure_ascii=False, indent=4)
                     
-                except Exception as e:
-                    logger.warning(f"HippoRAG diagnostic logging failed: {e}")
-                finally:
-                    # Cleanup thread-local log capture
-                    _thread_local.log_capture_list = None
+                # except Exception as e:
+                #     logger.warning(f"HippoRAG diagnostic logging failed: {e}")
+                # finally:
+                #     # Cleanup thread-local log capture
+                #     _thread_local.log_capture_list = None
             # ---------------------------------------------
             
             return response
             
         except Exception as e:
             # Ensure cleanup on error
-            if hasattr(_thread_local, 'log_capture_list'):
-                _thread_local.log_capture_list = None
-            logger.error(f"HippoRAG generation error: {repr(e)}", exc_info=True)
+            # if hasattr(_thread_local, 'log_capture_list'):
+            #     _thread_local.log_capture_list = None
+            # logger.error(f"HippoRAG generation error: {repr(e)}", exc_info=True)
             raise e
