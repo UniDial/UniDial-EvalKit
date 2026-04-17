@@ -34,7 +34,7 @@ class EvalPipelineConfig:
     judge_model_name: str = "gpt-4.1-2025-04-14"
 
     # Embedding model for Agents
-    embedding_model_name: str = "text-embedding-ada-002" # a-mem: sentence-transformers/all-MiniLM-L6-v2
+    embedding_model_name: str = "all-MiniLM-L6-v2" # "text-embedding-ada-002" # a-mem: sentence-transformers/all-MiniLM-L6-v2
     
     # Common
     api_key: Optional[str] = None

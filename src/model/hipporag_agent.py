@@ -153,8 +153,6 @@ class HippoRAGModel(BaseModel):
     def generate(
         self,
         messages: List[Dict[str, Any]],
-        temperature: float = 0.7,
-        max_tokens: int = 1024,
         **kwargs: Any
     ) -> str:
         """
