@@ -13,48 +13,23 @@ from typing import Any, Dict, List, Optional
 
 from .base import BaseModel
 
-# Create thread-local storage for log capturing
-_thread_local = threading.local()
-
-class ThreadLocalLogHandler(logging.Handler):
-    def emit(self, record):
-        try:
-            # Check if we are currently capturing for a dialog
-            if hasattr(_thread_local, 'log_capture_list') and _thread_local.log_capture_list is not None:
-                # To prevent infinite recursion if format/emit causes logging
-                if not getattr(_thread_local, 'is_emitting', False):
-                    _thread_local.is_emitting = True
-                    try:
-                        msg = self.format(record)
-                        _thread_local.log_capture_list.append({
-                            "time": time.time(),
-                            "level": record.levelname,
-                            "logger": record.name,
-                            "message": msg
-                        })
-                    finally:
-                        _thread_local.is_emitting = False
-        except Exception:
-            self.handleError(record)
-
-# Initialize the handler once
-_capture_handler = ThreadLocalLogHandler()
-_capture_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-
-# Set up basic config first (with force=True to ensure console output is enabled)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', force=True)
-# Then add our capture handler
-logging.getLogger().addHandler(_capture_handler)
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+# logger.setLevel(logging.INFO)
+
+def _ensure_memoryos_import_paths() -> None:
+    """Make bundled MemoryOS importable for its internal fallback imports."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    memoryos_root = os.path.join(current_dir, "MemoryOS")
+
+    if os.path.isdir(memoryos_root) and memoryos_root not in sys.path:
+        sys.path.insert(0, memoryos_root)
+
+
+_ensure_memoryos_import_paths()
 
 try:
-    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    if project_root not in sys.path:
-        sys.path.insert(0, project_root)
-        
-    from memoryos.memoryos import Memoryos
+    from .MemoryOS.memoryos import Memoryos
 except ImportError as e:
     logger.error(f"ImportError for memoryos: {e}. ")
     Memoryos = None
@@ -104,6 +79,12 @@ class MemoryOSModel(BaseModel):
         # Dialog-scoped state
         self._dialog_states: Dict[int, Dict[str, Any]] = {}
         self._state_lock = threading.Lock()
+        
+                
+        if self.config["save_agent_logs"]:
+            self.logs_output_dir = self.config["agent_logs_output_dir"]
+            os.makedirs(self.logs_output_dir, exist_ok=True)
+
 
         # MemoryOS configuration
         self.memoryos_config = {
@@ -179,8 +160,6 @@ class MemoryOSModel(BaseModel):
         """
         try:
             start_time = time.time()
-            # Enable log capture for this thread
-            _thread_local.log_capture_list = []
             
             if not messages:
                 return ""
@@ -230,43 +209,48 @@ class MemoryOSModel(BaseModel):
             # The auto add_memory inside get_response is disabled in memoryos.py.
             new_raw_inputs = []
             current_user_msg = None
-            i = start_idx
-            while i < last_user_idx:
+            for i in range(start_idx + 2, last_user_idx): # +2 to skip the first two messages (system and user), avoid repeated add_memory calls
                 msg = messages[i]
                 role = msg.get("role", "").lower()
                 content = msg.get("content")
-
-                if content is None:
-                    i += 1
-                    continue
-
                 content = str(content).strip()
-                if not content:
-                    i += 1
-                    continue
 
                 if role == "user":
-                    current_user_msg = content
-                elif role == "assistant" and current_user_msg is not None:
-                    client.add_memory(user_input=current_user_msg, agent_response=content)
-                    new_raw_inputs.append(f"User: {current_user_msg}\nAssistant: {content}")
-                    current_user_msg = None
+                    if current_user_msg is None:
+                        current_user_msg = content
+                    else:
+                        # Flush previous pending user as user-only memory, then
+                        # keep current user pending for possible assistant pair.
+                        client.add_memory(user_input=current_user_msg, agent_response="")
+                        new_raw_inputs.append(f"User: {current_user_msg}\nAssistant: ")
+                        current_user_msg = content
+                elif role == "assistant":
+                    if current_user_msg is not None:
+                        client.add_memory(user_input=current_user_msg, agent_response=content)
+                        new_raw_inputs.append(f"User: {current_user_msg}\nAssistant: {content}")
+                        current_user_msg = None
+                    else:
+                        # Handle assistant-only turn (no preceding user in window).
+                        client.add_memory(user_input="", agent_response=content)
+                        new_raw_inputs.append(f"User: \nAssistant: {content}")
 
-                i += 1
+            # Flush dangling user message when history ends with an unpaired user.
+            if current_user_msg is not None:
+                client.add_memory(user_input=current_user_msg, agent_response="")
+                new_raw_inputs.append(f"User: {current_user_msg}\nAssistant: ")
 
-            dataset_name = self.dataset_name
-            # Update state cursor
-            if dialog_id is not None:
-                self._dialog_states[dialog_id]["last_ingested_idx"] = last_user_idx
+            # Update state index
+            state["last_ingested_idx"] = last_user_idx
+            
 
             # Snapshot pre-generation state (read-only, no retrieve call to avoid
             # double-counting N_visit / heat in mid-term sessions).
             try:
-                old_user_profile = client.user_long_term_memory.get_raw_user_profile(client.user_id)
+                prev_user_profile = client.user_long_term_memory.get_raw_user_profile(client.user_id)
                 short_term_history = client.short_term_memory.get_all()
             except Exception as e:
                 logger.warning(f"MemoryOS pre-generation info fetch failed: {e}")
-                old_user_profile = "N/A"
+                prev_user_profile = ""
                 short_term_history = []
 
             # Monkey-patch retriever to capture results from the single retrieve
@@ -290,63 +274,67 @@ class MemoryOSModel(BaseModel):
 
             retrieved_pages = _captured_retrieval.get("retrieved_pages", [])
             retrieved_user_knowledge = _captured_retrieval.get("retrieved_user_knowledge", [])
+            retrieved_assistant_knowledge = _captured_retrieval.get("retrieved_assistant_knowledge", [])
 
             # --- Diagnostic Logging ---
             if self.config.get('save_agent_logs', False):
-                try:
-                    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-                    log_dir = os.path.join(project_root, "output", "memoryos_logs", dataset_name)
-                    os.makedirs(log_dir, exist_ok=True)
+                # try:
                 
-                    captured_logs = getattr(_thread_local, 'log_capture_list', [])
+                    # captured_logs = getattr(_thread_local, 'log_capture_list', [])
                     new_user_profile = client.user_long_term_memory.get_raw_user_profile(client.user_id)
-                    profile_updated = (old_user_profile != new_user_profile)
+                    profile_updated = (prev_user_profile != new_user_profile)
                 
                     # Format retrieved contexts
                     formatted_contexts = []
                     # Short term
+                    # print("short_term_history:", short_term_history)
                     for qa in short_term_history:
                         formatted_contexts.append({
                             "source": "memoryos_short_term",
-                            "content": f"User: {qa.get('user_input', '')}\nAssistant: {qa.get('agent_response', '')}",
-                            "score": None
+                            "user_input": qa.get('user_input', ''),
+                            "agent_response": qa.get('agent_response', ''),
+                            "timestamp": qa.get('timestamp', None)
                         })
                     # Mid term pages
+                    # print("retrieved_pages:", retrieved_pages)
                     for page in retrieved_pages:
                         formatted_contexts.append({
                             "source": "memoryos_mid_term",
-                            "content": f"User: {page.get('user_input', '')}\nAssistant: {page.get('agent_response', '')}\nMeta info: {page.get('meta_info', 'N/A')}",
-                            "score": None
+                            "user_input": page.get('user_input', ''),
+                            "agent_response": page.get('agent_response', ''),
+                            "meta_info": page.get('meta_info', 'N/A'),
                         })
-                    # User Profile
-                    formatted_contexts.append({
-                        "source": "memoryos_user_profile",
-                        "content": old_user_profile,
-                        "score": 1.0
-                    })
+                   
                     # Long term user knowledge
+                    # print("retrieved_user_knowledge:", retrieved_user_knowledge)
                     for k in retrieved_user_knowledge:
                         formatted_contexts.append({
                             "source": "memoryos_long_term_knowledge",
-                            "content": k.get("knowledge"),
-                            "score": None
+                            "knowledge": k.get("knowledge"),
+                            "timestamp": k.get("timestamp", None),
+                        })
+                        
+                    for k in retrieved_assistant_knowledge:
+                        formatted_contexts.append({
+                            "source": "memoryos_assistant_knowledge",
+                            "knowledge": k.get("knowledge"),
+                            "timestamp": k.get("timestamp", None),
                         })
 
                     diagnostic_data = {
                         "metadata": {
-                            "dataset": dataset_name,
                             "dialog_id": dialog_id,
-                            "turn_index": last_user_idx,
+                            "turn_index": last_user_idx + 1,
                             "query": final_query,
                             "timestamp": time.time(),
                             "latency_seconds": round(latency, 3)
                         },
                         "memory_update": {
                             "new_raw_inputs": new_raw_inputs,
-                            "chunked_documents": [{"content": text, "meta_info": {}} for text in new_raw_inputs],
+                            "chunked_documents": [{"content": text} for text in new_raw_inputs],
                             "extracted_knowledge": {
-                                "memoryos_profile": new_user_profile if profile_updated else old_user_profile,
-                                "memoryos_new_knowledge": [] # For brevity, we don't hook directly into the background update's returns
+                                "prev_user_profile": prev_user_profile,
+                                "new_user_profile": new_user_profile,
                             }
                         },
                         "retrieval": {
@@ -356,12 +344,12 @@ class MemoryOSModel(BaseModel):
                         "generation": {
                             "generated_response": response
                         },
-                        "system_logs": captured_logs
+                        # "system_logs": captured_logs
                     }
                 
                     # Save into a per-dialog JSON file
                     dialog_file_name = f"dialog_{dialog_id}.json" if dialog_id is not None else "dialog_stateless.json"
-                    dialog_file = os.path.join(log_dir, dialog_file_name)
+                    dialog_file = os.path.join(self.logs_output_dir, dialog_file_name)
                 
                     if os.path.exists(dialog_file):
                         try:
@@ -377,15 +365,9 @@ class MemoryOSModel(BaseModel):
                     with open(dialog_file, "w", encoding="utf-8") as f:
                         json.dump(dialog_data, f, ensure_ascii=False, indent=4)
                     
-                except Exception as e:
-                    logger.warning(f"MemoryOS diagnostic logging failed: {e}")
-                finally:
-                    # Cleanup thread-local log capture
-                    _thread_local.log_capture_list = None
-            # ---------------------------------------------
 
             return response if response else ""
 
-        except Exception:
+        except Exception as e:
             logger.exception("MemoryOS generation error")
-            raise
+            raise e

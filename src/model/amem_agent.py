@@ -227,8 +227,7 @@ class AMemModel(BaseModel):
         # max_tokens: int = 1024,
         **kwargs: Any
     ) -> str:
-        # try:
-            temperature = temperature if temperature is not None else 0.7
+        try:
             start_time = time.time()
             # Enable log capture for this thread
             # _thread_local.log_capture_list = []
@@ -281,9 +280,7 @@ class AMemModel(BaseModel):
                 msg = messages[i]
                 role = str(msg.get("role", "")).lower()
                 content = str(msg.get("content", "")).strip()
-                if not content:
-                    continue
-                    
+
                 if role == "user":
                     if current_user_msg is not None:
                         new_text = f"User input: {current_user_msg}"
@@ -393,3 +390,6 @@ class AMemModel(BaseModel):
             
             return str(prediction).strip()
 
+        except Exception as e:
+            logger.exception("AMem generation error")
+            raise e

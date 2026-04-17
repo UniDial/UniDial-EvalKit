@@ -183,14 +183,7 @@ class HippoRAGModel(BaseModel):
             if dialog_id is not None:
                 with self._state_lock:
                     state = self._dialog_states.get(dialog_id)
-                    if state is None:
-                        # Auto-initialize if begin_dialog missed (though pipeline should call it)
-                        state = {
-                            "hipporag": None,
-                            "last_ingested_idx": 0,
-                            "dialogue_texts": []
-                        }
-                        self._dialog_states[dialog_id] = state
+
             else:
                  # Stateless mode fallback
                  state = {
@@ -218,9 +211,6 @@ class HippoRAGModel(BaseModel):
                 role = str(msg.get("role", "")).lower()
                 content = str(msg.get("content", "")).strip()
                 
-                if not content:
-                    continue
-                    
                 if role == "user":
                     if current_user_msg is not None:
                         new_texts.append(f"User: {current_user_msg}")
@@ -366,4 +356,5 @@ class HippoRAGModel(BaseModel):
             return response
             
         except Exception as e:
+            logger.exception("HippoRAG generation error")
             raise e
