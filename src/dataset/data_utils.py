@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Iterable, Iterator, Union
+from typing import Any, Iterable, Iterator, Union
 
 from .schema import Dialog
 
@@ -23,6 +23,33 @@ def iter_jsonl_lines(path: PathLike) -> Iterator[str]:
             if not line:
                 continue
             yield line
+
+
+def to_jsonable(obj: Any) -> Any:
+    """Best-effort conversion of objects to JSON-serializable structures."""
+    if obj is None:
+        return None
+    if isinstance(obj, (str, int, float, bool)):
+        return obj
+    if isinstance(obj, (list, tuple)):
+        return [to_jsonable(x) for x in obj]
+    if isinstance(obj, dict):
+        return {str(k): to_jsonable(v) for k, v in obj.items()}
+
+    # Pydantic / SDK response objects often provide model_dump()/dict().
+    for attr in ("model_dump", "dict"):
+        fn = getattr(obj, attr, None)
+        if callable(fn):
+            try:
+                return to_jsonable(fn())
+            except Exception:
+                pass
+
+    # Fallback: keep a readable representation to avoid breaking serialization.
+    try:
+        return {"_repr": repr(obj)}
+    except Exception:
+        return {"_repr": "<unserializable>"}
 
 
 # def load_dialogs_from_jsonl(path: PathLike) -> Iterator[Dialog]:

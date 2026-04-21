@@ -27,6 +27,7 @@ class BenchmarkDataset(abc.ABC):
     """
 
     benchmark_id: str = "base"
+    PROJECT_ROOT: Path = Path(__file__).resolve().parents[2]
 
     def __init__(self, *, dataset_name: Optional[str] = None) -> None:
         self.dataset_name = dataset_name or self.benchmark_id
@@ -65,7 +66,12 @@ class BenchmarkDataset(abc.ABC):
         meta_path = out_dir / "_meta.json"
         # prompt_path = out_dir / "_prompt_templates.json"
 
-        raw_abs = str(raw_p.resolve())
+        raw_abs = raw_p.resolve()
+        try:
+            raw_from_project_root = str(raw_abs.relative_to(self.PROJECT_ROOT))
+        except ValueError:
+            # Keep absolute path only when data is outside project root.
+            raw_from_project_root = str(raw_abs)
         if out_dir.exists() and meta_path.exists() and not force:
             try:
                 meta = json.loads(meta_path.read_text(encoding="utf-8"))
@@ -74,7 +80,7 @@ class BenchmarkDataset(abc.ABC):
             if (
                 isinstance(meta, dict)
                 and meta.get("version") == self.meta_version()
-                and meta.get("raw_path") == raw_abs
+                and meta.get("raw_path") in {str(raw_abs), raw_from_project_root}
                 and meta.get("benchmark_id") == self.benchmark_id
             ):
                 return str(out_dir)
@@ -88,7 +94,7 @@ class BenchmarkDataset(abc.ABC):
             fname = self._write_dialog(out_dir, dialog, idx=idx, used=used)
             count += 1
 
-        self._dump_json(meta_path, {"version": self.meta_version(), "raw_path": raw_abs, "benchmark_id": self.benchmark_id, "count": count})
+        self._dump_json(meta_path, {"version": self.meta_version(), "raw_path": raw_from_project_root, "benchmark_id": self.benchmark_id, "count": count})
         # if self.prompt_templates():
         #     self._dump_json(prompt_path, {"templates": self.prompt_templates()})
         return str(out_dir)

@@ -12,6 +12,7 @@ from tqdm import tqdm
 
 from src.dataset import get_dataset_class, BenchmarkDataset
 from src.dataset.schema import Dialog
+from src.dataset.data_utils import to_jsonable
 from src.metric import get_metric_class, METRIC_REGISTRY
 from src.metric.aggregator import aggregate_results
 from src.model import get_model_class, BaseModel
@@ -34,7 +35,12 @@ def parse_args():
     parser.add_argument("--require_alternative_roles", action="store_true", help="Whether to require alternative roles, depending on the chat template")
     parser.add_argument("--model_type", type=str, default="openai", help="Type of model to use (openai, etc.)")
     parser.add_argument("--model_name", type=str, default="deepseek-ai/DeepSeek-V3.2", help="Model to evaluate (e.g., gpt-3.5-turbo)")
-    parser.add_argument("--temperature", type=float, default=0.7, help="Temperature for model generation")
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=None,
+        help="Temperature for model generation (omit to use backend default)",
+    )
     parser.add_argument("--max_tokens", type=int, default=1024, help="Maximum tokens for model generation")
     parser.add_argument("--judge_model_type", type=str, default="openai", help="Type of judge model to use (openai, etc.)")
     parser.add_argument("--judge_model_name", type=str, default="gpt-4.1-2025-04-14", help="Judge model name for LLM-based metrics")
@@ -46,6 +52,20 @@ def parse_args():
     # Task control flags
     parser.add_argument("--do_generation", action="store_true", help="Run the generation phase")
     parser.add_argument("--do_evaluation", action="store_true", help="Run the evaluation phase")
+    
+    # Output control flags
+    parser.add_argument(
+        "--save_llm_logs",
+        type=lambda x: (str(x).lower() in ["true", "1", "yes"]),
+        default=True,
+        help="Whether to save raw LLM response details (default: True; agents ignore this setting)",
+    )
+    parser.add_argument(
+        "--save_agent_logs",
+        type=lambda x: (str(x).lower() in ["true", "1", "yes"]),
+        default=True,
+        help="Whether to save detailed diagnostic logs for agents (default: True)",
+    )
     
     # Aggregation argument
     parser.add_argument(
@@ -85,7 +105,7 @@ def parse_args():
 def process_single_dialog_generation(
     dialog: Dialog, 
     model: BaseModel,
-    temperature: float = 0.7,
+    temperature: Optional[float] = None,
     max_tokens: int = 1024
 ) -> Dialog:
     """
@@ -112,12 +132,16 @@ def process_single_dialog_generation(
                 # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
                 if turn.eval_config.do_eval:
                     # Generate response (let exception propagate so no file is written on error)
-                    response = model.generate(
+                    gen_res = model.generate(
                         messages=messages,
                         temperature=temperature,
                         max_tokens=max_tokens,
                         dialog_id=dialog_id,
                     )
+                    if isinstance(gen_res, tuple) and len(gen_res) == 2:
+                        response, response_details = gen_res
+                    else:
+                        response, response_details = gen_res, None
 
                     # Update history with generated response
                     if dialog.dialog_eval_config.use_reference_history:
@@ -128,6 +152,8 @@ def process_single_dialog_generation(
                     # Create new turn with generated content
                     new_turn = turn.model_copy()
                     new_turn.content = response
+                    if response_details is not None:
+                        new_turn.turn_labels["raw_response_details"] = to_jsonable(response_details)
                     processed_turns.append(new_turn)
                 else:
                     messages.append({"role": "assistant", "content": turn.content})
@@ -146,7 +172,7 @@ def run_generation_phase(
     model: BaseModel,
     output_dir: Path,
     parallel: int = 4,
-    temperature: float = 0.7,
+    temperature: Optional[float] = None,
     max_tokens: int = 1024
 ) -> List[Dialog]:
     """
@@ -331,10 +357,12 @@ def run_evaluation_phase(
 
 def main():
     args = parse_args()
-    
+    model_name_last = args.model_name.split("/")[-1]
     # Use directories instead of single files
-    gen_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_name}" / "generated"
-    eval_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_name}" / "eval_details"
+    gen_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_type}-{model_name_last}" / "generated"
+    eval_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_type}-{model_name_last}" / "eval_details"
+    summary_output_path = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_type}-{model_name_last}" / "summary.json"
+    agent_logs_output_dir = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_type}-{model_name_last}" / "agent_logs"
     
     logger.info(f"Initialize dataset: {args.dataset}")
     DatasetClass = get_dataset_class(args.dataset)
@@ -367,11 +395,20 @@ def main():
         logger.info(f"Initializing model: {args.model_name} (Type: {args.model_type})")
         
         ModelClass = get_model_class(args.model_type)
+        effective_save_llm_logs = bool(args.save_llm_logs) if args.model_type.lower() == "openai" else False
         gen_model = ModelClass( 
             model_name=args.model_name, 
             api_key=args.api_key, 
             base_url=args.base_url,
-        )# TODO: agents may also need to load other embedding models
+            # dataset_name=args.dataset,
+            save_llm_logs=effective_save_llm_logs,
+            # agents
+            save_agent_logs=args.save_agent_logs,
+            embedding_model_name=args.embedding_model_name,
+            agent_logs_output_dir=agent_logs_output_dir,
+        )
+    
+        
         
         # Run Generation
         generated_dialogs = run_generation_phase(
@@ -430,11 +467,13 @@ def main():
                 continue
                 
             if name == "llm_judge":
-                JudgeModelClass = get_model_class("openai") 
+                JudgeModelClass = get_model_class(args.judge_model_type) 
+                effective_judge_save_llm_logs = bool(args.save_llm_logs) if args.judge_model_type.lower() == "openai" else False
                 judge_model = JudgeModelClass(
                     model_name=args.judge_model_name,
                     api_key=args.api_key,
-                    base_url=args.base_url
+                    base_url=args.base_url,
+                    save_llm_logs=effective_judge_save_llm_logs,
                 )
         
                 metrics_map[name] = get_metric_class(name)(llm_client=judge_model, dataset=dataset, **config)
@@ -481,7 +520,6 @@ def main():
             print("="*40 + "\n")
 
             # Save final aggregated summary
-            summary_output_path = Path(args.output_dir) / f"{args.dataset}" / f"{args.model_name}" / "summary.json"
             with open(summary_output_path, "w", encoding="utf-8") as f:
                 json.dump({
                     "summary": aggregated,

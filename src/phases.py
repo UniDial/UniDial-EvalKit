@@ -24,6 +24,7 @@ from src.metric.aggregator import aggregate_results
 from src.model import BaseModel
 
 from src.config import EvalPipelineConfig
+from src.dataset.data_utils import to_jsonable
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ logger = logging.getLogger(__name__)
 def _generate_single_dialog(
     dialog: Dialog,
     model: BaseModel,
-    temperature: float = 0.7,
+    temperature: Optional[float] = None,
     max_tokens: int = 1024,
 ) -> Dialog:
     """Generate model responses for a single Dialog, return the updated Dialog."""
@@ -58,12 +59,17 @@ def _generate_single_dialog(
 
                 # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
                 if turn.eval_config.do_eval:
-                    response = model.generate(
+                    gen_res = model.generate(
                         messages=messages,
                         temperature=temperature,
                         max_tokens=max_tokens,
                         dialog_id=dialog_id,
                     )
+                    if isinstance(gen_res, tuple) and len(gen_res) == 2:
+                        response, response_details = gen_res
+                    else:
+                        response, response_details = gen_res, None
+                        
                     # Build history: use reference or generated response based on dialog config
                     if dialog.dialog_eval_config.use_reference_history:
                         messages.append({
@@ -76,6 +82,11 @@ def _generate_single_dialog(
                     # Create new turn with generated content
                     new_turn = turn.model_copy()
                     new_turn.content = response
+                    # Store raw generation details for later debugging/analysis.
+                    # Use `raw_` prefix so downstream evaluation output can filter it out.
+                    if response_details is not None:
+                        new_turn.turn_labels["raw_response_details"] = to_jsonable(response_details)
+                    
                     processed_turns.append(new_turn)
                 else:
                     messages.append({"role": "assistant", "content": turn.content})
@@ -202,7 +213,11 @@ class GenerationPhase:
         with ThreadPoolExecutor(max_workers=cfg.parallel) as executor:
             future_map = {
                 executor.submit(
-                    _generate_single_dialog, d, model, cfg.temperature, cfg.max_tokens
+                    _generate_single_dialog,
+                    d,
+                    model,
+                    cfg.temperature,
+                    cfg.max_tokens,
                 ): d
                 for d in remaining
             }

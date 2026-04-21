@@ -3,6 +3,16 @@
   UniDial-EvalKit
 </h1>
 
+<div align="center">
+  <h2 align="center">
+  <a href="https://github.com/UniDial/UniDial-EvalKit" target='_blank' style="text-decoration: none;"><img src="https://visitor-badge.laobi.icu/badge?page_id=UniDial/UniDial-EvalKit"></a>
+  <a href="https://arxiv.org/abs/2603.23160" style="display: inline-block; text-align: center;">
+      <img alt="arXiv" src="https://img.shields.io/badge/arXiv-2603.23160-b31b1b.svg?style=flat">
+  </a>
+  <a href="https://github.com/UniDial/UniDial-EvalKit/stargazers" target='_blank' style="text-decoration: none;"><img src="https://img.shields.io/github/stars/UniDial/UniDial-EvalKit"></a>
+</div>
+
+
 **UniDial-EvalKit** (UDE) is a unified framework focusing on the **evaluation of multi-turn interactions in Large Language Models (LLMs)**. We are committed to building a comprehensive evaluation system for long-term interactions covering dimensions such as **memory, understanding, safety, mathematics, and code**. By integrating multiple mainstream benchmarks for comprehensive comparison, UniDial-EvalKit provides a full-scale, standardized capability profile for the evolution of multi-turn human-AI interaction technologies in LLMs and Agent systems.
 
 As a modular and extensible evaluation tool, UniDial-EvalKit decouples data loading, model generation, and metric evaluation. It supports breakpoint resume and parallel acceleration, enabling efficient all-round assessment of various open-source and closed-source models.
@@ -21,17 +31,17 @@ As a modular and extensible evaluation tool, UniDial-EvalKit decouples data load
 
 ## 📊 Leaderboard
 
-Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using UniDial-EvalKit (Judge Model: GPT-4.1):
+Below are the multi-dimensional evaluation results using UniDial-EvalKit (Judge Model: GPT-4.1):
 
-| Benchmark     | Metrics                      | DeepSeek-V3.2 |
-|---------------|------------------------------|---------------|
-| LoCoMo        | `f1_score`, `recall`         | 59.25         |
-| MathChat      | `llm_judge`, `numeric_match` | 77.87         |
-| MemoryCode    | `code_math`                  | 25.40         |
-| MT-Bench-101  | `llm_judge`                  | 91.17         |
-| PersonaMem    | `exact_match`                | 60.88         |
-| MultiIF       | `instruction_following`      | 56.61         |
-| SafeDialBench | `llm_judge`                  | 53.95         |
+| Benchmark     | Metrics                      | DeepSeek-V3.2 | Qwen3-Max-Thinking |
+|---------------|------------------------------|---------------|--------------------|
+| LoCoMo        | `f1_score`, `recall`         | 59.25         |62.11               |
+| MathChat      | `llm_judge`, `numeric_match` | 77.87         |77.43               |
+| MemoryCode    | `code_math`                  | 25.99         |34.06               |
+| MT-Bench-101  | `llm_judge`                  | 91.17         |93.62               |
+| PersonaMem    | `exact_match`                | 64.52         |65.20               |
+| MultiIF       | `instruction_following`      | 64.23         |68.93               |
+| SafeDialBench | `llm_judge`                  | 53.95         |61.33               |
 
 > ⚠️ All evaluations are conducted in a multi-turn user-assistant interaction format; evaluation settings may differ from the original papers. Results are summarized using `agg_turn_stat=mean`, `agg_dialog_stat=min`, and `agg_dataset_level=dialog`.
 
@@ -41,15 +51,15 @@ Below are the multi-dimensional evaluation results for **DeepSeek-V3.2** using U
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/JiaQiSJTU/UniDial-EvalKit.git
+   git clone https://github.com/UniDial/UniDial-EvalKit.git
    cd UniDial-EvalKit
    ```
 
 2. Create and activate a conda environment:
 
     ```bash
-    conda create -n uniconv python=3.10
-    conda activate uniconv
+    conda create -n unidial python=3.10
+    conda activate unidial
     ```
 
 3. Install dependencies:
@@ -189,8 +199,12 @@ PYTHONPATH=. python src/eval_cli.py \
 
 > 💡 Since vLLM provides an OpenAI-compatible interface, you can keep the default `--model_type` as `openai.` Just point `--base_url` to your local address and set `--model_name` to the corresponding `--served-model-name`, and you can pass any non-empty string as the api_key.
 
+### 4. Supported Agents
 
-### 4. Common Parameter Descriptions
+Currently, the framework integrates A-Mem, HippoRAG, and MemoryOS agents. For detailed setup and usage instructions, please refer to [`src/model/README_agent.md`](src/model/README_agent.md).
+
+
+### 5. Common Parameter Descriptions
 
 
 | Parameter | Type | Default | Description |
@@ -235,11 +249,8 @@ script/
 
 We welcome researchers and developers interested in dialogue evaluation to contribute! If you have any questions, suggestions, or collaboration intentions, please feel free to contact us:
 
-- 📧 Email: jiaqi@pjlab.org.cn
-- 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniDial-EvalKit/issues)
-- 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniDial-EvalKit/pulls)
-
-For more evaluation-related resources, please follow [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)!
+- 🐛 Issue: [GitHub Issues](https://github.com/UniDial/UniDial-EvalKit/issues)
+- 🔀 Pull Request: [GitHub PRs](https://github.com/UniDial/UniDial-EvalKit/pulls)
 
 
 ## 🖊️ Citation
@@ -247,10 +258,13 @@ For more evaluation-related resources, please follow [OpenCompass](https://openc
 If you use UniDial-EvalKit in your research, please cite the following BibTeX:
 
 ```bibtex
-@misc{UniDial-EvalKit2026,
-  title={UniDial-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
-  author={xxx},
-  year={2026},
-  howpublished={\url{https://github.com/JiaQiSJTU/UniDial-EvalKit}}
+@misc{jia2026unidialevalkitunifiedtoolkitevaluating,
+      title={UniDial-EvalKit: A Unified Toolkit for Evaluating Multi-Faceted Conversational Abilities}, 
+      author={Qi Jia and Haodong Zhao and Dun Pei and Xiujie Song and Shibo Wang and Zijian Chen and Zicheng Zhang and Xiangyang Zhu and Guangtao Zhai},
+      year={2026},
+      eprint={2603.23160},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2603.23160}, 
 }
 ```

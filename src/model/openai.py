@@ -5,6 +5,7 @@ import os
 from typing import Any, Dict, List, Optional
 import time
 
+
 from .base import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,7 @@ class OpenAIModel(BaseModel):
         base_url: Optional[str] = None,
         max_retries: int = 3,
         timeout: float = 60.0,
+        save_llm_logs: bool = False,
         **kwargs: Any
     ) -> None:
         """
@@ -52,20 +54,20 @@ class OpenAIModel(BaseModel):
         self.base_url = base_url
         self.max_retries = max_retries
         self.timeout = timeout
+        self.save_llm_logs = save_llm_logs
+        
         
         self.client = OpenAI(
             api_key=self.api_key,
             base_url=self.base_url,
             timeout=self.timeout,
             max_retries=self.max_retries,
-            **kwargs
+            # **kwargs
         )
 
     def generate(
         self,
         messages: List[Dict[str, str]],
-        temperature: float = 0.7,
-        max_tokens: int = 1024,
         **kwargs: Any
     ) -> str:
         """
@@ -82,33 +84,66 @@ class OpenAIModel(BaseModel):
         Returns:
             The generated content string.
         """
+        # time.sleep(15)
+        # Do not forward unset optional params (e.g., temperature=None) to the backend.
+        # This lets the backend use its own defaults when the user didn't specify.
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        kwargs.pop("dialog_id", None)
+        # print(kwargs)
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens,
                 **kwargs
             )
-            
+            # print(response)
+            # exit(0)
             if not response.choices:
                 raise ValueError("OpenAI API returned no choices in response")
             
             content = response.choices[0].message.content
             if not content:
                 try:
-                    reasoning_content = response.choices[0].message.reasoning_content
+                    msg = response.choices[0].message
+                    # Try different possible attribute names for reasoning
+                    reasoning_content = getattr(msg, "reasoning_content", None)
+                    if not reasoning_content:
+                        reasoning_content = getattr(msg, "reasoning", None)
+                    
+                    # Also check for reasoning_details
+                    if not reasoning_content:
+                        reasoning_details = getattr(msg, "reasoning_details", None)
+                        if isinstance(reasoning_details, list) and len(reasoning_details) > 0:
+                            reasoning_content = reasoning_details[0].get("text", "")
+                            
+                    # Pydantic models might require accessing the dict directly 
+                    # if the attribute is not defined in the model schema
+                    if not reasoning_content and hasattr(msg, "model_extra") and msg.model_extra:
+                        print("here:!!! model_extra")
+                        reasoning_content = msg.model_extra.get("reasoning") or msg.model_extra.get("reasoning_content")
+                        if not reasoning_content and "reasoning_details" in msg.model_extra:
+                            rd = msg.model_extra["reasoning_details"]
+                            if isinstance(rd, list) and len(rd) > 0:
+                                reasoning_content = rd[0].get("text", "")
+                                
                     if reasoning_content:
-                        return reasoning_content
+                        # print(reasoning_content)
+                        if self.save_llm_logs:
+                            return reasoning_content, response
+                        else:
+                            return reasoning_content
                 except Exception as e:
-                    raise ValueError("OpenAI API returned empty content in response")
+                    pass
+                raise ValueError("OpenAI API returned empty content in response")
             
-            return content
+            if self.save_llm_logs:
+                return content, response
+            else:
+                return content
             
         except openai.OpenAIError as e:
             logger.error(f"OpenAI API error: {e}")
             raise e
         except Exception as e:
             logger.error(f"Unexpected error in OpenAIModel.generate: {e}")
-            raise e
-
+            raise e     

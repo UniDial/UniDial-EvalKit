@@ -21,17 +21,17 @@
 
 ## 📊 Leaderboard
 
-以下为使用 UniDial-EvalKit 对 **DeepSeek-V3.2** 进行多维度评测的结果（Judge Model: GPT-4.1）：
+以下为使用 UniDial-EvalKit 进行多维度评测的结果（Judge Model: GPT-4.1）：
 
-|               | 评测指标                       | DeepSeek-V3.2 | Qwen3-max |
-|---------------|------------------------------|---------------|------------|
-| LoCoMo        | `f1_score`, `recall`         | 59.25         | 62.11      |
-| MathChat      | `llm_judge`, `numeric_match` | 77.87         |
-| MemoryCode    | `code_math`                  | 25.40         |
-| MT-Bench-101  | `llm_judge`                  | 91.17         |
-| PersonaMem    | `exact_match`                | 60.88         |
-| MultiIF       | `instruction_following`      | 56.61         |
-| SafeDialBench | `llm_judge`                  | 53.95         |
+| 评测基准        | 评测指标                      | DeepSeek-V3.2 | Qwen3-Max-Thinking |
+|---------------|------------------------------|---------------|--------------------|
+| LoCoMo        | `f1_score`, `recall`         | 59.25         |62.11               |
+| MathChat      | `llm_judge`, `numeric_match` | 77.87         |77.43               |
+| MemoryCode    | `code_math`                  | 25.99         |34.06               |
+| MT-Bench-101  | `llm_judge`                  | 91.17         |93.62               |
+| PersonaMem    | `exact_match`                | 64.52         |65.20               |
+| MultiIF       | `instruction_following`      | 64.23         |68.93               |
+| SafeDialBench | `llm_judge`                  | 53.95         |61.33               |
 
 
 > ⚠️ 全部评测均以多轮 user-assistant 交互形式进行，评测设定可能与原文存在差异。分数结果按 `agg_turn_stat=mean`, `agg_dialog_stat=min`, `agg_dataset_level=dialog` 进行汇总。
@@ -42,14 +42,14 @@
 
 1. 克隆本项目代码：
    ```bash
-   git clone https://github.com/JiaQiSJTU/UniDial-EvalKit.git
+   git clone https://github.com/UniDial/UniDial-EvalKit.git
    cd UniDial-EvalKit
    ```
 
 2. 创建并激活 conda 环境：
    ```bash
-   conda create -n uniconv python=3.10
-   conda activate uniconv
+   conda create -n unidial python=3.10
+   conda activate unidial
    ```
 
 3. 安装依赖环境：
@@ -186,7 +186,13 @@ PYTHONPATH=. python src/eval_cli.py \
 
 > 💡 vLLM 提供的是 OpenAI 兼容接口，因此 `--model_type` 保持默认 `openai` 即可，只需将 `--base_url` 指向本地地址，`--model_name` 设为 `--served-model-name` 对应的名称，api_key传递任意非空字符串即可。
 
-### 4. 常用参数说明
+### 4. 支持的 Memory Agent
+
+目前，框架已集成 A-Mem、HippoRAG 和 MemoryOS 等多轮对话 Agent。关于具体的安装与使用方法，请参阅 [`src/model/README_CN_agent.md`](src/model/README_CN_agent.md)。
+
+
+
+### 5. 常用参数说明
 
 | 参数名 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
@@ -219,21 +225,18 @@ script/
 └── test_vllm_client.sh  # vLLM 评测调用示例
 ```
 
-## 📝 TODO / Roadmap
+## 📝 任务列表 / 开发路线图
 
 - [ ] 增加 User Simulator，支持更灵活的对话过程
 - [ ] 增加 Agent 接口，支持 Agent 系统评测
 - [ ] 扩展多模态评测数据集
 
-## 🤝 Get Involved
+## 🤝 参与贡献
 
 欢迎对对话评测感兴趣的研究者和开发者参与贡献！如有任何问题、建议或合作意向，欢迎通过以下方式联系我们：
 
-- 📧 Email: jiaqi@pjlab.org.cn
-- 🐛 Issue: [GitHub Issues](https://github.com/JiaQiSJTU/UniDial-EvalKit/issues)
-- 🔀 Pull Request: [GitHub PRs](https://github.com/JiaQiSJTU/UniDial-EvalKit/pulls)
-
-更多评测相关信息，欢迎关注 [OpenCompass](https://opencompass.org.cn/home), [AIBench](https://aiben.ch/home)!
+- 🐛 Issue: [GitHub Issues](https://github.com/UniDial/UniDial-EvalKit/issues)
+- 🔀 Pull Request: [GitHub PRs](https://github.com/UniDial/UniDial-EvalKit/pulls)
 
 
 ## 🖊️ Citation
@@ -241,18 +244,16 @@ script/
 如果您在研究中使用了 UniDial-EvalKit，请引用以下 BibTeX：
 
 ```bibtex
-@misc{UniDial-EvalKit2026,
-  title={UniDial-EvalKit: A Unified Evaluation Toolkit for Comprehensive Conversational Abilities},
-  author={xxx},
-  year={2026},
-  howpublished={\url{https://github.com/JiaQiSJTU/UniDial-EvalKit}}
+@misc{jia2026unidialevalkitunifiedtoolkitevaluating,
+      title={UniDial-EvalKit: A Unified Toolkit for Evaluating Multi-Faceted Conversational Abilities}, 
+      author={Qi Jia and Haodong Zhao and Dun Pei and Xiujie Song and Shibo Wang and Zijian Chen and Zicheng Zhang and Xiangyang Zhu and Guangtao Zhai},
+      year={2026},
+      eprint={2603.23160},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2603.23160}, 
 }
 ```
-
-<!-- 我们也在多轮对话评测方向开展了系列研究工作，以下评测基准也将陆续集成到本工具中：
-
-- **EvolIF** — 面向多轮指令遵循能力的动态评测基准 [[arxiv](https://arxiv.org/abs/2511.03508v2)] [[code](https://github.com/JiaQiSJTU/EvolIF)]
-- **EvolMem** — 面向多轮对话多方面记忆能力的评测基准 [[arxiv](https://arxiv.org/abs/2601.03543)] [[code](https://github.com/shenye7436/EvolMem)] -->
 
 
 

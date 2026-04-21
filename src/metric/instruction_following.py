@@ -195,7 +195,7 @@ class InstructionFollowingMetric(BaseMetric):
             "Kannada": "kn", "Marathi": "mr", "Gujarati": "gu", "Punjabi": "pa",
             "Malayalam": "ml", "Finnish": "fi",
         }
-        lang_key = args.get("lang")
+        lang_key = args.get("lang", args.get("language"))
         if not lang_key or lang_key not in langs:
             return False
             
@@ -321,7 +321,7 @@ class InstructionFollowingMetric(BaseMetric):
         )
 
     def _check_placeholder(self, response: str, args: Dict) -> bool:
-        num_placeholder = args.get("num_placeholder")
+        num_placeholder = args.get("num_placeholder", args.get("number_placeholders"))
         if num_placeholder is None:
             return False
             
