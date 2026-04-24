@@ -8,6 +8,7 @@ _LAZY_MODEL_MAP = {
     "hipporag": (".hipporag_agent", "HippoRAGModel"),
     "memoryos": (".memoryos_agent", "MemoryOSModel"),
     "amem": (".amem_agent", "AMemModel"),
+    "mempalace": (".mempalace_agent", "MempalaceModel"),
 }
 
 # Registry mapping model type names to model classes
@@ -55,6 +56,7 @@ __all__ = [
     "HippoRAGModel",
     "MemoryOSModel",
     "AMemModel",
+    "MempalaceModel",
     "MODEL_REGISTRY",
     "get_model_class",
 ]
