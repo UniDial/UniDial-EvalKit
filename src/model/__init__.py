@@ -8,6 +8,8 @@ _LAZY_MODEL_MAP = {
     "hipporag": (".hipporag_agent", "HippoRAGModel"),
     "memoryos": (".memoryos_agent", "MemoryOSModel"),
     "amem": (".amem_agent", "AMemModel"),
+    "lightmem": (".lightmem_agent", "LightMemModel"),
+    "rfmem": (".rfmem_agent", "RFMemModel"),
     "mempalace": (".mempalace_agent", "MempalaceModel"),
 }
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import sys
 import threading
 import time
 from pathlib import Path
@@ -10,12 +11,24 @@ from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
 
-from .RF_mem.personamem_data.retri_mdoel.EmbdRetri import EmbeddingRetrievaler
-from .RF_mem.personamem_data.utils import decide_strategy_with_probe
+
 from .base import BaseModel
 
 logger = logging.getLogger(__name__)
 
+def _ensure_rfmem_import_paths() -> None:
+    """Make bundled rfmem importable for its internal absolute imports."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    rfmem_root = os.path.join(current_dir, "ICLR2026_RF_Mem")
+    rfmem_src = os.path.join(rfmem_root, "RF_mem")
+
+    for path in (rfmem_root, rfmem_src):
+        if os.path.isdir(path) and path not in sys.path:
+            sys.path.insert(0, path)
+
+_ensure_rfmem_import_paths()
+from .ICLR2026_RF_Mem.RF_mem.personamem_data.retri_mdoel.EmbdRetri import EmbeddingRetrievaler
+from .ICLR2026_RF_Mem.RF_mem.personamem_data.utils import decide_strategy_with_probe
 
 class RFMemModel(BaseModel):
     """
@@ -55,9 +68,8 @@ class RFMemModel(BaseModel):
         self.alpha = float(kwargs.get("alpha", 0.8))
         self.mmr_lambda = float(kwargs.get("mmr_lambda", 0.95))
         self.depth = int(kwargs.get("depth", self.retrieve_k))
-        # PersonaMem generation defaults; can be overridden via rfmem_* kwargs.
-        self.rfmem_temperature = float(kwargs.get("rfmem_temperature", 0.0))
-        self.rfmem_max_tokens = int(kwargs.get("rfmem_max_tokens", 256))
+        self.rfmem_temperature = float(kwargs.get("rfmem_temperature", 0.7))
+        self.rfmem_max_tokens = int(kwargs.get("rfmem_max_tokens", 1024))
         self.rfmem_top_p = float(kwargs.get("rfmem_top_p", 0.9))
         rfmem_seed = kwargs.get("rfmem_seed", 42)
         self.rfmem_seed: Optional[int] = int(rfmem_seed) if rfmem_seed is not None else None
@@ -65,14 +77,15 @@ class RFMemModel(BaseModel):
         self.embedding_model_name = str(
             kwargs.get("embedding_model_name", "sentence-transformers/multi-qa-MiniLM-L6-cos-v1")
         )
-        self.cache_root = Path(kwargs.get("rfmem_cache_root", str(Path("output") / "rfmem_cache")))
-        self.cache_root.mkdir(parents=True, exist_ok=True)
 
         self.EmbeddingRetrievaler = EmbeddingRetrievaler
         self.decide_strategy_with_probe = decide_strategy_with_probe
 
         self.save_agent_logs = bool(kwargs.get("save_agent_logs", True))
         self.logs_output_dir = Path(kwargs.get("agent_logs_output_dir", "agent_logs"))
+        self.cache_root = self.logs_output_dir.parent / "rfmem_cache"
+        self.cache_root.mkdir(parents=True, exist_ok=True)
+
         if self.save_agent_logs:
             self.logs_output_dir.mkdir(parents=True, exist_ok=True)
 

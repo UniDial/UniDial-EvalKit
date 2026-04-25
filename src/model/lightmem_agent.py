@@ -8,6 +8,8 @@ import threading
 import time
 import uuid
 import traceback
+import os
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -15,11 +17,25 @@ from .base import BaseModel
 
 logger = logging.getLogger(__name__)
 
+def _ensure_lightmem_import_paths() -> None:
+    """Make bundled LightMem importable for its internal absolute imports."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    lightmem_root = os.path.join(current_dir, "LightMem")
+    lightmem_src = os.path.join(lightmem_root, "src")
+
+    for path in (lightmem_root, lightmem_src):
+        if os.path.isdir(path) and path not in sys.path:
+            sys.path.insert(0, path)
+
+
+_ensure_lightmem_import_paths()
+
 
 try:
-    from .lightmem.memory.lightmem import LightMemory
+    from .LightMem.src.lightmem.memory.lightmem import LightMemory
 except ImportError as e:
     logger.error(f"Failed to import LightMem components: {e}")
+    exit(0)
     traceback.print_exc()
     LightMemory = None
 
@@ -53,17 +69,12 @@ class LightMemModel(BaseModel):
         self._lightmem_cls = LightMemory
         self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         self.retrieve_k = int(kwargs.get("retrieve_k", retrieve_k))
-        self.enable_diagnostics = bool(kwargs.get("lightmem_diagnostics", True))
-        self.enable_stage_progress = bool(kwargs.get("lightmem_stage_progress", True))
-        self.batch_progress_every = max(1, int(kwargs.get("lightmem_batch_progress_every", 10)))
-        self.diagnostic_log_path = Path(
-            kwargs.get("lightmem_diag_log_path", "lightmem_agent_errors.jsonl")
-        )
         self.save_agent_logs = bool(kwargs.get("save_agent_logs", True))
         self.agent_logs_output_dir = Path(kwargs.get("agent_logs_output_dir", "agent_logs"))
-        self.agent_log_max_chars = int(kwargs.get("agent_log_max_chars", 10000))
         if self.save_agent_logs:
             self.agent_logs_output_dir.mkdir(parents=True, exist_ok=True)
+        # Ensure intermediate artifacts are colocated with `agent_logs_output_dir` by default.
+        artifacts_root = self.agent_logs_output_dir.parent
         default_device = kwargs.get("default_device")
         if default_device is None:
             default_device = "cpu"
@@ -79,6 +90,7 @@ class LightMemModel(BaseModel):
 
         # Keep LightMem options in kwargs-driven config (MemoryOS-style),
         # rather than reading from environment variables.
+        # Defaults here follow `src/model/LightMem/README.md` recommended config_dict.
         self.lightmem_config = {
             "pre_compress": kwargs.get("pre_compress", True),
             "topic_segment": kwargs.get("topic_segment", True),
@@ -101,12 +113,19 @@ class LightMemModel(BaseModel):
             "llmlingua_buffer_len": int(kwargs.get("llmlingua_buffer_len", 512)),
             "compress_rate": float(kwargs.get("compress_rate", 0.6)),
             "shortmem_max_tokens": int(kwargs.get("shortmem_max_tokens", 512)),
-            "qdrant_root": kwargs.get("qdrant_root", str(Path("output") / "lightmem_qdrant")),
-            "qdrant_on_disk": bool(kwargs.get("qdrant_on_disk", False)),
+            "qdrant_root": kwargs.get("qdrant_root", str(artifacts_root / "lightmem_qdrant")),
+            # LightMem's Qdrant wrapper deletes the local `path` directory when `on_disk=False`.
+            # README recommended config persists collections via local path, so default to True.
+            "qdrant_on_disk": bool(kwargs.get("qdrant_on_disk", True)),
+            # Optional: align with README's `summary_retriever` example.
+            "summary_collection_name": kwargs.get("summary_collection_name"),
+            "summary_qdrant_root": kwargs.get(
+                "summary_qdrant_root", str(artifacts_root / "lighmem_qdrant_summaries")
+            ),
             "memory_manager_name": kwargs.get("memory_manager_name", default_manager),
             "memory_manager_model": kwargs.get("memory_manager_model", self.model_name),
-            "memory_manager_max_tokens": int(kwargs.get("memory_manager_max_tokens", 2048)),
-            "memory_manager_temperature": float(kwargs.get("memory_manager_temperature", 0.0)),
+            "memory_manager_max_tokens": int(kwargs.get("memory_manager_max_tokens", 16000)),
+            "memory_manager_temperature": float(kwargs.get("memory_manager_temperature", 0.1)),
             "memory_manager_top_p": float(kwargs.get("memory_manager_top_p", 0.1)),
             "memory_manager_api_key": kwargs.get("memory_manager_api_key", self.api_key),
             "memory_manager_base_url": kwargs.get("memory_manager_base_url", self.base_url),
@@ -114,26 +133,14 @@ class LightMemModel(BaseModel):
             "offline_consolidate_on_end": bool(kwargs.get("offline_consolidate_on_end", True)),
             "offline_update_top_k": int(kwargs.get("offline_update_top_k", 20)),
             "offline_update_keep_top_n": int(kwargs.get("offline_update_keep_top_n", 10)),
-            "offline_update_workers": int(kwargs.get("offline_update_workers", 4)),
+            # LightMem defaults: construct queue uses 8 workers; offline update uses 5.
+            "offline_construct_workers": int(kwargs.get("offline_construct_workers", 8)),
+            "offline_update_workers": int(kwargs.get("offline_update_workers", 5)),
             "offline_update_score_threshold": float(kwargs.get("offline_update_score_threshold", 0.8)),
         }
 
         self._dialog_states: Dict[int, Dict[str, Any]] = {}
         self._state_lock = threading.Lock()
-
-    def _append_diag_error(self, payload: Dict[str, Any]) -> None:
-        """Best-effort persistent error logging for failure localization."""
-        try:
-            self.diagnostic_log_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.diagnostic_log_path, "a", encoding="utf-8") as f:
-                f.write(json.dumps(payload, ensure_ascii=False) + "\n")
-        except Exception as e:
-            logger.warning(f"Failed to write LightMem diagnostics: {e}")
-
-    def _clip_text(self, text: str) -> str:
-        if len(text) <= self.agent_log_max_chars:
-            return text
-        return text[: self.agent_log_max_chars] + "...<truncated>"
 
     def _dedupe_role_prefix(self, text: str) -> str:
         """Fix duplicated prefixes like 'User: User:' for logging."""
@@ -145,17 +152,6 @@ class LightMemModel(BaseModel):
             flags=re.IGNORECASE,
         )
         return cleaned
-
-    def _sanitize_ingest_content(self, role: str, content: str) -> str:
-        """
-        Normalize message text before ingestion:
-        1) remove duplicated prefixes (User: User:, Assistant: Assistant:)
-        2) remove one leading role prefix matching the current role
-        """
-        cleaned = self._dedupe_role_prefix(content)
-        role_prefix = "user" if role == "user" else "assistant"
-        cleaned = re.sub(rf"^{role_prefix}\s*:\s*", "", cleaned, flags=re.IGNORECASE)
-        return cleaned.strip()
 
     def _normalize_text_key(self, text: str) -> str:
         return " ".join(str(text or "").strip().lower().split())
@@ -196,7 +192,7 @@ class LightMemModel(BaseModel):
             parsed_sections.append(
                 {
                     "entry_type": entry_type,
-                    "raw_output": self._clip_text(raw_text),
+                    "raw_output": raw_text,
                     "parsed_items": parsed_items,
                     "parsed_count": len(parsed_items),
                 }
@@ -348,41 +344,7 @@ class LightMemModel(BaseModel):
             )
         return indexed_memories
 
-    def _append_structured_dialog_log(self, dialog_id: Optional[int], payload: Dict[str, Any]) -> None:
-        if not self.save_agent_logs:
-            return
-        try:
-            self.agent_logs_output_dir.mkdir(parents=True, exist_ok=True)
-            file_name = f"dialog_{dialog_id}.json" if dialog_id is not None else "dialog_stateless.json"
-            file_path = self.agent_logs_output_dir / file_name
-            if file_path.exists():
-                try:
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        data = json.load(f)
-                    if not isinstance(data, list):
-                        data = []
-                except Exception:
-                    data = []
-            else:
-                data = []
-            data.append(payload)
-            with open(file_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-        except Exception as e:
-            logger.warning(f"Failed to write LightMem structured logs: {e}")
-
-    def _emit_progress(self, dialog_id: Optional[int], msg: str) -> None:
-        """Emit progress to both stdout and logger for visibility."""
-        if not self.enable_stage_progress:
-            return
-        line = f"[LightMem][progress] dialog_id={dialog_id} {msg}"
-        # Use stdout to avoid logger-level/config swallowing progress lines.
-        print(line, flush=True)
-        logger.info(line)
-
     def _create_lightmem_client(self, dialog_id: int) -> Dict[str, Any]:
-        init_start = time.perf_counter()
-        self._emit_progress(dialog_id, "init_lightmem_client start")
         collection_name = f"dialog_{dialog_id}_{uuid.uuid4().hex[:8]}"
         collection_path = str(Path(self.lightmem_config["qdrant_root"]) / collection_name)
         config = {
@@ -449,26 +411,32 @@ class LightMemModel(BaseModel):
             },
             "update": self.lightmem_config["update"],
         }
-        self._emit_progress(dialog_id, f"init_lightmem_client from_config start collection={collection_name}")
+
+        # Optional: enable summary retriever as in LightMem README example.
+        summary_collection_name = self.lightmem_config.get("summary_collection_name")
+        if summary_collection_name:
+            summary_collection_path = str(
+                Path(self.lightmem_config["summary_qdrant_root"]) / str(summary_collection_name)
+            )
+            config["summary_retriever"] = {
+                "model_name": "qdrant",
+                "configs": {
+                    "collection_name": str(summary_collection_name),
+                    "embedding_model_dims": self.lightmem_config["embedding_dims"],
+                    "path": summary_collection_path,
+                    "on_disk": self.lightmem_config["qdrant_on_disk"],
+                },
+            }
         lightmem_client = self._lightmem_cls.from_config(config)
-        self._emit_progress(
-            dialog_id,
-            f"init_lightmem_client from_config done elapsed={round(time.perf_counter() - init_start, 3)}s",
-        )
         # Keep this runtime-level override in the wrapper so we can tune th
         # without changing lower-level LightMem package files.
         try:
             lightmem_client.shortmem_buffer_manager.max_tokens = self.lightmem_config["shortmem_max_tokens"]
         except Exception as e:
             logger.warning(f"Failed to override shortmem_max_tokens: {e}")
-        self._emit_progress(
-            dialog_id,
-            f"init_lightmem_client ready collection={collection_name} total_elapsed={round(time.perf_counter() - init_start, 3)}s",
-        )
         return {
             "lightmem": lightmem_client,
             "last_ingested_idx": 0,
-            "pending_user_msg": None,
             "collection_name": collection_name,
             "logged_entry_ids": set(),
         }
@@ -476,14 +444,9 @@ class LightMemModel(BaseModel):
     def begin_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
         if dialog_id is None:
             return
-        self._emit_progress(dialog_id, "begin_dialog start")
         with self._state_lock:
             if dialog_id not in self._dialog_states:
-                self._emit_progress(dialog_id, "begin_dialog creating_state")
                 self._dialog_states[dialog_id] = self._create_lightmem_client(dialog_id=dialog_id)
-            else:
-                self._emit_progress(dialog_id, "begin_dialog reuse_existing_state")
-        self._emit_progress(dialog_id, "begin_dialog done")
 
     def end_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
         if dialog_id is None:
@@ -492,7 +455,6 @@ class LightMemModel(BaseModel):
         # generate() before retrieval when enabled.
         with self._state_lock:
             self._dialog_states.pop(dialog_id, None)
-        self._emit_progress(dialog_id, "end_dialog done")
 
     def generate(
         self,
@@ -525,97 +487,91 @@ class LightMemModel(BaseModel):
             # Stateless fallback
             state = self._create_lightmem_client(dialog_id=-1)
 
-        stage = "init"
-        stage_start = time.perf_counter()
-        stage_costs: Dict[str, float] = {}
-        current_batch_idx = -1
         batches: List[List[Dict[str, Any]]] = []
-        merged_user_count = 0
-        orphan_assistant_count = 0
         dialog_start_time = time.perf_counter()
-        add_memory_api_calls = 0
         raw_extracted_facts: List[Dict[str, Any]] = []
         new_memory_entries: List[Dict[str, Any]] = []
         indexed_memories: List[Dict[str, Any]] = []
         entries_for_log: List[Dict[str, Any]] = []
-        total_memory_entries = 0
         retrieved_contexts: List[str] = []
 
-        def _close_stage(name: str) -> None:
-            stage_costs[name] = round(time.perf_counter() - stage_start, 3)
-
-        def _progress(msg: str) -> None:
-            self._emit_progress(dialog_id, msg)
-
         try:
-            _progress(f"start last_user_idx={last_user_idx} total_messages={len(messages)}")
-            stage = "prepare_state"
             lightmem = state["lightmem"]
             start_idx = int(state.get("last_ingested_idx", 0))
             if start_idx < 0 or start_idx > last_user_idx:
                 start_idx = 0
 
-            stage = "build_batches"
-            stage_start = time.perf_counter()
-            pending_user = state.get("pending_user_msg")
-            if pending_user is not None and str(pending_user.get("role", "")).lower() != "user":
-                pending_user = None
+            # Build strict [user, assistant] pairs for LightMem ingestion.
+            # Compared with the previous logic, we also keep:
+            # - first system prompt (as user text),
+            # - assistant-only turns,
+            # - dangling/continuous user turns via empty assistant fallback.
+            current_user_msg = None
             for i in range(start_idx, last_user_idx):
                 msg = messages[i]
                 role = str(msg.get("role", "")).lower()
-                content = self._sanitize_ingest_content(
-                    role=role,
-                    content=str(msg.get("content", "")).strip(),
-                )
-                if role not in ("user", "assistant") or not content:
-                    continue
+                content = str(msg.get("content", "")).strip()
 
-                # Prefer explicit timestamp fields if present, then fallback.
-                time_stamp = None
-                for key in ("time_stamp", "timestamp", "time", "datetime"):
-                    if key in msg and msg[key]:
-                        time_stamp = str(msg[key])
-                        break
-                if time_stamp is None:
+                if role in ("system", "user", "assistant") and content:
                     ts = dt.datetime.now(dt.timezone.utc) + dt.timedelta(milliseconds=i)
                     time_stamp = ts.isoformat()
 
-                stamped = {
-                    "role": role,
-                    "content": content,
-                    "time_stamp": time_stamp,
-                }
-                if role == "user":
-                    if pending_user is None:
-                        pending_user = stamped
+                    stamped = {
+                        "role": role,
+                        "content": content,
+                        "time_stamp": time_stamp,
+                    }
+
+                    if role == "system":
+                        if i == 0:
+                            system_as_user = {
+                                "role": "user",
+                                "content": f"System prompt: {content}",
+                                "time_stamp": time_stamp,
+                            }
+                            batches.append(
+                                [
+                                    system_as_user,
+                                    {"role": "assistant", "content": "", "time_stamp": time_stamp},
+                                ]
+                            )
+                    elif role == "user":
+                        if current_user_msg is None:
+                            current_user_msg = stamped
+                        else:
+                            batches.append(
+                                [
+                                    current_user_msg,
+                                    {"role": "assistant", "content": "", "time_stamp": time_stamp},
+                                ]
+                            )
+                            current_user_msg = stamped
                     else:
-                        # Keep LightMem input in strict [user, assistant] pairs:
-                        # merge consecutive user turns into one pending user entry.
-                        prev = str(pending_user.get("content", "")).strip()
-                        pending_user["content"] = f"{prev}\n{content}" if prev else content
-                        merged_user_count += 1
-                    continue
-                if pending_user is not None:
-                    batches.append([pending_user, stamped])
-                    pending_user = None
-                else:
-                    orphan_assistant_count += 1
+                        if current_user_msg is not None:
+                            batches.append([current_user_msg, stamped])
+                            current_user_msg = None
+                        else:
+                            batches.append(
+                                [
+                                    {"role": "user", "content": "", "time_stamp": time_stamp},
+                                    stamped,
+                                ]
+                            )
 
-            state["pending_user_msg"] = pending_user
-            _close_stage("build_batches")
-            _progress(
-                "build_batches done "
-                f"start_idx={start_idx} batch_count={len(batches)} "
-                f"merged_users={merged_user_count} orphan_assistants={orphan_assistant_count} "
-                f"pending_user={pending_user is not None}"
-            )
-
-            stage = "add_memory"
-            stage_start = time.perf_counter()
+            if current_user_msg is not None:
+                batches.append(
+                    [
+                        current_user_msg,
+                        {
+                            "role": "assistant",
+                            "content": "",
+                            "time_stamp": current_user_msg["time_stamp"],
+                        },
+                    ]
+                )
+            # Ingest newly formed batches.
             if batches:
-                _progress(f"add_memory start total_batches={len(batches)}")
                 for idx, batch in enumerate(batches):
-                    current_batch_idx = idx
                     is_last = idx == len(batches) - 1
                     add_result = lightmem.add_memory(
                         messages=batch,
@@ -623,43 +579,26 @@ class LightMemModel(BaseModel):
                         force_extract=is_last,
                     )
                     if isinstance(add_result, dict):
-                        add_memory_api_calls += int(add_result.get("api_call_nums", 0) or 0)
                         raw_extracted_facts.extend(self._collect_raw_extractions(add_result, idx))
-                    if (
-                        idx == 0
-                        or (idx + 1) % self.batch_progress_every == 0
-                        or is_last
-                    ):
-                        _progress(f"add_memory batch={idx + 1}/{len(batches)}")
-            else:
-                _progress("add_memory skipped no_new_batches")
-            _close_stage("add_memory")
             state["last_ingested_idx"] = last_user_idx
-            new_memory_entries, total_memory_entries = self._collect_normalized_entries(lightmem, state)
+            new_memory_entries, _ = self._collect_normalized_entries(lightmem, state)
             entries_for_log = new_memory_entries
-            _progress(f"add_memory done elapsed={stage_costs.get('add_memory', 0.0)}s")
-            _progress(
-                f"memory_entries new={len(new_memory_entries)} total={total_memory_entries} "
-                f"api_calls={add_memory_api_calls}"
-            )
 
             # Optional sleep-time update before retrieval:
             # run this before each generation so retrieval uses the latest
             # consolidated memories.
             if self.lightmem_config["offline_consolidate_on_end"]:
-                stage = "offline_consolidate"
-                stage_start = time.perf_counter()
-                _progress("offline_consolidate start")
                 try:
-                    workers = int(self.lightmem_config["offline_update_workers"])
+                    construct_workers = int(self.lightmem_config.get("offline_construct_workers") or 8)
+                    update_workers = int(self.lightmem_config.get("offline_update_workers") or 5)
                     lightmem.construct_update_queue_all_entries(
                         top_k=int(self.lightmem_config["offline_update_top_k"]),
                         keep_top_n=int(self.lightmem_config["offline_update_keep_top_n"]),
-                        max_workers=workers,
+                        max_workers=construct_workers,
                     )
                     lightmem.offline_update_all_entries(
                         score_threshold=float(self.lightmem_config["offline_update_score_threshold"]),
-                        max_workers=workers,
+                        max_workers=update_workers,
                     )
                 except Exception as e:
                     logger.warning(
@@ -668,10 +607,6 @@ class LightMemModel(BaseModel):
                         e,
                         traceback.format_exc(),
                     )
-                _close_stage("offline_consolidate")
-                _progress(
-                    f"offline_consolidate done elapsed={stage_costs.get('offline_consolidate', 0.0)}s"
-                )
                 # Keep logging content aligned to post-update state.
                 post_update_entries = self._collect_entries_by_ids(
                     lightmem,
@@ -682,9 +617,6 @@ class LightMemModel(BaseModel):
 
             indexed_memories = self._build_indexed_memories(entries_for_log, raw_extracted_facts)
 
-            stage = "retrieve"
-            stage_start = time.perf_counter()
-            _progress("retrieve start")
             retrieved = lightmem.retrieve(final_query, limit=self.retrieve_k)
             if isinstance(retrieved, str):
                 retrieved_contexts = [
@@ -696,21 +628,11 @@ class LightMemModel(BaseModel):
                 ]
             else:
                 retrieved_contexts = [self._dedupe_role_prefix(str(retrieved))] if retrieved else []
-            _close_stage("retrieve")
-            _progress(
-                "retrieve done "
-                f"elapsed={stage_costs.get('retrieve', 0.0)}s "
-                f"retrieved={len(retrieved_contexts)}"
-            )
+                
             prompt = (
-                "Answer the question based on the retrieved memories. "
-                "If memories are insufficient, answer concisely with best effort.\n\n"
-                f"Question:\n{final_query}\n\n"
-                f"Retrieved memories:\n{str(retrieved) if retrieved else ''}"
+                f"Question:{final_query}\n"
+                f"Please answer the question based on the following memories: {str(retrieved)}"
             )
-            stage = "final_llm"
-            stage_start = time.perf_counter()
-            _progress("final_llm start")
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=[
@@ -720,21 +642,7 @@ class LightMemModel(BaseModel):
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
-            _close_stage("final_llm")
-            _progress(f"final_llm done elapsed={stage_costs.get('final_llm', 0.0)}s")
 
-            if self.enable_diagnostics:
-                logger.info(
-                    "[LightMem][diag] dialog_id=%s batches=%s merged_users=%s orphan_assistants=%s "
-                    "pending_user=%s stage_costs=%s retrieved=%s",
-                    dialog_id,
-                    len(batches),
-                    merged_user_count,
-                    orphan_assistant_count,
-                    pending_user is not None,
-                    stage_costs,
-                    len(retrieved_contexts),
-                )
             content = response.choices[0].message.content
             if self.save_agent_logs:
                 response_text = (content or "").strip()
@@ -758,36 +666,31 @@ class LightMemModel(BaseModel):
                         "generated_response": response_text,
                     },
                 }
-                self._append_structured_dialog_log(dialog_id, structured_payload)
+                
+                
+                # saving logs
+                self.agent_logs_output_dir.mkdir(parents=True, exist_ok=True)
+                dialog_file_name = (
+                    f"dialog_{dialog_id}.json" if dialog_id is not None else "dialog_stateless.json"
+                )
+                dialog_file = self.agent_logs_output_dir / dialog_file_name
+
+                if dialog_file.exists():
+                    try:
+                        with open(dialog_file, "r", encoding="utf-8") as f:
+                            dialog_data = json.load(f)
+                    except json.JSONDecodeError:
+                        dialog_data = []
+                else:
+                    dialog_data = []
+
+                dialog_data.append(structured_payload)
+
+                with open(dialog_file, "w", encoding="utf-8") as f:
+                    json.dump(dialog_data, f, ensure_ascii=False, indent=4)
+
             return (content or "").strip()
-        except Exception as e:
-            payload = {
-                "dialog_id": dialog_id,
-                "stage": stage,
-                "error_type": type(e).__name__,
-                "error": str(e),
-                "traceback": traceback.format_exc(),
-                "batch_idx": current_batch_idx,
-                "batch_count": len(batches),
-                "message_count": len(messages),
-                "last_user_idx": last_user_idx,
-                "start_idx": int(state.get("last_ingested_idx", 0)) if isinstance(state, dict) else None,
-                "merged_user_count": merged_user_count,
-                "orphan_assistant_count": orphan_assistant_count,
-                "stage_costs": stage_costs,
-                "model_name": self.model_name,
-                "base_url": self.base_url,
-                "final_query_preview": final_query[:300],
-            }
-            self._append_diag_error(payload)
-            logger.error(
-                "LightMem generation error. dialog_id=%s stage=%s error=%s. "
-                "Details persisted to %s\n%s",
-                dialog_id,
-                stage,
-                e,
-                self.diagnostic_log_path,
-                payload["traceback"],
-            )
+        except Exception:
+            logger.exception("LightMem generation error")
             raise
 

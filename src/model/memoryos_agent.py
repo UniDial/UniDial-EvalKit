@@ -207,7 +207,7 @@ class MemoryOSModel(BaseModel):
             # The auto add_memory inside get_response is disabled in memoryos.py.
             new_raw_inputs = []
             current_user_msg = None
-            for i in range(start_idx + 2, last_user_idx): # +2 to skip the first two messages (system and user), avoid repeated add_memory calls
+            for i in range(start_idx, last_user_idx):
                 msg = messages[i]
                 role = msg.get("role", "").lower()
                 content = msg.get("content")
@@ -222,6 +222,10 @@ class MemoryOSModel(BaseModel):
                         client.add_memory(user_input=current_user_msg, agent_response="")
                         new_raw_inputs.append(f"User: {current_user_msg}\nAssistant: ")
                         current_user_msg = content
+                elif role == "system" and i == 0 and content:
+                    ui = f"System prompt: {content}"
+                    client.add_memory(user_input=ui, agent_response="")
+                    new_raw_inputs.append(f"User: {ui}\nAssistant: ")
                 elif role == "assistant":
                     if current_user_msg is not None:
                         client.add_memory(user_input=current_user_msg, agent_response=content)

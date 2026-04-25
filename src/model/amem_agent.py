@@ -196,7 +196,7 @@ class AMemModel(BaseModel):
         if isinstance(raw_context, list):
             return raw_context
         if not isinstance(raw_context, str):
-            return [{"source": "amem_vector_db", "content": str(raw_context), "score": None}]
+            return [{"source": "amem_vector_db", "content": str(raw_context)}]
 
         pattern = (
             r"talk start time:(?P<talk_start_time>.*?)"
@@ -213,12 +213,12 @@ class AMemModel(BaseModel):
                 "memory_context": match.group("memory_context").strip(),
                 "memory_keywords": cls._parse_list_field(match.group("memory_keywords")),
                 "memory_tags": cls._parse_list_field(match.group("memory_tags")),
-                "score": None,
+                # "score": None,
             })
 
         if parsed_items:
             return parsed_items
-        return [{"source": "amem_vector_db", "content": raw_context, "score": None}]
+        return [{"source": "amem_vector_db", "content": raw_context}]
 
     def generate(
         self,
@@ -287,6 +287,10 @@ class AMemModel(BaseModel):
                         agent.add_memory(content=new_text)
                         new_texts.append(new_text)
                     current_user_msg = content
+                elif role == "system" and i == 0 and content:
+                    new_text = f"System prompt: {content}"
+                    agent.add_memory(content=new_text)
+                    new_texts.append(new_text)
                 elif role == "assistant":
                     if current_user_msg is not None:
                         new_text = f"User input: {current_user_msg}\nAI response: {content}"
