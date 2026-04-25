@@ -33,8 +33,6 @@ try:
     from .HippoRAG.src.hipporag.utils.config_utils import BaseConfig
     logger.info("Successfully imported HippoRAG")
 except ImportError as e:
-    import logging
-    logger = logging.getLogger(__name__)
     logger.error(f"Failed to import HippoRAG: {e}")
     HippoRAG = None
     BaseConfig = None
@@ -213,6 +211,8 @@ class HippoRAGModel(BaseModel):
                     if current_user_msg is not None:
                         new_texts.append(f"User: {current_user_msg}")
                     current_user_msg = content
+                elif role == "system" and i == 0 and content:
+                    new_texts.append(f"System: {content}")
                 elif role == "assistant":
                     if current_user_msg is not None:
                         new_texts.append(f"User: {current_user_msg}\nAssistant: {content}")
