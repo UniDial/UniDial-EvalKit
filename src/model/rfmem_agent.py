@@ -198,6 +198,9 @@ class RFMemModel(BaseModel):
                     current_user_msg = None
                 else:
                     new_texts.append(f"Assistant: {content}")
+            elif role == "system" and i == 0 and content:
+                new_texts.append(f"System: {content}")
+                
         if current_user_msg is not None:
             new_texts.append(f"User: {current_user_msg}")
 
