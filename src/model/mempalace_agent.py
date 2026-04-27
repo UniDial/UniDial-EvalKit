@@ -6,6 +6,7 @@ import logging
 import os
 import re
 import shutil
+import sys
 import threading
 import time
 from datetime import datetime as _dt
@@ -19,9 +20,19 @@ from .base import BaseModel
 
 logger = logging.getLogger(__name__)
 
+def _ensure_mempalace_import_paths() -> None:
+    """Make bundled mempalace importable for its internal absolute imports."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    mempalace_root = os.path.join(current_dir, "mempalace")
+    if os.path.isdir(mempalace_root) and mempalace_root not in sys.path:
+        sys.path.insert(0, mempalace_root)
+
+
+_ensure_mempalace_import_paths()
+
 try:
     from mempalace.miner import detect_hall, NORMALIZE_VERSION as _NORMALIZE_VERSION
-    from mempalace.miner import _extract_entities_for_metadata  # type: ignore
+    from mempalace.miner import _extract_entities_for_metadata
 except Exception as e:
     detect_hall = None
     _extract_entities_for_metadata = None
@@ -98,19 +109,19 @@ def _name_boost(names: List[str], doc_text: str) -> float:
 
 # ----- Embedding function (fastembed wrapper) -----
 
-_EMBED_MODEL_MAP = {
-    "bge-base": "BAAI/bge-base-en-v1.5",
-    "bge-large": "BAAI/bge-large-en-v1.5",
-    "nomic": "nomic-ai/nomic-embed-text-v1.5",
-    "mxbai": "mixedbread-ai/mxbai-embed-large-v1",
-}
+# _EMBED_MODEL_MAP = {
+#     "bge-base": "BAAI/bge-base-en-v1.5",
+#     "bge-large": "BAAI/bge-large-en-v1.5",
+#     "nomic": "nomic-ai/nomic-embed-text-v1.5",
+#     "mxbai": "mixedbread-ai/mxbai-embed-large-v1",
+# }
 
 
 def _make_embed_fn(model_name: str):
     """Return ChromaDB embedding function or None for default."""
     if not model_name or model_name == "default":
         return None
-    hf_name = _EMBED_MODEL_MAP.get(model_name, model_name)
+    # hf_name = _EMBED_MODEL_MAP.get(model_name, model_name)
     try:
         import numpy as np  # noqa: F401
         from fastembed import TextEmbedding
@@ -132,7 +143,7 @@ def _make_embed_fn(model_name: str):
             # ChromaDB 1.5+ requires a numpy array (not list[list[float]]).
             return _np.asarray(list(self._model.embed(input)), dtype=_np.float32)
 
-    return _FastEmbedFn(hf_name)
+    return _FastEmbedFn(model_name)
 
 
 # Suppress chromadb warnings that dump entire embedding vectors on bad upsert.
@@ -151,6 +162,7 @@ class MempalaceModel(BaseModel):
         model_name: str,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
+        embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
         **kwargs: Any,
     ) -> None:
         super().__init__(model_name, **kwargs)
@@ -171,14 +183,16 @@ class MempalaceModel(BaseModel):
                 f"mempalace_mode must be 'raw' or 'hybrid', got '{self.mode}'"
             )
 
-        self.granularity = str(kwargs.get("mempalace_granularity", "session")).lower()
+        self.granularity = str(kwargs.get("mempalace_granularity", "qa_pair")).lower()
         if self.granularity not in {"qa_pair", "session"}:
             raise ValueError(
                 f"mempalace_granularity must be 'qa_pair' or 'session', got '{self.granularity}'"
             )
 
         self.top_k = int(kwargs.get("mempalace_top_k", 10))
-        self.embed_model = str(kwargs.get("mempalace_embed_model", "bge-large")).strip()
+        self.embed_model = str(
+            kwargs.get("embedding_model_name", kwargs.get("mempalace_embed_model", embedding_model_name))
+        ).strip()
         self.hybrid_weight = float(kwargs.get("mempalace_hybrid_weight", 0.30))
 
         self.llm_rerank = bool(kwargs.get("mempalace_llm_rerank", self.mode == "hybrid"))
@@ -606,8 +620,6 @@ class MempalaceModel(BaseModel):
         snippets = []
         for i, hit in enumerate(hits[: self.top_k], 1):
             text = str(hit.get("text", "")).strip()
-            if len(text) > 700:
-                text = text[:700] + "...<truncated>"
             meta = hit.get("metadata") or {}
             ts = str(meta.get("timestamp", "") or "").strip()
             header = f"[Memory {i}, {ts}]" if ts else f"[Memory {i}]"
@@ -619,28 +631,28 @@ class MempalaceModel(BaseModel):
             + prompt_question
         )
 
-    @staticmethod
-    def _extract_retrieval_query(full_text: str) -> str:
-        if not full_text:
-            return full_text
-        if "Question:" not in full_text:
-            return full_text
+    # @staticmethod
+    # def _extract_retrieval_query(full_text: str) -> str:
+    #     if not full_text:
+    #         return full_text
+    #     if "Question:" not in full_text:
+    #         return full_text
 
-        tail = full_text.rsplit("Question:", 1)[-1].strip()
+    #     tail = full_text.rsplit("Question:", 1)[-1].strip()
 
-        for marker in ("Short answer:", "Short answer", "Answer:"):
-            if marker in tail:
-                tail = tail.split(marker)[0].strip()
+    #     for marker in ("Short answer:", "Short answer", "Answer:"):
+    #         if marker in tail:
+    #             tail = tail.split(marker)[0].strip()
 
-        cat2_suffix = "Use DATE of CONVERSATION to answer with an approximate date."
-        if cat2_suffix in tail:
-            tail = tail.replace(cat2_suffix, "").strip()
+    #     cat2_suffix = "Use DATE of CONVERSATION to answer with an approximate date."
+    #     if cat2_suffix in tail:
+    #         tail = tail.replace(cat2_suffix, "").strip()
 
-        cat5_match = re.search(r"\s*Select the correct answer:.*$", tail, flags=re.DOTALL)
-        if cat5_match:
-            tail = tail[: cat5_match.start()].strip()
+    #     cat5_match = re.search(r"\s*Select the correct answer:.*$", tail, flags=re.DOTALL)
+    #     if cat5_match:
+    #         tail = tail[: cat5_match.start()].strip()
 
-        return tail or full_text
+    #     return tail or full_text
 
     @staticmethod
     def _system_content(messages: List[Dict[str, Any]]) -> str:
@@ -813,7 +825,7 @@ class MempalaceModel(BaseModel):
         # Use the bare question for retrieval to match MemPalace's bench
         # (which queries with raw `qa["question"]`); the full bundled
         # `final_query` is still used to build the LLM prompt.
-        retrieval_query = self._extract_retrieval_query(final_query)
+        retrieval_query = final_query # self._extract_retrieval_query(final_query)
 
         # Phase 2: Retrieve.
         if self.mode == "raw":
