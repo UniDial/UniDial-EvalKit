@@ -13,6 +13,7 @@ from openai import OpenAI
 
 
 from .base import BaseModel
+from src.dataset.data_utils import normalize_statement
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +118,7 @@ class RFMemModel(BaseModel):
                     "retriever": None,
                     "dialogue_messages": [],  # List[{"role": str, "content": str}]
                     "last_ingested_idx": 0,
+                    "current_timestamp": None,
                 }
 
     def end_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
@@ -124,6 +126,15 @@ class RFMemModel(BaseModel):
             return
         with self._state_lock:
             self._dialog_states.pop(dialog_id, None)
+
+    def _format_memories_for_prompt(self, memories: List[str]) -> str:
+        cleaned_memories = [str(m).strip() for m in memories if str(m).strip()]
+        if not cleaned_memories:
+            return "(No related memories retrieved.)"
+        blocks = []
+        for idx, memory in enumerate(cleaned_memories, 1):
+            blocks.append(f"[Memory {idx}]\n{memory}")
+        return "\n---\n".join(blocks)
 
     def generate(
         self,
@@ -140,7 +151,7 @@ class RFMemModel(BaseModel):
         last_user_idx = -1
         for i in range(len(messages) - 1, -1, -1):
             if str(messages[i].get("role", "")).lower() == "user":
-                final_query = str(messages[i].get("content", "")).strip()
+                final_query, _ = normalize_statement(messages[i].get("content", ""))
                 last_user_idx = i
                 break
         if last_user_idx < 0 or not final_query:
@@ -155,6 +166,7 @@ class RFMemModel(BaseModel):
                         "retriever": None,
                         "dialogue_messages": [],
                         "last_ingested_idx": 0,
+                        "current_timestamp": None,
                     }
                     self._dialog_states[dialog_id] = state
         else:
@@ -162,6 +174,7 @@ class RFMemModel(BaseModel):
                 "retriever": None,
                 "dialogue_messages": [],
                 "last_ingested_idx": 0,
+                "current_timestamp": None,
             }
 
         start_idx = int(state.get("last_ingested_idx", 0))
@@ -169,51 +182,58 @@ class RFMemModel(BaseModel):
             start_idx = 0
 
         dialogue_messages = state["dialogue_messages"]
-        new_messages: List[Dict[str, str]] = []
+        new_dialogue_messages: List[Dict[str, str]] = []
+        has_new_history = False
+
+        def _with_timestamp_prefix(text: str) -> str:
+            if not text:
+                return text
+            ts = state.get("current_timestamp")
+            return f"[{ts}] {text}" if ts else text
+
         for i in range(start_idx, last_user_idx):
             msg = messages[i]
             role = str(msg.get("role", "")).lower()
-            content = str(msg.get("content", "")).strip()
-            if role not in ("user", "assistant") or not content:
-                continue
-            stamped = {"role": role, "content": content}
-            dialogue_messages.append(stamped)
-            new_messages.append(stamped)
-        state["last_ingested_idx"] = last_user_idx
-
-        new_texts: List[str] = []
-        current_user_msg: Optional[str] = None
-        for msg in new_messages:
-            role = str(msg.get("role", "")).lower()
-            content = str(msg.get("content", "")).strip()
+            content, date_str = normalize_statement(msg.get("content", ""))
+            if date_str is not None:
+                state["current_timestamp"] = date_str
             if not content:
                 continue
+
+            content_with_time = _with_timestamp_prefix(content)
+
             if role == "user":
-                if current_user_msg is not None:
-                    new_texts.append(f"User: {current_user_msg}")
-                current_user_msg = content
+                stamped = {"role": "user", "content": content_with_time}
+                dialogue_messages.append(stamped)
+                new_dialogue_messages.append(stamped)
+                has_new_history = True
             elif role == "assistant":
-                if current_user_msg is not None:
-                    new_texts.append(f"User: {current_user_msg}\nAssistant: {content}")
-                    current_user_msg = None
-                else:
-                    new_texts.append(f"Assistant: {content}")
-            elif role == "system" and i == 0 and content:
-                new_texts.append(f"System: {content}")
-                
-        if current_user_msg is not None:
-            new_texts.append(f"User: {current_user_msg}")
+                stamped = {"role": "assistant", "content": content_with_time}
+                dialogue_messages.append(stamped)
+                new_dialogue_messages.append(stamped)
+                has_new_history = True
+            elif role == "system":
+                # Keep system statements as standalone User statements.
+                stamped = {"role": "user", "content": content_with_time}
+                dialogue_messages.append(stamped)
+                new_dialogue_messages.append(stamped)
+                has_new_history = True
+            else:
+                continue
+        state["last_ingested_idx"] = last_user_idx
 
         retriever = state.get("retriever")
         if retriever is None and dialogue_messages:
             retriever = self._create_rfmem_client(dialog_id=dialog_id, dialogue_messages=dialogue_messages)
             state["retriever"] = retriever
-        elif retriever is not None and new_messages:
+        elif retriever is not None and has_new_history:
             try:
+                # EmbeddingRetrievaler.build_from_history is a full rebuild API.
+                # It must receive full dialogue history instead of only increments.
                 retriever.build_from_history(dialogue_messages)
             except Exception as e:
                 logger.warning(
-                    "RF-Mem incremental re-build failed for dialog_id=%s: %s; fallback to re-create client",
+                    "RF-Mem full rebuild after new history failed for dialog_id=%s: %s; fallback to re-create client",
                     dialog_id,
                     e,
                 )
@@ -262,15 +282,16 @@ class RFMemModel(BaseModel):
             except Exception as e:
                 logger.warning("RF-Mem retrieval failed for dialog_id=%s: %s", dialog_id, e)
 
-        if retrieved_memories:
-            prompt = (
-                "Please answer the question based on the relevant chat history.\n\n"
-                + "\n".join(str(m) for m in retrieved_memories)
-                + "\n\n"
-                + final_query
-            )
-        else:
-            prompt = final_query
+        memories_str = self._format_memories_for_prompt(retrieved_memories)
+        prompt = f""" 
+Based on following dialogue history and related memories, please answer final question. Ensure your answer is based on the content discussed in the dialogues. 
+
+# User Memories: 
+{memories_str}
+             
+# Final Question
+{final_query}
+""".strip()
 
         effective_temperature = float(kwargs.get("rfmem_temperature", self.rfmem_temperature))
         effective_max_tokens = int(kwargs.get("rfmem_max_tokens", self.rfmem_max_tokens))
@@ -307,11 +328,10 @@ class RFMemModel(BaseModel):
                         "query": final_query,
                         "timestamp": time.time(),
                         "latency_seconds": round(time.time() - dialog_start_time, 3),
-                        "model_name": self.model_name,
                         "retrieval_mode": retrieval_mode,
                     },
                     "memory_update": {
-                        "chunked_documents": new_texts,
+                        "dialogue_messages": new_dialogue_messages,
                     },
                     "retrieval": {
                         "search_queries": [final_query],

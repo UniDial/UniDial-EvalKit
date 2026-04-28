@@ -10,6 +10,7 @@ import time
 from typing import Any, Dict, List, Optional
 
 from .base import BaseModel
+from src.dataset.data_utils import normalize_statement
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -103,7 +104,8 @@ class HippoRAGModel(BaseModel):
                 self._dialog_states[dialog_id] = {
                     "hipporag": None,
                     "last_ingested_idx": 0,
-                    "dialogue_texts": []
+                    "dialogue_texts": [],
+                    "current_timestamp": None,
                 }
 
     def end_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
@@ -164,9 +166,10 @@ class HippoRAGModel(BaseModel):
             
             # extract the final user query
             final_query = "" 
+            final_query_date = None
             last_msg = messages[-1]
             if last_msg.get("role", "").lower() == "user":
-                final_query = str(last_msg.get("content", ""))
+                final_query, final_query_date = normalize_statement(last_msg.get("content", ""))
      
             # if no final query, return empty string
             if not final_query:
@@ -179,14 +182,25 @@ class HippoRAGModel(BaseModel):
             if dialog_id is not None:
                 with self._state_lock:
                     state = self._dialog_states.get(dialog_id)
+                    if state is None:
+                        state = {
+                            "hipporag": None,
+                            "last_ingested_idx": 0,
+                            "dialogue_texts": [],
+                            "current_timestamp": None,
+                        }
+                        self._dialog_states[dialog_id] = state
 
             else:
                  # Stateless mode fallback
                  state = {
                     "hipporag": None,
                     "last_ingested_idx": 0,
-                    "dialogue_texts": []
+                    "dialogue_texts": [],
+                    "current_timestamp": None,
                 }
+            if final_query_date is not None:
+                state["current_timestamp"] = final_query_date
             
             
             start_idx = state["last_ingested_idx"]
@@ -205,20 +219,24 @@ class HippoRAGModel(BaseModel):
                 if i >= len(messages): break # Safety check
                 msg = messages[i]
                 role = str(msg.get("role", "")).lower()
-                content = str(msg.get("content", "")).strip()
+                content, date_str = normalize_statement(msg.get("content", ""))
+                if date_str is not None:
+                    state["current_timestamp"] = date_str
+                timestamp_prefix = f"[{state['current_timestamp']}] " if state.get("current_timestamp") else ""
+                content_with_time = f"{timestamp_prefix}{content}" if content else ""
                 
                 if role == "user":
                     if current_user_msg is not None:
                         new_texts.append(f"User: {current_user_msg}")
-                    current_user_msg = content
+                    current_user_msg = content_with_time
                 elif role == "system" and i == 0 and content:
-                    new_texts.append(f"System: {content}")
+                    new_texts.append(f"User: {content_with_time}")
                 elif role == "assistant":
                     if current_user_msg is not None:
-                        new_texts.append(f"User: {current_user_msg}\nAssistant: {content}")
+                        new_texts.append(f"User: {current_user_msg}\nAssistant: {content_with_time}")
                         current_user_msg = None
                     else:
-                        new_texts.append(f"Assistant: {content}")
+                        new_texts.append(f"Assistant: {content_with_time}")
             
             
             if current_user_msg is not None:

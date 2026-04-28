@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .base import BaseModel
+from src.dataset.data_utils import normalize_statement
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +108,8 @@ class LightMemModel(BaseModel):
             "embedding_device": kwargs.get("embedding_device", default_device),
             "llmlingua_model_name": kwargs.get(
                 "llmlingua_model_name",
-                "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+                "/mnt/shared-storage-user/pceval-jiaqi/tmp_cache/huggingface/hub/models--microsoft--llmlingua-2-bert-base-multilingual-cased-meetingbank/snapshots/5f0c82792b7ea14c6484e015b6a072009496b7f2"
+                # "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
             ),
             "llmlingua_device_map": kwargs.get("llmlingua_device_map", default_device),
             "llmlingua_buffer_len": int(kwargs.get("llmlingua_buffer_len", 512)),
@@ -144,17 +146,83 @@ class LightMemModel(BaseModel):
 
     def _dedupe_role_prefix(self, text: str) -> str:
         """Fix duplicated prefixes like 'User: User:' for logging."""
-        cleaned = str(text or "").strip()
-        cleaned = re.sub(
-            r"^(User|Assistant)\s*:\s*(User|Assistant)\s*:\s*",
-            lambda m: f"{m.group(2)}: ",
-            cleaned,
-            flags=re.IGNORECASE,
-        )
+        cleaned, _ = normalize_statement(str(text or ""))
         return cleaned
+
+    def _normalize_timestamp(
+        self,
+        raw_timestamp: Optional[str],
+        fallback_ts: dt.datetime,
+        offset_ms: int = 0,
+    ) -> str:
+        """
+        Normalize timestamp to ISO-8601.
+
+        - Prefer parsed DATE strings when available.
+        - Fall back to provided UTC timestamp.
+        - Add a tiny per-message offset to avoid identical stamps in a batch.
+        """
+        if not isinstance(fallback_ts, dt.datetime):
+            fallback_ts = dt.datetime.now(dt.timezone.utc)
+        if fallback_ts.tzinfo is None:
+            fallback_ts = fallback_ts.replace(tzinfo=dt.timezone.utc)
+
+        fallback_with_offset = fallback_ts + dt.timedelta(milliseconds=offset_ms)
+        if not raw_timestamp:
+            return fallback_with_offset.isoformat()
+
+        raw_text = str(raw_timestamp).strip()
+        if not raw_text:
+            return fallback_with_offset.isoformat()
+
+        # 1) Fast path for ISO-like strings.
+        iso_candidate = raw_text.replace("Z", "+00:00")
+        try:
+            parsed = dt.datetime.fromisoformat(iso_candidate)
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=dt.timezone.utc)
+            return (parsed + dt.timedelta(milliseconds=offset_ms)).isoformat()
+        except ValueError:
+            pass
+
+        # 2) Parse common natural-language date strings from datasets.
+        normalized = re.sub(r"\s+", " ", raw_text).strip()
+        normalized = re.sub(r"(?i)\b(am|pm)\b", lambda m: m.group(1).upper(), normalized)
+        normalized_no_comma = normalized.replace(",", "")
+        candidates = [normalized, normalized_no_comma]
+        patterns = (
+            "%I:%M %p on %d %B %Y",
+            "%I:%M %p on %d %b %Y",
+            "%H:%M on %d %B %Y",
+            "%H:%M on %d %b %Y",
+            "%d %B %Y %I:%M %p",
+            "%d %b %Y %I:%M %p",
+            "%B %d %Y %I:%M %p",
+            "%b %d %Y %I:%M %p",
+        )
+
+        for candidate in candidates:
+            for pattern in patterns:
+                try:
+                    parsed = dt.datetime.strptime(candidate, pattern).replace(tzinfo=dt.timezone.utc)
+                    return (parsed + dt.timedelta(milliseconds=offset_ms)).isoformat()
+                except ValueError:
+                    continue
+
+        return fallback_with_offset.isoformat()
 
     def _normalize_text_key(self, text: str) -> str:
         return " ".join(str(text or "").strip().lower().split())
+
+    def _format_memories_for_prompt(self, memories: List[str]) -> str:
+        """Render retrieved memories with clear separators for readability."""
+        cleaned_memories = [self._dedupe_role_prefix(str(m)).strip() for m in memories if str(m).strip()]
+        if not cleaned_memories:
+            return "(No related memories retrieved.)"
+        blocks = []
+        for idx, memory in enumerate(cleaned_memories, 1):
+            blocks.append(f"[Memory {idx}]\n{memory}")
+        return "\n---\n".join(blocks)
 
     def _parse_extraction_output(self, output_prompt: str) -> List[Dict[str, Any]]:
         """Parse extraction LLM output into structured raw extraction blocks."""
@@ -439,6 +507,7 @@ class LightMemModel(BaseModel):
             "last_ingested_idx": 0,
             "collection_name": collection_name,
             "logged_entry_ids": set(),
+            "current_timestamp": None,
         }
 
     def begin_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
@@ -471,7 +540,7 @@ class LightMemModel(BaseModel):
         for i in range(len(messages) - 1, -1, -1):
             if str(messages[i].get("role", "")).lower() == "user":
                 last_user_idx = i
-                final_query = str(messages[i].get("content", "")).strip()
+                final_query, _ = normalize_statement(messages[i].get("content", ""))
                 break
         if last_user_idx < 0 or not final_query:
             return ""
@@ -510,11 +579,17 @@ class LightMemModel(BaseModel):
             for i in range(start_idx, last_user_idx):
                 msg = messages[i]
                 role = str(msg.get("role", "")).lower()
-                content = str(msg.get("content", "")).strip()
+                content, date_str = normalize_statement(msg.get("content", ""))
 
                 if role in ("system", "user", "assistant") and content:
-                    ts = dt.datetime.now(dt.timezone.utc) + dt.timedelta(milliseconds=i)
-                    time_stamp = ts.isoformat()
+                    if date_str is not None:
+                        state["current_timestamp"] = date_str
+                    ts = dt.datetime.now(dt.timezone.utc)
+                    time_stamp = self._normalize_timestamp(
+                        state.get("current_timestamp"),
+                        fallback_ts=ts,
+                        offset_ms=i,
+                    )
 
                     stamped = {
                         "role": role,
@@ -526,7 +601,7 @@ class LightMemModel(BaseModel):
                         if i == 0:
                             system_as_user = {
                                 "role": "user",
-                                "content": f"System prompt: {content}",
+                                "content": f"{content}",
                                 "time_stamp": time_stamp,
                             }
                             batches.append(
@@ -629,10 +704,16 @@ class LightMemModel(BaseModel):
             else:
                 retrieved_contexts = [self._dedupe_role_prefix(str(retrieved))] if retrieved else []
                 
-            prompt = (
-                f"Question:{final_query}\n"
-                f"Please answer the question based on the following memories: {str(retrieved)}"
-            )
+            memories_str = self._format_memories_for_prompt(retrieved_contexts)
+            prompt = f""" 
+Based on following dialogue history and related memories, please answer final question. Ensure your answer is based on the content discussed in the dialogues. 
+
+# User Memories: 
+{memories_str}
+             
+# Final Question
+{final_query}
+""".strip()
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=[

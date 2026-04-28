@@ -17,6 +17,7 @@ import chromadb
 from openai import OpenAI
 
 from .base import BaseModel
+from src.dataset.data_utils import normalize_statement
 
 logger = logging.getLogger(__name__)
 
@@ -200,17 +201,20 @@ class MempalaceModel(BaseModel):
         self.llm_base_url = str(kwargs.get("mempalace_llm_base_url", "") or self.base_url or "")
         self.llm_api_key = str(kwargs.get("mempalace_llm_key", "") or self.api_key or "")
 
-        self.default_wing = str(kwargs.get("mempalace_wing", "dialog_memory"))
-        self.cache_root = Path(
-            kwargs.get("mempalace_cache_root", str(Path("output") / "mempalace_cache"))
-        )
-        self.cache_root.mkdir(parents=True, exist_ok=True)
-        self.entry_max_chars = int(kwargs.get("mempalace_entry_max_chars", 1200))
-
         self.save_agent_logs = bool(kwargs.get("save_agent_logs", True))
         self.logs_output_dir = Path(kwargs.get("agent_logs_output_dir", "agent_logs"))
         if self.save_agent_logs:
             self.logs_output_dir.mkdir(parents=True, exist_ok=True)
+
+        self.default_wing = str(kwargs.get("mempalace_wing", "dialog_memory"))
+        artifacts_root = self.logs_output_dir.parent
+        run_cache_id = f"run_{os.getpid()}_{int(time.time() * 1000)}"
+        default_cache_root = artifacts_root / "mempalace_cache" / run_cache_id
+        self.cache_root = Path(
+            kwargs.get("mempalace_cache_root", str(default_cache_root))
+        )
+        self.cache_root.mkdir(parents=True, exist_ok=True)
+        self.entry_max_chars = int(kwargs.get("mempalace_entry_max_chars", 1200))
 
         self._dialog_states: Dict[int, Dict[str, Any]] = {}
         self._state_lock = threading.Lock()
@@ -274,25 +278,14 @@ class MempalaceModel(BaseModel):
 
     @staticmethod
     def _extract_date(content: str) -> Tuple[str, Optional[str]]:
-        text = content.lstrip()
-        if not text.startswith("DATE:"):
-            return content, None
-        after_date = text[len("DATE:"):]
-        if "\n\n" in after_date:
-            date_line, _, rest = after_date.partition("\n\n")
-            return rest.strip(), date_line.strip()
-        return "", after_date.strip()
+        return normalize_statement(content)
 
     _ROLE_PREFIXES = ("User:", "Assistant:", "user:", "assistant:")
 
     @classmethod
     def _strip_role_prefix(cls, content: str) -> str:
-        text = content.lstrip()
-        for p in cls._ROLE_PREFIXES:
-            if text.startswith(p):
-                rest = text[len(p):]
-                return rest[1:] if rest.startswith(" ") else rest
-        return content
+        cleaned, _ = normalize_statement(content)
+        return cleaned
 
     @classmethod
     def _render_acc(cls, acc: List[Tuple[str, str]]) -> str:
@@ -399,18 +392,53 @@ class MempalaceModel(BaseModel):
             if not cleaned:
                 continue
 
-            acc.append((role, cleaned))
             if role == "user":
+                # Keep every utterance: if a previous user chunk is still open,
+                # flush it as a dangling user with empty assistant.
+                if acc_has_user and acc:
+                    self._ingest_doc(
+                        state,
+                        self._render_acc(acc),
+                        source_file,
+                        timestamp=state.get("current_timestamp"),
+                        corpus_id=self._next_qa_corpus_id(state),
+                    )
+                    acc, acc_has_user = [], False
+
+                acc.append((role, cleaned))
                 acc_has_user = True
-            elif role == "assistant" and acc_has_user:
-                self._ingest_doc(
-                    state,
-                    self._render_acc(acc),
-                    source_file,
-                    timestamp=state.get("current_timestamp"),
-                    corpus_id=self._next_qa_corpus_id(state),
-                )
-                acc, acc_has_user = [], False
+            elif role == "assistant":
+                if acc_has_user:
+                    acc.append((role, cleaned))
+                    self._ingest_doc(
+                        state,
+                        self._render_acc(acc),
+                        source_file,
+                        timestamp=state.get("current_timestamp"),
+                        corpus_id=self._next_qa_corpus_id(state),
+                    )
+                    acc, acc_has_user = [], False
+                else:
+                    # Keep dangling assistant utterances by attaching an empty user.
+                    assistant_only = [(role, cleaned)]
+                    self._ingest_doc(
+                        state,
+                        self._render_acc(assistant_only),
+                        source_file,
+                        timestamp=state.get("current_timestamp"),
+                        corpus_id=self._next_qa_corpus_id(state),
+                    )
+
+        # Keep every utterance: flush any remaining dangling chunk.
+        if acc:
+            self._ingest_doc(
+                state,
+                self._render_acc(acc),
+                source_file,
+                timestamp=state.get("current_timestamp"),
+                corpus_id=self._next_qa_corpus_id(state),
+            )
+            acc, acc_has_user = [], False
 
         state["qa_acc"] = acc
         state["qa_acc_has_user"] = acc_has_user
@@ -599,69 +627,33 @@ class MempalaceModel(BaseModel):
 
     # ----- Prompt + LLM -----
 
-    @staticmethod
-    def _extract_prompt_question(full_text: str) -> str:
-        """Drop everything up to and including the FIRST 'Question:' marker.
-
-        For LoCoMo-bundled content this strips the conversational filler and
-        the redundant `Question: Based on the above context...` wrapper,
-        keeping `Based on...\\nQuestion: <real Q> Short answer:` for the LLM.
-        Returned unchanged if no `Question:` marker is present.
-        """
-        if not full_text or "Question:" not in full_text:
-            return full_text
-        _, _, rest = full_text.partition("Question:")
-        return rest.strip()
-
-    def _build_prompt(self, query: str, hits: List[Dict[str, Any]]) -> str:
-        prompt_question = self._extract_prompt_question(query)
-        if not hits:
-            return f"[Task]\n{prompt_question}"
-        snippets = []
+    def _format_memories_for_prompt(self, hits: List[Dict[str, Any]]) -> str:
+        blocks: List[str] = []
         for i, hit in enumerate(hits[: self.top_k], 1):
             text = str(hit.get("text", "")).strip()
+            if not text:
+                continue
             meta = hit.get("metadata") or {}
             ts = str(meta.get("timestamp", "") or "").strip()
-            header = f"[Memory {i}, {ts}]" if ts else f"[Memory {i}]"
-            snippets.append(f"{header} {text}")
-        return (
-            "Use the following relevant memories if they help answer the question.\n\n"
-            + "\n\n".join(snippets)
-            + "\n\n[Task]\n"
-            + prompt_question
-        )
+            if ts:
+                blocks.append(f"[Memory {i} | timestamp: {ts}]\n{text}")
+            else:
+                blocks.append(f"[Memory {i}]\n{text}")
+        if not blocks:
+            return "(No related memories retrieved.)"
+        return "\n---\n".join(blocks)
 
-    # @staticmethod
-    # def _extract_retrieval_query(full_text: str) -> str:
-    #     if not full_text:
-    #         return full_text
-    #     if "Question:" not in full_text:
-    #         return full_text
+    def _build_prompt(self, query: str, hits: List[Dict[str, Any]]) -> str:
+        memories_str = self._format_memories_for_prompt(hits)
+        return f""" 
+Based on following dialogue history and related memories, please answer final question. Ensure your answer is based on the content discussed in the dialogues. 
 
-    #     tail = full_text.rsplit("Question:", 1)[-1].strip()
-
-    #     for marker in ("Short answer:", "Short answer", "Answer:"):
-    #         if marker in tail:
-    #             tail = tail.split(marker)[0].strip()
-
-    #     cat2_suffix = "Use DATE of CONVERSATION to answer with an approximate date."
-    #     if cat2_suffix in tail:
-    #         tail = tail.replace(cat2_suffix, "").strip()
-
-    #     cat5_match = re.search(r"\s*Select the correct answer:.*$", tail, flags=re.DOTALL)
-    #     if cat5_match:
-    #         tail = tail[: cat5_match.start()].strip()
-
-    #     return tail or full_text
-
-    @staticmethod
-    def _system_content(messages: List[Dict[str, Any]]) -> str:
-        for msg in messages:
-            if str(msg.get("role", "")).lower() == "system":
-                cand = str(msg.get("content", "") or "").strip()
-                if cand:
-                    return cand
-        return "You are a helpful assistant."
+# User Memories: 
+{memories_str}
+             
+# Final Question
+{query}
+""".strip()
 
     # ----- Logging -----
 
@@ -711,7 +703,6 @@ class MempalaceModel(BaseModel):
                 "query": query,
                 "timestamp": time.time(),
                 "latency_seconds": round(latency_s, 3),
-                "model_name": self.model_name,
             },
             "memory_update": {
                 "ingested_docs": list(ingested_docs),
@@ -770,7 +761,7 @@ class MempalaceModel(BaseModel):
         last_user_idx = -1
         for i in range(len(messages) - 1, -1, -1):
             if str(messages[i].get("role", "")).lower() == "user":
-                final_query = str(messages[i].get("content", "") or "").strip()
+                final_query, _ = normalize_statement(messages[i].get("content", ""))
                 last_user_idx = i
                 break
         if last_user_idx < 0 or not final_query:
@@ -796,7 +787,9 @@ class MempalaceModel(BaseModel):
         for i in range(start_idx, last_user_idx):
             msg = messages[i]
             role = str(msg.get("role", "")).lower()
-            content = str(msg.get("content", "") or "").strip()
+            content, date_str = normalize_statement(msg.get("content", ""))
+            if date_str is not None:
+                state["current_timestamp"] = date_str
             if not content:
                 continue
             if role == "system":
@@ -840,14 +833,13 @@ class MempalaceModel(BaseModel):
 
         # Phase 4: Generate.
         prompt = self._build_prompt(final_query, hits)
-        system_content = self._system_content(messages)
         effective_temperature = 0.0 if temperature is None else float(temperature)
         effective_max_tokens = 1024 if max_tokens is None else int(max_tokens)
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=[
-                    {"role": "system", "content": system_content},
+                    {"role": "system", "content": "You are a helpful assistant."},
                     {"role": "user", "content": prompt},
                 ],
                 temperature=effective_temperature,

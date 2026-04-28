@@ -8,10 +8,10 @@ import uuid
 import threading
 import time
 import json
-import re
 from typing import Any, Dict, List, Optional
 
 from .base import BaseModel
+from src.dataset.data_utils import normalize_statement
 
 
 logger = logging.getLogger(__name__)
@@ -134,6 +134,7 @@ class MemoryOSModel(BaseModel):
                     "client": client_info["client"],
                     "last_ingested_idx": 0,
                     "temp_dir": client_info["temp_dir"],
+                    "current_timestamp": None,
                 }
 
     def end_dialog(self, dialog_id: Optional[int] = None, **kwargs: Any) -> None:
@@ -167,7 +168,7 @@ class MemoryOSModel(BaseModel):
             last_user_idx = -1
             for i in range(len(messages) - 1, -1, -1):
                 if messages[i].get("role", "").lower() == "user":
-                    final_query = str(messages[i].get("content", ""))
+                    final_query, _ = normalize_statement(messages[i].get("content", ""))
                     last_user_idx = i
                     break
 
@@ -187,6 +188,7 @@ class MemoryOSModel(BaseModel):
                             "client": client_info["client"],
                             "last_ingested_idx": 0,
                             "temp_dir": client_info["temp_dir"],
+                            "current_timestamp": None,
                         }
                         self._dialog_states[dialog_id] = state
             else:
@@ -196,6 +198,7 @@ class MemoryOSModel(BaseModel):
                     "client": client_info["client"],
                     "last_ingested_idx": 0,
                     "temp_dir": client_info["temp_dir"],
+                    "current_timestamp": None,
                 }
 
             client = state["client"]
@@ -207,34 +210,43 @@ class MemoryOSModel(BaseModel):
             # The auto add_memory inside get_response is disabled in memoryos.py.
             new_raw_inputs = []
             current_user_msg = None
+
+            def _with_timestamp_prefix(text: str) -> str:
+                if not text:
+                    return text
+                ts = state.get("current_timestamp")
+                return f"[{ts}] {text}" if ts else text
+
             for i in range(start_idx, last_user_idx):
                 msg = messages[i]
                 role = msg.get("role", "").lower()
-                content = msg.get("content")
-                content = str(content).strip()
+                content, date_str = normalize_statement(msg.get("content"))
+                if date_str is not None:
+                    state["current_timestamp"] = date_str
+                content_with_time = _with_timestamp_prefix(content)
 
                 if role == "user":
                     if current_user_msg is None:
-                        current_user_msg = content
+                        current_user_msg = content_with_time
                     else:
                         # Flush previous pending user as user-only memory, then
                         # keep current user pending for possible assistant pair.
                         client.add_memory(user_input=current_user_msg, agent_response="")
                         new_raw_inputs.append(f"User: {current_user_msg}\nAssistant: ")
-                        current_user_msg = content
+                        current_user_msg = content_with_time
                 elif role == "system" and i == 0 and content:
-                    ui = f"System prompt: {content}"
+                    ui = f"{content_with_time}"
                     client.add_memory(user_input=ui, agent_response="")
                     new_raw_inputs.append(f"User: {ui}\nAssistant: ")
                 elif role == "assistant":
                     if current_user_msg is not None:
-                        client.add_memory(user_input=current_user_msg, agent_response=content)
-                        new_raw_inputs.append(f"User: {current_user_msg}\nAssistant: {content}")
+                        client.add_memory(user_input=current_user_msg, agent_response=content_with_time)
+                        new_raw_inputs.append(f"User: {current_user_msg}\nAssistant: {content_with_time}")
                         current_user_msg = None
                     else:
                         # Handle assistant-only turn (no preceding user in window).
-                        client.add_memory(user_input="", agent_response=content)
-                        new_raw_inputs.append(f"User: \nAssistant: {content}")
+                        client.add_memory(user_input="", agent_response=content_with_time)
+                        new_raw_inputs.append(f"User: \nAssistant: {content_with_time}")
 
             # Flush dangling user message when history ends with an unpaired user.
             if current_user_msg is not None:
@@ -329,7 +341,7 @@ class MemoryOSModel(BaseModel):
                             "turn_index": last_user_idx + 1,
                             "query": final_query,
                             "timestamp": time.time(),
-                            "latency_seconds": round(latency, 3)
+                            "latency_seconds": round(latency, 3),
                         },
                         "memory_update": {
                             "new_raw_inputs": new_raw_inputs,
