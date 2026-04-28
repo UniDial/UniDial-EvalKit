@@ -108,8 +108,7 @@ class LightMemModel(BaseModel):
             "embedding_device": kwargs.get("embedding_device", default_device),
             "llmlingua_model_name": kwargs.get(
                 "llmlingua_model_name",
-                "/mnt/shared-storage-user/pceval-jiaqi/tmp_cache/huggingface/hub/models--microsoft--llmlingua-2-bert-base-multilingual-cased-meetingbank/snapshots/5f0c82792b7ea14c6484e015b6a072009496b7f2"
-                # "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
+                "microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank",
             ),
             "llmlingua_device_map": kwargs.get("llmlingua_device_map", default_device),
             "llmlingua_buffer_len": int(kwargs.get("llmlingua_buffer_len", 512)),
