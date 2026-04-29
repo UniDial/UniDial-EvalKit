@@ -260,6 +260,7 @@ class RFMemModel(BaseModel):
                     score_bt=self.score_low,
                 )
                 retrieval_mode = mode
+                # mode == "slow" # for memorycode
                 if mode == "fast":
                     hits = retriever.retrieve(
                         final_query,

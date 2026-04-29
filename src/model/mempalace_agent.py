@@ -787,15 +787,18 @@ Based on following dialogue history and related memories, please answer final qu
         for i in range(start_idx, last_user_idx):
             msg = messages[i]
             role = str(msg.get("role", "")).lower()
-            content, date_str = normalize_statement(msg.get("content", ""))
-            if date_str is not None:
-                state["current_timestamp"] = date_str
-            if not content:
-                continue
+            raw_content = str(msg.get("content", ""))
+            content, _ = normalize_statement(raw_content)
             if role == "system":
+                if not content:
+                    continue
                 new_system_msgs.append(content)
             elif role in {"user", "assistant"}:
-                new_msgs.append({"role": role, "content": content})
+                # Keep raw text so DATE markers are parsed in ingest stage,
+                # where timestamp updates and chunk boundaries are handled.
+                if not raw_content.strip():
+                    continue
+                new_msgs.append({"role": role, "content": raw_content})
         state["last_ingested_idx"] = last_user_idx
 
         source_file = (
