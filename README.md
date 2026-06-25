@@ -1,4 +1,17 @@
-# UniDial-EvalKit: A Unified Toolkit for Evaluating Multi-Faceted Conversational Abilities
+<h1 align="center">
+  <img src="assets/logo.jpg" alt="UDE Logo" width="100" height="100" align="absmiddle">
+  UniDial-EvalKit
+</h1>
+
+<div align="center">
+  <h2 align="center">
+  <a href="https://github.com/UniDial/UniDial-EvalKit" target='_blank' style="text-decoration: none;"><img src="https://visitor-badge.laobi.icu/badge?page_id=UniDial/UniDial-EvalKit"></a>
+  <a href="https://arxiv.org/abs/2603.23160" style="display: inline-block; text-align: center;">
+      <img alt="arXiv" src="https://img.shields.io/badge/arXiv-2603.23160-b31b1b.svg?style=flat">
+  </a>
+  <a href="https://github.com/UniDial/UniDial-EvalKit/stargazers" target='_blank' style="text-decoration: none;"><img src="https://img.shields.io/github/stars/UniDial/UniDial-EvalKit"></a>
+</div>
+
 
 **UniDial-EvalKit** (UDE) is a unified framework focusing on the **evaluation of multi-turn interactions in Large Language Models (LLMs)**. We are committed to building a comprehensive evaluation system for long-term interactions covering dimensions such as **memory, understanding, safety, mathematics, and code**. By integrating multiple mainstream benchmarks for comprehensive comparison, UniDial-EvalKit provides a full-scale, standardized capability profile for the evolution of multi-turn human-AI interaction technologies in LLMs and Agent systems.
 
@@ -16,12 +29,29 @@ As a modular and extensible evaluation tool, UniDial-EvalKit decouples data load
   - **Task-Specific**: `mathchat` (Math), `memorycode` (Code), `multi_if` (Instruction Following), `personamem` (Personalization)
 - **Flexible Aggregation**: Supports multi-level score aggregation strategies (Mean/Min/Max) from **Turn** to **Dialog** to **Dataset**.
 
+## 📊 Leaderboard
+
+Below are the multi-dimensional evaluation results using UniDial-EvalKit (Judge Model: GPT-4.1):
+
+| Benchmark     | Metrics                      | DeepSeek-V3.2 | Qwen3-Max-Thinking |
+|---------------|------------------------------|---------------|--------------------|
+| LoCoMo        | `f1_score`, `recall`         | 59.25         |62.11               |
+| MathChat      | `llm_judge`, `numeric_match` | 77.87         |77.43               |
+| MemoryCode    | `code_math`                  | 25.99         |34.06               |
+| MT-Bench-101  | `llm_judge`                  | 91.17         |93.62               |
+| PersonaMem    | `exact_match`                | 64.52         |65.20               |
+| MultiIF       | `instruction_following`      | 64.23         |68.93               |
+| SafeDialBench | `llm_judge`                  | 53.95         |61.33               |
+
+> ⚠️ All evaluations are conducted in a multi-turn user-assistant interaction format; evaluation settings may differ from the original papers. Results are summarized using `agg_turn_stat=mean`, `agg_dialog_stat=min`, and `agg_dataset_level=dialog`.
+
+> 🔄 Evaluation results and in-depth analysis for more models will be released gradually. Stay tuned!
 
 ## 🛠️ Installation
 
 1. Clone the repository:
    ```bash
-   git clone xxx
+   git clone https://github.com/UniDial/UniDial-EvalKit.git
    cd UniDial-EvalKit
    ```
 
@@ -207,4 +237,34 @@ src/
 script/
 ├── vllm_server.sh    # Example for local vLLM model deployment
 └── test_vllm_client.sh  # Example for vLLM evaluation call
+```
+
+## 📝 TODO / Roadmap
+
+- [ ] Add User Simulator
+- [ ] Add Agent backend to support agent-based evaluation
+- [ ] Extend multimodal evaluation benchmarks
+
+## 🤝 Get Involved
+
+We welcome researchers and developers interested in dialogue evaluation to contribute! If you have any questions, suggestions, or collaboration intentions, please feel free to contact us:
+
+- 🐛 Issue: [GitHub Issues](https://github.com/UniDial/UniDial-EvalKit/issues)
+- 🔀 Pull Request: [GitHub PRs](https://github.com/UniDial/UniDial-EvalKit/pulls)
+
+
+## 🖊️ Citation
+
+If you use UniDial-EvalKit in your research, please cite the following BibTeX:
+
+```bibtex
+@misc{jia2026unidialevalkitunifiedtoolkitevaluating,
+      title={UniDial-EvalKit: A Unified Toolkit for Evaluating Multi-Faceted Conversational Abilities}, 
+      author={Qi Jia and Haodong Zhao and Dun Pei and Xiujie Song and Shibo Wang and Zijian Chen and Zicheng Zhang and Xiangyang Zhu and Guangtao Zhai},
+      year={2026},
+      eprint={2603.23160},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2603.23160}, 
+}
 ```
