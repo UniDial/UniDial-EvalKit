@@ -2,4 +2,6 @@ __pycache__/
 .DS_Store
 raw_data/*
 data/*
-output/*
+output-all/*
+all-MiniLM-L6-v2/*
+analysis/
