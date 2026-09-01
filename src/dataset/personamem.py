@@ -3,9 +3,12 @@ import csv
 from pathlib import Path
 from typing import Iterable, Any, Dict, List, Optional
 
+from src.registry import register_dataset
+
 from .base import BenchmarkDataset, BenchmarkContext
 from .schema import Dialog, Turn, TurnEvalConfig, MetricConfig, DialogEvalConfig
 
+@register_dataset()
 class PersonaMemDataset(BenchmarkDataset):
     benchmark_id: str = "personamem"
 

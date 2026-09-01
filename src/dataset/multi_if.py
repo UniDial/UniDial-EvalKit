@@ -6,11 +6,14 @@ import logging
 from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Any
 
+from src.registry import register_dataset
+
 from .base import BenchmarkContext, BenchmarkDataset
 from .schema import Dialog, Turn, TurnEvalConfig, MetricConfig, DialogEvalConfig
 
 logger = logging.getLogger(__name__)
 
+@register_dataset()
 class MultiIFDataset(BenchmarkDataset):
     benchmark_id = "multi_if"
 

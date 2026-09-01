@@ -8,6 +8,8 @@ import time
 import threading
 from typing import Any, Dict, List, Optional
 
+from src.registry import register_model
+
 from .base import BaseModel
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -124,6 +126,7 @@ class AdvancedMemAgent:
             logger.error(f"Error in answer_question: {e}")
             raise e
 
+@register_model("amem")
 class AMemModel(BaseModel):
     def __init__(
         self,

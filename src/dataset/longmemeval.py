@@ -3,10 +3,13 @@ from pathlib import Path
 from typing import Iterable, Any, Dict, List, Optional
 from collections import defaultdict
 
+from src.registry import register_dataset
+
 from .base import BenchmarkDataset, BenchmarkContext
 from .schema import Dialog, Turn, TurnEvalConfig, MetricConfig, DialogEvalConfig
 
 
+@register_dataset()
 class LongMemEvalDataset(BenchmarkDataset):
     benchmark_id: str = "longmemeval"
 

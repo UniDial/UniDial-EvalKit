@@ -6,6 +6,8 @@ from typing import Any, Dict, List, Optional
 import time
 
 
+from src.registry import register_model
+
 from .base import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -18,6 +20,7 @@ except ImportError:
     OpenAI = None
 
 
+@register_model("openai")
 class OpenAIModel(BaseModel):
     """
     OpenAI API Wrapper for chat completion.

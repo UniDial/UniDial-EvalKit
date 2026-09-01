@@ -13,6 +13,8 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from src.registry import register_model
+
 from .base import BaseModel
 from src.dataset.data_utils import normalize_statement
 
@@ -41,6 +43,7 @@ except ImportError as e:
     LightMemory = None
 
 
+@register_model("lightmem")
 class LightMemModel(BaseModel):
     """
     Wrapper that adapts LightMem to the project's BaseModel interface.

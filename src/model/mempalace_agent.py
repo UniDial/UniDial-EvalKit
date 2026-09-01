@@ -16,6 +16,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import chromadb
 from openai import OpenAI
 
+from src.registry import register_model
+
 from .base import BaseModel
 from src.dataset.data_utils import normalize_statement
 
@@ -152,6 +154,7 @@ logging.getLogger("chromadb").setLevel(logging.ERROR)
 logging.getLogger("chromadb.segment").setLevel(logging.ERROR)
 
 
+@register_model("mempalace")
 class MempalaceModel(BaseModel):
     """
     Thin shell over mempalace + chromadb.

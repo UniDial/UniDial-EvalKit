@@ -12,6 +12,8 @@ from typing import Any, Dict, List, Optional
 from openai import OpenAI
 
 
+from src.registry import register_model
+
 from .base import BaseModel
 from src.dataset.data_utils import normalize_statement
 
@@ -31,6 +33,7 @@ _ensure_rfmem_import_paths()
 from .ICLR2026_RF_Mem.RF_mem.personamem_data.retri_mdoel.EmbdRetri import EmbeddingRetrievaler
 from .ICLR2026_RF_Mem.RF_mem.personamem_data.utils import decide_strategy_with_probe
 
+@register_model("rfmem")
 class RFMemModel(BaseModel):
     """
     Adapter wrapper for RF-Mem retrieval code.

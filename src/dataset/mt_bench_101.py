@@ -5,6 +5,8 @@ import logging
 from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Any
 
+from src.registry import register_dataset
+
 from .base import BenchmarkContext, BenchmarkDataset
 from .data_utils import iter_jsonl_lines
 from .schema import Dialog, Turn, TurnEvalConfig, MetricConfig, DialogEvalConfig
@@ -211,6 +213,7 @@ NEED_REF_TASKS = ['MR', 'GR']
 SKIP_FIRST_TASKS = ['FR', 'CR', 'AR', 'SA', 'SC', 'CM']
 
 
+@register_dataset()
 class MTBench101Dataset(BenchmarkDataset):
     benchmark_id = "mt_bench_101"
 

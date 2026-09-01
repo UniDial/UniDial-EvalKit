@@ -9,6 +9,8 @@ import json
 import time
 from typing import Any, Dict, List, Optional
 
+from src.registry import register_model
+
 from .base import BaseModel
 from src.dataset.data_utils import normalize_statement
 
@@ -39,6 +41,7 @@ except ImportError as e:
     BaseConfig = None
 
 
+@register_model("hipporag")
 class HippoRAGModel(BaseModel):
     """
     HippoRAG-v2 Model Wrapper for chat completion.

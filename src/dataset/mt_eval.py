@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Any
 from nltk import sent_tokenize
 
+from src.registry import register_dataset
+
 from .base import BenchmarkContext, BenchmarkDataset
 from .data_utils import iter_jsonl_lines
 from .schema import Dialog, Turn, TurnEvalConfig, MetricConfig, DialogEvalConfig
@@ -29,6 +31,7 @@ def _iter_mteval_files(raw_path: Path) -> Iterator[Path]:
 #     return value if isinstance(value, str) else str(value)
 
 
+@register_dataset()
 class MTEvalDataset(BenchmarkDataset):
     benchmark_id = "mt_eval"
 

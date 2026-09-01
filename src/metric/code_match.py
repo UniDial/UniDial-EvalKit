@@ -2,6 +2,8 @@ import ast
 import re
 from typing import Any, Dict, List, Optional, Union
 import numpy as np
+from src.registry import register_metric
+
 from .base import BaseMetric
 from .extract_objects_for_code_match import get_all_objects
 
@@ -16,6 +18,7 @@ def extract_code(text: str) -> str:
     extracted_text = code_match[0] if code_match else text
     return extracted_text
 
+@register_metric("code_match")
 class CodeMatchMetric(BaseMetric):
     metric_name: str = "code_match"
     

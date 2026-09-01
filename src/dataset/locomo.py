@@ -6,6 +6,8 @@ import re
 from pathlib import Path
 from typing import Dict, Iterable, List, Any
 
+from src.registry import register_dataset
+
 from .base import BenchmarkContext, BenchmarkDataset
 from .schema import Dialog, Turn, TurnEvalConfig, MetricConfig, DialogEvalConfig
 
@@ -21,6 +23,7 @@ QA_PROMPT_CAT_5 = """Based on the above context, answer the following question.
 
 Question: {} Short answer:"""
 
+@register_dataset()
 class LoCoMoDataset(BenchmarkDataset):
     benchmark_id = "locomo"
 

@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Dict, Iterable, Iterator, List, Optional, Any
 import re
 
+from src.registry import register_dataset
+
 from .base import BenchmarkContext, BenchmarkDataset
 from .data_utils import iter_jsonl_lines
 from .schema import Dialog, Turn, TurnEvalConfig, MetricConfig, DialogEvalConfig
@@ -72,6 +74,7 @@ def post_process_safedialbench(output: str) -> int:
 
 
 
+@register_dataset()
 class SafeDialBenchDataset(BenchmarkDataset):
     benchmark_id = "safedialbench"
 

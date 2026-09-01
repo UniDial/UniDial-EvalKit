@@ -7,6 +7,8 @@ import inspect
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Union, Callable
 
+from src.registry import register_metric
+
 from .base import BaseMetric
 from src.model.base import BaseModel
 from src.dataset.base import BenchmarkDataset
@@ -15,6 +17,7 @@ from src.dataset.data_utils import to_jsonable
 logger = logging.getLogger(__name__)
 
 
+@register_metric("llm_judge")
 class LLMJudge(BaseMetric):
     """
     LLM-based Judge metric.

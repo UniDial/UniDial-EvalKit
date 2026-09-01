@@ -1,56 +1,61 @@
+import importlib
 from typing import Dict, Type
 
 from .base import BaseModel
-from .openai import OpenAIModel
+from src.registry import MODEL_REGISTRY, register_model
 
-# Lazy-loaded model classes
-_LAZY_MODEL_MAP = {
-    "hipporag": (".hipporag_agent", "HippoRAGModel"),
-    "memoryos": (".memoryos_agent", "MemoryOSModel"),
-    "amem": (".amem_agent", "AMemModel"),
-    "lightmem": (".lightmem_agent", "LightMemModel"),
-    "rfmem": (".rfmem_agent", "RFMemModel"),
-    "mempalace": (".mempalace_agent", "MempalaceModel"),
+from . import openai  # noqa: F401
+
+# Lazy-loaded model modules (heavy / optional dependencies).
+_LAZY_MODEL_MODULES: Dict[str, str] = {
+    "hipporag": ".hipporag_agent",
+    "memoryos": ".memoryos_agent",
+    "amem": ".amem_agent",
+    "lightmem": ".lightmem_agent",
+    "rfmem": ".rfmem_agent",
+    "mempalace": ".mempalace_agent",
 }
 
-# Registry mapping model type names to model classes
-# Note: "openai" handles both standard OpenAI and Azure OpenAI via configuration
-MODEL_REGISTRY: Dict[str, Type[BaseModel]] = {
-    "openai": OpenAIModel,
-}
+
+def _ensure_model_registered(model_type: str) -> None:
+    if model_type in MODEL_REGISTRY:
+        return
+    module_path = _LAZY_MODEL_MODULES.get(model_type)
+    if module_path is None:
+        return
+    importlib.import_module(module_path, package=__name__)
+
 
 def get_model_class(model_type: str) -> Type[BaseModel]:
     """
     Get the model class by its type name.
-    
+
     Args:
-        model_type: The type of the model (e.g., "openai", "azure", "huggingface").
-        
+        model_type: The type of the model (e.g., "openai", "lightmem").
+
     Returns:
         The corresponding BaseModel subclass.
-        
+
     Raises:
         ValueError: If the model type is not found in the registry.
     """
     model_type = model_type.lower()
-    if model_type in MODEL_REGISTRY:
-        return MODEL_REGISTRY[model_type]
-    if model_type in _LAZY_MODEL_MAP:
-        module_name, class_name = _LAZY_MODEL_MAP[model_type]
-        import importlib
-        module = importlib.import_module(module_name, package=__name__)
-        cls = getattr(module, class_name)
-        MODEL_REGISTRY[model_type] = cls
-        return cls
-    raise ValueError(f"Model type '{model_type}' not found. Available types: {list(MODEL_REGISTRY.keys()) + list(_LAZY_MODEL_MAP.keys())}")
+    _ensure_model_registered(model_type)
+    if model_type not in MODEL_REGISTRY:
+        available = sorted(set(MODEL_REGISTRY.keys()) | set(_LAZY_MODEL_MODULES.keys()))
+        raise ValueError(
+            f"Model type '{model_type}' not found. Available types: {available}"
+        )
+    return MODEL_REGISTRY[model_type]
+
 
 def __getattr__(name: str):
-    for _, (module_name, class_name) in _LAZY_MODEL_MAP.items():
-        if name == class_name:
-            import importlib
-            module = importlib.import_module(module_name, package=__name__)
-            return getattr(module, class_name)
+    for model_type, module_path in _LAZY_MODEL_MODULES.items():
+        module = importlib.import_module(module_path, package=__name__)
+        if hasattr(module, name):
+            return getattr(module, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = [
     "BaseModel",
@@ -60,5 +65,6 @@ __all__ = [
     "AMemModel",
     "MempalaceModel",
     "MODEL_REGISTRY",
+    "register_model",
     "get_model_class",
 ]

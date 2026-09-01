@@ -3,10 +3,13 @@ from typing import Iterable, List, Dict, Any, Optional
 from pathlib import Path
 import re
 
+from src.registry import register_dataset
+
 from .base import BenchmarkDataset, BenchmarkContext
 from .schema import Dialog, Turn, TurnEvalConfig, MetricConfig, DialogEvalConfig
 
 
+@register_dataset()
 class MathChatDataset(BenchmarkDataset):
     benchmark_id: str = "mathchat"
 

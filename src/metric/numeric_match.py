@@ -1,6 +1,8 @@
 import re
 from typing import Any, Dict, Optional, Union
 
+from src.registry import register_metric
+
 from .base import BaseMetric
 
 def extract_last_number(text: str) -> Optional[float]:
@@ -18,6 +20,7 @@ def extract_last_number(text: str) -> Optional[float]:
     except ValueError:
         return None
         
+@register_metric("numeric_match")
 class NumericMatchMetric(BaseMetric):
     """
     Extracts the last number from the prediction and compares it with the reference number.

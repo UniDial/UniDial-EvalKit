@@ -4,6 +4,8 @@ import abc
 from typing import Any, Dict, Optional, Union, List
 import evaluate
 
+from src.registry import register_metric
+
 
 
 class BaseMetric(abc.ABC):
@@ -53,6 +55,7 @@ def _multiset_overlap(a, b):
 
 
 
+@register_metric("exact_match")
 class ExactMatchMetric(BaseMetric):
     """
     Exact Match metric.
@@ -91,6 +94,7 @@ class ExactMatchMetric(BaseMetric):
 
        
 
+@register_metric("precision")
 class PrecisionMetric(BaseMetric):
     """
     Word-level Precision:
@@ -127,6 +131,7 @@ class PrecisionMetric(BaseMetric):
         }
 
 
+@register_metric("recall")
 class RecallMetric(BaseMetric):
     """
     Word-level Recall:
@@ -174,6 +179,7 @@ class RecallMetric(BaseMetric):
             "recall": scores,
         }
 
+@register_metric("f1_score")
 class F1Metric(BaseMetric):
     """
     Word-level F1:

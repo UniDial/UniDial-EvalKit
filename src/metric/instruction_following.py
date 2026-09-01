@@ -27,6 +27,8 @@ except ImportError:
     sent_tokenize_thai = None
     word_tokenize_thai = None
 
+from src.registry import register_metric
+
 from .base import BaseMetric
 
 logger = logging.getLogger(__name__)
@@ -88,6 +90,7 @@ def count_words(text):
         return 0
     return num_words
 
+@register_metric("instruction_following")
 class InstructionFollowingMetric(BaseMetric):
     
     

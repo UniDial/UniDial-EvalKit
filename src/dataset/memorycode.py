@@ -3,10 +3,13 @@ from pathlib import Path
 from typing import Dict, Any, Iterable, List, Optional
 import re
 
+from src.registry import register_dataset
+
 from .base import BenchmarkDataset, BenchmarkContext
 from .schema import Dialog, Turn, TurnEvalConfig, MetricConfig, DialogEvalConfig
 
 
+@register_dataset()
 class MemoryCodeDataset(BenchmarkDataset):
     benchmark_id: str = "memorycode"
 
