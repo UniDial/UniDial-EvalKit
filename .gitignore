@@ -5,3 +5,7 @@ data/*
 output-all/*
 all-MiniLM-L6-v2/*
 analysis/
+down_sampling/
+
+frontend/
+backend/
