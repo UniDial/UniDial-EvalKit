@@ -3,11 +3,11 @@
     "dialog_id": 6,
     "turn_id": 1,
     "metric_name": "precision",
-    "score": 0.0,
+    "score": 1.0,
     "details": {
-      "score": 0.0,
-      "precision": 0.0,
-      "overlap": 0,
+      "score": 1.0,
+      "precision": 1.0,
+      "overlap": 1,
       "pred_len": 1,
       "ref_len": 1
     },

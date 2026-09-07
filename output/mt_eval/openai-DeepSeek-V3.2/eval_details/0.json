@@ -1,0 +1,387 @@
+[
+  {
+    "dialog_id": 0,
+    "turn_id": 1,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 0.9,
+    "details": {
+      "score": 0.9,
+      "rationale": "The translation is faithful to the original paragraph in terms of meaning and detail. The bustling city of 'Gasstopolis' is rendered as '香料之城加斯特罗波利斯', which preserves the flavor of the setting. The scent of spices and the sound of pans are accurately translated, as are the descriptions of Luminara's legendary cooking skills and her hidden restaurant. Some word choices, like '魔法坩埚' for 'The Magic Pot', and '老饕们' for 'food lovers', creatively adapt the original without distorting its intent. Overall, the translation is natural, vivid, and accurate, though with slight stylistic embellishments rather than being strictly literal. There are no extraneous explanations or content, adhering strictly to the constraints.",
+      "raw_output": "{\n  \"Rationale\": \"The translation is faithful to the original paragraph in terms of meaning and detail. The bustling city of 'Gasstopolis' is rendered as '香料之城加斯特罗波利斯', which preserves the flavor of the setting. The scent of spices and the sound of pans are accurately translated, as are the descriptions of Luminara's legendary cooking skills and her hidden restaurant. Some word choices, like '魔法坩埚' for 'The Magic Pot', and '老饕们' for 'food lovers', creatively adapt the original without distorting its intent. Overall, the translation is natural, vivid, and accurate, though with slight stylistic embellishments rather than being strictly literal. There are no extraneous explanations or content, adhering strictly to the constraints.\",\n  \"Score\": 9\n}",
+      "raw_judge_response_details": {
+        "id": "chatcmpl-DUs0IsormisS1uDzIf4rgouPXs9JO",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "```json\n{\n  \"Rationale\": \"The translation is faithful to the original paragraph in terms of meaning and detail. The bustling city of 'Gasstopolis' is rendered as '香料之城加斯特罗波利斯', which preserves the flavor of the setting. The scent of spices and the sound of pans are accurately translated, as are the descriptions of Luminara's legendary cooking skills and her hidden restaurant. Some word choices, like '魔法坩埚' for 'The Magic Pot', and '老饕们' for 'food lovers', creatively adapt the original without distorting its intent. Overall, the translation is natural, vivid, and accurate, though with slight stylistic embellishments rather than being strictly literal. There are no extraneous explanations or content, adhering strictly to the constraints.\",\n  \"Score\": 9\n}\n```",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": [],
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null
+            }
+          }
+        ],
+        "created": 1776249802,
+        "model": "gpt-4.1-2025-04-14",
+        "object": "chat.completion",
+        "service_tier": "default",
+        "system_fingerprint": "fp_63d8723934",
+        "usage": {
+          "completion_tokens": 179,
+          "prompt_tokens": 374,
+          "total_tokens": 553,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 3,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "rationale": "The response directly and accurately answers the question using the information from the article, correctly identifying 'Moonberry' as the magical ingredient and 'Gastrogriff' as the mythical creature that guarded it. The answer is clear, relevant, succinct, and contains no errors or omissions. Given the constraints, it meets all requirements for helpfulness, relevance, and accuracy.",
+      "raw_output": "{\n  \"Rationale\": \"The response directly and accurately answers the question using the information from the article, correctly identifying 'Moonberry' as the magical ingredient and 'Gastrogriff' as the mythical creature that guarded it. The answer is clear, relevant, succinct, and contains no errors or omissions. Given the constraints, it meets all requirements for helpfulness, relevance, and accuracy.\",\n  \"Score\": 10\n}",
+      "raw_judge_response_details": {
+        "id": "chatcmpl-DUs0KdKFNEVEpEDA37ZleuPr5nV53",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "```json\n{\n  \"Rationale\": \"The response directly and accurately answers the question using the information from the article, correctly identifying 'Moonberry' as the magical ingredient and 'Gastrogriff' as the mythical creature that guarded it. The answer is clear, relevant, succinct, and contains no errors or omissions. Given the constraints, it meets all requirements for helpfulness, relevance, and accuracy.\",\n  \"Score\": 10\n}\n```",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": [],
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null
+            }
+          }
+        ],
+        "created": 1776249804,
+        "model": "gpt-4.1-2025-04-14",
+        "object": "chat.completion",
+        "service_tier": "default",
+        "system_fingerprint": "fp_7a7fd0eb44",
+        "usage": {
+          "completion_tokens": 92,
+          "prompt_tokens": 180,
+          "total_tokens": 272,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 5,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 0.8,
+    "details": {
+      "score": 0.8,
+      "rationale": "The summary effectively captures the main characters (Luminara and Gastrogriff), the setting (Gastropolis and The Enchanted Pot), and the central quest for the Moonberry. It accurately notes Luminara's adventurous journey and the transformation of her restaurant through the new dish. However, it omits details such as Spatulon, the magical aspect of her cooking, and specific mystical locations like the Whispering Woods. The summary is concise and relevant, but lacks some vivid elements and minor details from the article, preventing a perfect score.",
+      "raw_output": "{\n  \"Rationale\": \"The summary effectively captures the main characters (Luminara and Gastrogriff), the setting (Gastropolis and The Enchanted Pot), and the central quest for the Moonberry. It accurately notes Luminara's adventurous journey and the transformation of her restaurant through the new dish. However, it omits details such as Spatulon, the magical aspect of her cooking, and specific mystical locations like the Whispering Woods. The summary is concise and relevant, but lacks some vivid elements and minor details from the article, preventing a perfect score.\",\n  \"Score\": 8\n}",
+      "raw_judge_response_details": {
+        "id": "chatcmpl-DUs0N8Uxz7n7HASJj29EZUfXcyq45",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "```json\n{\n  \"Rationale\": \"The summary effectively captures the main characters (Luminara and Gastrogriff), the setting (Gastropolis and The Enchanted Pot), and the central quest for the Moonberry. It accurately notes Luminara's adventurous journey and the transformation of her restaurant through the new dish. However, it omits details such as Spatulon, the magical aspect of her cooking, and specific mystical locations like the Whispering Woods. The summary is concise and relevant, but lacks some vivid elements and minor details from the article, preventing a perfect score.\",\n  \"Score\": 8\n}\n```",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": [],
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null
+            }
+          }
+        ],
+        "created": 1776249807,
+        "model": "gpt-4.1-2025-04-14",
+        "object": "chat.completion",
+        "service_tier": "default",
+        "system_fingerprint": "fp_7a7fd0eb44",
+        "usage": {
+          "completion_tokens": 129,
+          "prompt_tokens": 419,
+          "total_tokens": 548,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 7,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "rationale": "The response accurately lists all the relations of the specified types ([work for], [located in], [live in]) found in the article. It does not add any extra output or explanation, and it uses the required format. No relations are missing or incorrect, and the order matches the one in the example, though order is not specified as a constraint. Therefore, the response is fully helpful, relevant, and accurate.",
+      "raw_output": "{\n  \"Rationale\": \"The response accurately lists all the relations of the specified types ([work for], [located in], [live in]) found in the article. It does not add any extra output or explanation, and it uses the required format. No relations are missing or incorrect, and the order matches the one in the example, though order is not specified as a constraint. Therefore, the response is fully helpful, relevant, and accurate.\",\n  \"Score\": 10\n}",
+      "raw_judge_response_details": {
+        "id": "chatcmpl-DUs0PKIFwloYW1mm6Wia3VEXYMKaC",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "```json\n{\n  \"Rationale\": \"The response accurately lists all the relations of the specified types ([work for], [located in], [live in]) found in the article. It does not add any extra output or explanation, and it uses the required format. No relations are missing or incorrect, and the order matches the one in the example, though order is not specified as a constraint. Therefore, the response is fully helpful, relevant, and accurate.\",\n  \"Score\": 10\n}\n```",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": [],
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null
+            }
+          }
+        ],
+        "created": 1776249809,
+        "model": "gpt-4.1-2025-04-14",
+        "object": "chat.completion",
+        "service_tier": "default",
+        "system_fingerprint": "fp_63d8723934",
+        "usage": {
+          "completion_tokens": 104,
+          "prompt_tokens": 297,
+          "total_tokens": 401,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 9,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 0.7,
+    "details": {
+      "score": 0.7,
+      "rationale": "The response correctly lists all the persons and places from the article (Luminara; Gastropolis, The Enchanted Pot, Whispering Woods, Mount Savor). However, it introduces an additional person, 'Spatulon,' who is not present in the initially provided content. This inclusion of extraneous information reduces the accuracy of the response, though all required elements are still present. Therefore, while helpfulness and relevance are high, accuracy is slightly compromised.",
+      "raw_output": "{\n  \"Rationale\": \"The response correctly lists all the persons and places from the article (Luminara; Gastropolis, The Enchanted Pot, Whispering Woods, Mount Savor). However, it introduces an additional person, 'Spatulon,' who is not present in the initially provided content. This inclusion of extraneous information reduces the accuracy of the response, though all required elements are still present. Therefore, while helpfulness and relevance are high, accuracy is slightly compromised.\",\n  \"Score\": 7\n}",
+      "raw_judge_response_details": {
+        "id": "chatcmpl-DUs0RTXKyxwK3e3b4gFiujzwEod7M",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "```json\n{\n  \"Rationale\": \"The response correctly lists all the persons and places from the article (Luminara; Gastropolis, The Enchanted Pot, Whispering Woods, Mount Savor). However, it introduces an additional person, 'Spatulon,' who is not present in the initially provided content. This inclusion of extraneous information reduces the accuracy of the response, though all required elements are still present. Therefore, while helpfulness and relevance are high, accuracy is slightly compromised.\",\n  \"Score\": 7\n}\n```",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": [],
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null
+            }
+          }
+        ],
+        "created": 1776249811,
+        "model": "gpt-4.1-2025-04-14",
+        "object": "chat.completion",
+        "service_tier": "default",
+        "system_fingerprint": "fp_63d8723934",
+        "usage": {
+          "completion_tokens": 113,
+          "prompt_tokens": 209,
+          "total_tokens": 322,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 11,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 0.4,
+    "details": {
+      "score": 0.4,
+      "rationale": "The response provides a list of adjectives, some of which are correctly extracted from the provided article (e.g., bustling, culinary, legendary, hidden, adventurous, magical, rare, signature, whimsical, crisp, mysterious, emerald, elusive, true, trusty, talking, Whispering, luminescent, majestic, hopeful, stained, extraordinary, rich). However, the response contains several adjectives not present in the article (e.g., Enchanted, tucked, draped, delighted, astonished, autumn, mythical, single, closer, next, first, wondrous), and misses several adjectives that are in the article (e.g., aromatic, sizzling, traditional, enchanting, Savor, shimmering, respectful, transported, icy, warm, imaginative). Redundant entries (like 'culinary' and 'legendary' listed twice) are also present. Additionally, 'Whimsical' is listed as capitalized, whereas the article used 'whimsical' (though case sensitivity may be minor for adjectives). The response is inaccurate due to these inclusions and omissions, and does not fully meet the constraints.",
+      "raw_output": "{\n  \"Rationale\": \"The response provides a list of adjectives, some of which are correctly extracted from the provided article (e.g., bustling, culinary, legendary, hidden, adventurous, magical, rare, signature, whimsical, crisp, mysterious, emerald, elusive, true, trusty, talking, Whispering, luminescent, majestic, hopeful, stained, extraordinary, rich). However, the response contains several adjectives not present in the article (e.g., Enchanted, tucked, draped, delighted, astonished, autumn, mythical, single, closer, next, first, wondrous), and misses several adjectives that are in the article (e.g., aromatic, sizzling, traditional, enchanting, Savor, shimmering, respectful, transported, icy, warm, imaginative). Redundant entries (like 'culinary' and 'legendary' listed twice) are also present. Additionally, 'Whimsical' is listed as capitalized, whereas the article used 'whimsical' (though case sensitivity may be minor for adjectives). The response is inaccurate due to these inclusions and omissions, and does not fully meet the constraints.\",\n  \"Score\": 4\n}",
+      "raw_judge_response_details": {
+        "id": "chatcmpl-DUs0UoscYEsl4OC4ZlIzv9Ri49mYy",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "```json\n{\n  \"Rationale\": \"The response provides a list of adjectives, some of which are correctly extracted from the provided article (e.g., bustling, culinary, legendary, hidden, adventurous, magical, rare, signature, whimsical, crisp, mysterious, emerald, elusive, true, trusty, talking, Whispering, luminescent, majestic, hopeful, stained, extraordinary, rich). However, the response contains several adjectives not present in the article (e.g., Enchanted, tucked, draped, delighted, astonished, autumn, mythical, single, closer, next, first, wondrous), and misses several adjectives that are in the article (e.g., aromatic, sizzling, traditional, enchanting, Savor, shimmering, respectful, transported, icy, warm, imaginative). Redundant entries (like 'culinary' and 'legendary' listed twice) are also present. Additionally, 'Whimsical' is listed as capitalized, whereas the article used 'whimsical' (though case sensitivity may be minor for adjectives). The response is inaccurate due to these inclusions and omissions, and does not fully meet the constraints.\",\n  \"Score\": 4\n}\n```",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": [],
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null
+            }
+          }
+        ],
+        "created": 1776249814,
+        "model": "gpt-4.1-2025-04-14",
+        "object": "chat.completion",
+        "service_tier": "default",
+        "system_fingerprint": "fp_7a7fd0eb44",
+        "usage": {
+          "completion_tokens": 245,
+          "prompt_tokens": 313,
+          "total_tokens": 558,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  },
+  {
+    "dialog_id": 0,
+    "turn_id": 13,
+    "metric_name": "llm_judge->expansion_evaluation",
+    "score": 1.0,
+    "details": {
+      "score": 1.0,
+      "rationale": "The response provided exactly matches the correct classification label for the article. It is fully accurate, directly relevant, and satisfies the constraints without any unnecessary explanations or extra output. Therefore, it is as helpful as possible for the task.",
+      "raw_output": "{\n  \"Rationale\": \"The response provided exactly matches the correct classification label for the article. It is fully accurate, directly relevant, and satisfies the constraints without any unnecessary explanations or extra output. Therefore, it is as helpful as possible for the task.\",\n  \"Score\": 10\n}",
+      "raw_judge_response_details": {
+        "id": "chatcmpl-DUs0XuZGdE1l54ExWms4wwjWYVMfk",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "```json\n{\n  \"Rationale\": \"The response provided exactly matches the correct classification label for the article. It is fully accurate, directly relevant, and satisfies the constraints without any unnecessary explanations or extra output. Therefore, it is as helpful as possible for the task.\",\n  \"Score\": 10\n}\n```",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": [],
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null
+            }
+          }
+        ],
+        "created": 1776249817,
+        "model": "gpt-4.1-2025-04-14",
+        "object": "chat.completion",
+        "service_tier": "default",
+        "system_fingerprint": "fp_dc49d4fcba",
+        "usage": {
+          "completion_tokens": 65,
+          "prompt_tokens": 178,
+          "total_tokens": 243,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": 0,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cached_tokens": 0
+          }
+        }
+      }
+    },
+    "dialog_labels": {
+      "task_type": "expansion",
+      "task_subtype": "multi"
+    },
+    "turn_labels": {}
+  }
+]

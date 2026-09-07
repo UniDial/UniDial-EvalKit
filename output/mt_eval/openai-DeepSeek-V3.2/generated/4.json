@@ -73,7 +73,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90ba582fe7a955549855f2c2ea46",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "medicine",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249624,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 348,
+            "total_tokens": 349,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 348
+          }
+        }
+      }
     },
     {
       "turn_id": 4,
@@ -104,7 +146,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90ba5edaa022109205148ce75190",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "technology",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249626,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 612,
+            "total_tokens": 613,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 612
+          }
+        }
+      }
     },
     {
       "turn_id": 6,
@@ -135,7 +219,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90ba664aec56f44e2ef2c95cec96",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "economics",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249628,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 774,
+            "total_tokens": 775,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 774
+          }
+        }
+      }
     },
     {
       "turn_id": 8,
@@ -166,7 +292,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90ba712eae2460c08e59705b3dd8",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "sports",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249631,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 2,
+            "prompt_tokens": 986,
+            "total_tokens": 988,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 986
+          }
+        }
+      }
     },
     {
       "turn_id": 10,
@@ -197,7 +365,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90ba769c02cc3a7ef454a7f3377f",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "food",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249632,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 1223,
+            "total_tokens": 1224,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1223
+          }
+        }
+      }
     },
     {
       "turn_id": 12,
@@ -228,7 +438,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90baa3e15e79926c0f71ce4100f0",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "music",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249644,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 1575,
+            "total_tokens": 1576,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1575
+          }
+        }
+      }
     },
     {
       "turn_id": 14,
@@ -259,7 +511,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90baaa34020d297f969fad6b7ae5",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "travel",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249645,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 1928,
+            "total_tokens": 1929,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1928
+          }
+        }
+      }
     },
     {
       "turn_id": 16,
@@ -290,7 +584,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90bab2d9a57b00baac0e19afa94e",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "science",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249647,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 2308,
+            "total_tokens": 2309,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 2308
+          }
+        }
+      }
     },
     {
       "turn_id": 18,
@@ -321,7 +657,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90babbb0351f63facfde75b69881",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "education",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249650,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 2580,
+            "total_tokens": 2581,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 2304
+            },
+            "prompt_cache_hit_tokens": 2304,
+            "prompt_cache_miss_tokens": 276
+          }
+        }
+      }
     },
     {
       "turn_id": 20,
@@ -352,7 +730,49 @@
         ],
         "dynamic_config_source": {}
       },
-      "turn_labels": {}
+      "turn_labels": {
+        "raw_response_details": {
+          "id": "019d90bac126b0853ad8bafff6699eae",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "food",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249651,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 1,
+            "prompt_tokens": 2794,
+            "total_tokens": 2795,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 2560
+            },
+            "prompt_cache_hit_tokens": 2560,
+            "prompt_cache_miss_tokens": 234
+          }
+        }
+      }
     }
   ]
 }

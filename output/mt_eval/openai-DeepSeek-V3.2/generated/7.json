@@ -1,0 +1,96 @@
+{
+  "dialog_id": 7,
+  "dialog_raw_info": {
+    "raw_id": "1_1-212",
+    "source_file": "recollection_single_global-inst.jsonl",
+    "line_index": 0
+  },
+  "dialog_labels": {
+    "task_type": "recollection",
+    "task_subtype": "single"
+  },
+  "dialog_eval_config": {
+    "use_reference_history": false
+  },
+  "dialog_turns": [
+    {
+      "turn_id": 0,
+      "role": "user",
+      "content": "Instruction: Begin all your responses in the upcoming conversation with the letter o. Keep all your responses under 200 words.\nQuestion: Is it morally wrong to break a law you consider unjust?",
+      "reference": null,
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": false,
+        "metrics": [],
+        "dynamic_config_source": {}
+      },
+      "turn_labels": {}
+    },
+    {
+      "turn_id": 1,
+      "role": "assistant",
+      "content": "One could argue that civil disobedience, like Martin Luther King Jr.'s, is a moral duty when confronting unjust laws. The key is the act being public, nonviolent, and accepting consequences to highlight the injustice. However, this requires careful discernment. Simply disliking a law doesn't make it unjust. The moral weight depends on the law's harm, the intent behind breaking it, and the methods used. Ultimately, it's a profound personal choice that balances respect for social order with the imperative to resist oppression.",
+      "reference": "",
+      "reference_document": null,
+      "eval_config": {
+        "do_eval": true,
+        "metrics": [
+          {
+            "class_name": "instruction_following",
+            "args": {
+              "inst_name": "startend:start_char",
+              "inst_args": {
+                "letter": "o"
+              }
+            }
+          }
+        ],
+        "dynamic_config_source": {}
+      },
+      "turn_labels": {
+        "cur_task_type": "startend:start_char",
+        "raw_response_details": {
+          "id": "019d90bac52e2b866b7a4f986f812bfc",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "One could argue that civil disobedience, like Martin Luther King Jr.'s, is a moral duty when confronting unjust laws. The key is the act being public, nonviolent, and accepting consequences to highlight the injustice. However, this requires careful discernment. Simply disliking a law doesn't make it unjust. The moral weight depends on the law's harm, the intent behind breaking it, and the methods used. Ultimately, it's a profound personal choice that balances respect for social order with the imperative to resist oppression.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249652,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 104,
+            "prompt_tokens": 42,
+            "total_tokens": 146,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 42
+          }
+        }
+      }
+    }
+  ]
+}

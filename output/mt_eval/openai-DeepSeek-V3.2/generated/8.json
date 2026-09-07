@@ -29,7 +29,7 @@
     {
       "turn_id": 1,
       "role": "assistant",
-      "content": "Chef Luminara, a legendary culinary alchemist in Gastropolis, receives a mysterious invitation to find the legendary Moonberry. With her talking spatula, Spatulon, she journeys through the Whispering Woods and scales Mount Savor. At the peak, she respectfully earns a Moonberry from the guardian Gastrogriff. Returning to her restaurant, The Enchanted Pot, she creates a dish that transports diners through the story of her quest, weaving her tale into the city's culinary lore.",
+      "content": "Chef Luminara, a celebrated culinary alchemist in Gastropolis, receives a mysterious invitation to find the legendary Moonberry. With her talking spatula, Spatulon, she journeys through magical lands, braves the Whispering Woods and Mount Savor, and respectfully earns a Moonberry from the guardian Gastrogriff. Returning to her restaurant, The Enchanted Pot, she creates a dish that allows diners to taste the story of her extraordinary quest, weaving her tale into the city's culinary lore.",
       "reference": "In Gastropolis, a city known for its rich culinary scene, lived a legendary chef, Luminara, who owned a quaint restaurant, The Enchanted Pot. Luminara, renowned for her unique ability to blend traditional ingredients with magical elements, crafted dishes that adapted to the diner's mood. Her life took an adventurous turn when she received an invitation to find the Moonberry, a rare ingredient believed to elevate any dish. Accompanied by her talking spatula, Spatulon, she journeyed through mystical lands, including the Whispering Woods and Mount Savor, to acquire the Moonberry from the Gastrogriff, a mythical guardian. Upon her return, Luminara created a dish that not only reflected the diner's mood but also embodied her extraordinary journey. This dish transformed The Enchanted Pot into more than just a restaurant; it became a gateway to culinary wonders, etching Luminara's story into Gastropolis's rich culinary history.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -53,7 +53,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "sum"
+        "cur_task_type": "sum",
+        "raw_response_details": {
+          "id": "019d90badb88189bb395a16397996204",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "Chef Luminara, a celebrated culinary alchemist in Gastropolis, receives a mysterious invitation to find the legendary Moonberry. With her talking spatula, Spatulon, she journeys through magical lands, braves the Whispering Woods and Mount Savor, and respectfully earns a Moonberry from the guardian Gastrogriff. Returning to her restaurant, The Enchanted Pot, she creates a dish that allows diners to taste the story of her extraordinary quest, weaving her tale into the city's culinary lore.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249658,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 105,
+            "prompt_tokens": 561,
+            "total_tokens": 666,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 561
+          }
+        }
       }
     },
     {
@@ -72,7 +113,7 @@
     {
       "turn_id": 3,
       "role": "assistant",
-      "content": "Luminara embarked on a quest to find the legendary Moonberry. She traversed the Whispering Woods and scaled Mount Savor, where the Moonberry was guarded by the mythical Gastrogriff. At the peak, she respectfully explained her quest to the creature. Impressed by her passion, the Gastrogriff granted her a single Moonberry.",
+      "content": "Luminara received a mysterious invitation to seek the legendary Moonberry. She journeyed through the Whispering Woods and scaled Mount Savor to its peak, where the Moonberry was guarded by the mythical Gastrogriff. She respectfully explained her quest to the beast, which, impressed by her passion, granted her a single glowing Moonberry.",
       "reference": "Luminara, a renowned chef, embarked on a quest to find the Moonberry, guided by a mysterious letter. She journeyed through the Whispering Woods to Mount Savor, where she met the Gastrogriff. This mythical creature, impressed by her passion, granted her a Moonberry. Luminara returned, using the Moonberry in a dish that embodied her adventure.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -96,7 +137,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "sum"
+        "cur_task_type": "sum",
+        "raw_response_details": {
+          "id": "019d90baeff0839fbe3d1ff0bc7cc24b",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "Luminara received a mysterious invitation to seek the legendary Moonberry. She journeyed through the Whispering Woods and scaled Mount Savor to its peak, where the Moonberry was guarded by the mythical Gastrogriff. She respectfully explained her quest to the beast, which, impressed by her passion, granted her a single glowing Moonberry.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249663,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 68,
+            "prompt_tokens": 687,
+            "total_tokens": 755,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 687
+          }
+        }
       }
     },
     {
@@ -115,7 +197,7 @@
     {
       "turn_id": 5,
       "role": "assistant",
-      "content": "Luminara journeyed to Mount Savor, where she respectfully asked the Gastrogriff for the legendary Moonberry. Impressed by her passion, the creature granted her one.",
+      "content": "On her quest for the legendary Moonberry, Luminara found it guarded by the Gastrogriff. Impressed by her passion, the creature granted her the glowing berry.",
       "reference": "Chef Luminara's quest for the Moonberry leads her to Mount Savor. Gastrogriff grants her the berry, enriching her culinary art with its magical essence.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -139,7 +221,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "sum"
+        "cur_task_type": "sum",
+        "raw_response_details": {
+          "id": "019d90baffaa7d1f3a33ca30f58ce86c",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "On her quest for the legendary Moonberry, Luminara found it guarded by the Gastrogriff. Impressed by her passion, the creature granted her the glowing berry.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249667,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 35,
+            "prompt_tokens": 766,
+            "total_tokens": 801,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 766
+          }
+        }
       }
     },
     {
@@ -158,7 +281,7 @@
     {
       "turn_id": 7,
       "role": "assistant",
-      "content": "I journeyed to Mount Savor and respectfully asked the Gastrogriff for the Moonberry. Moved by my passion, the majestic creature granted me a single, glowing berry.",
+      "content": "I sought the legendary Moonberry and found it guarded by the Gastrogriff. When I explained my quest, the majestic beast, impressed, granted me the glowing berry.",
       "reference": "I sought the Moonberry, braved Mount Savor's challenges, and earned the Gastrogriff's respect. The berry's magic now infuses my culinary creations, weaving my journey into each dish.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -182,7 +305,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "sum"
+        "cur_task_type": "sum",
+        "raw_response_details": {
+          "id": "019d90bb09dc1e2169167352b76336ea",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "I sought the legendary Moonberry and found it guarded by the Gastrogriff. When I explained my quest, the majestic beast, impressed, granted me the glowing berry.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249670,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 34,
+            "prompt_tokens": 816,
+            "total_tokens": 850,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 816
+          }
+        }
       }
     },
     {
@@ -201,7 +365,7 @@
     {
       "turn_id": 9,
       "role": "assistant",
-      "content": "My culinary pilgrimage led me to the mountain's crown, where I offered my dream to the guardian. The Gastrogriff, a living legend, gifted me a piece of captured moonlight.",
+      "content": "Luminara’s culinary pilgrimage led her to the Gastrogriff, a living fortress guarding the mythic fruit. Her respectful plea was the key that unlocked the Moonberry’s radiant treasure.",
       "reference": "I, a culinary explorer, navigated the seas of Whispering Woods and climbed the mountain of challenges to earn the Moonberry's light from the guardian Gastrogriff, enriching my dishes' stories.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -225,7 +389,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "sum"
+        "cur_task_type": "sum",
+        "raw_response_details": {
+          "id": "019d90bb15eb65ad8a8e28532562ed72",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "Luminara’s culinary pilgrimage led her to the Gastrogriff, a living fortress guarding the mythic fruit. Her respectful plea was the key that unlocked the Moonberry’s radiant treasure.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249673,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 40,
+            "prompt_tokens": 875,
+            "total_tokens": 915,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 875
+          }
+        }
       }
     },
     {
@@ -244,7 +449,7 @@
     {
       "turn_id": 11,
       "role": "assistant",
-      "content": "The chef's pilgrimage for a legendary ingredient ended at a peak, where she offered her dream to a mythical guardian. Moved, the beast granted a single, luminous prize.",
+      "content": "The chef’s pilgrimage culminated at a mythic peak where a majestic guardian kept a radiant treasure. A story of pure passion was the only key she needed to receive its glowing gift.",
       "reference": "As a culinary voyager, I sought a mystical berry, journeyed through whispering forests to a mountain, earned respect from a legendary guardian, and wove this essence into my creations.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -268,7 +473,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "sum"
+        "cur_task_type": "sum",
+        "raw_response_details": {
+          "id": "019d90bb20ffd8fc8a7b62c18d644b3e",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "The chef’s pilgrimage culminated at a mythic peak where a majestic guardian kept a radiant treasure. A story of pure passion was the only key she needed to receive its glowing gift.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249676,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 37,
+            "prompt_tokens": 939,
+            "total_tokens": 976,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 939
+          }
+        }
       }
     },
     {
@@ -311,7 +557,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "ner"
+        "cur_task_type": "ner",
+        "raw_response_details": {
+          "id": "019d90bb2ded2449108371c693cc5b9f",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "Person: Luminara, Spatulon; Places: Gastropolis, The Enchanted Pot, Whispering Woods, Mount Savor",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249679,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 28,
+            "prompt_tokens": 1013,
+            "total_tokens": 1041,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1013
+          }
+        }
       }
     },
     {
@@ -354,7 +641,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "ner"
+        "cur_task_type": "ner",
+        "raw_response_details": {
+          "id": "019d90bb37be5c44794e42c116d0e1c9",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "The character is Luminara.\nThe character is Spatulon.\nThe location is Gastropolis.\nThe location is The Enchanted Pot.\nThe location is the Whispering Woods.\nThe location is Mount Savor.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249681,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 44,
+            "prompt_tokens": 1063,
+            "total_tokens": 1107,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1063
+          }
+        }
       }
     },
     {
@@ -373,7 +701,7 @@
     {
       "turn_id": 17,
       "role": "assistant",
-      "content": "The character is Luminara.\nThe location is Gastropolis.\nThe location is The Enchanted Pot.\nThe character is Spatulon.\nThe location is the Whispering Woods.\nThe location is Mount Savor.\nThe character is the Gastrogriff.",
+      "content": "The character is Luminara.\nThe location is Gastropolis.\nThe location is The Enchanted Pot.\nThe character is Spatulon.\nThe location is the Whispering Woods.\nThe location is Mount Savor.",
       "reference": "The character is Luminara. The location is Gastropolis. The location is The Enchanted Pot. The location is Whispering Woods. The location is Mount Savor.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -397,7 +725,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "ner"
+        "cur_task_type": "ner",
+        "raw_response_details": {
+          "id": "019d90bb45cbfe82c11d383b425629f2",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "The character is Luminara.\nThe location is Gastropolis.\nThe location is The Enchanted Pot.\nThe character is Spatulon.\nThe location is the Whispering Woods.\nThe location is Mount Savor.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249685,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 44,
+            "prompt_tokens": 1122,
+            "total_tokens": 1166,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1122
+          }
+        }
       }
     },
     {
@@ -416,7 +785,7 @@
     {
       "turn_id": 19,
       "role": "assistant",
-      "content": "Luminara is a chef.\nGastropolis is a city.\nThe Enchanted Pot is a restaurant.\nSpatulon is a talking spatula.\nWhispering Woods is a forest.\nMount Savor is a mountain.\nThe Gastrogriff is a mythical creature.",
+      "content": "Chef Luminara lived in Gastropolis.\nHer restaurant was The Enchanted Pot.\nHer spatula Spatulon spoke.\nThey traveled through the Whispering Woods.\nThey then climbed Mount Savor.",
       "reference": "Character Luminara is introduced. Gastropolis is first location. The Enchanted Pot is mentioned. Whispering Woods comes next. Lastly, Mount Savor appears.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -440,7 +809,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "ner"
+        "cur_task_type": "ner",
+        "raw_response_details": {
+          "id": "019d90bb51ef66d69820e84cb35b72b5",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "Chef Luminara lived in Gastropolis.\nHer restaurant was The Enchanted Pot.\nHer spatula Spatulon spoke.\nThey traveled through the Whispering Woods.\nThey then climbed Mount Savor.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249688,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 42,
+            "prompt_tokens": 1180,
+            "total_tokens": 1222,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1180
+          }
+        }
       }
     },
     {
@@ -459,7 +869,7 @@
     {
       "turn_id": 21,
       "role": "assistant",
-      "content": "Luminara is a chef.\nGastropolis is a city.\nThe Enchanted Pot is a restaurant.\nSpatulon is a talking spatula.\nWhispering Woods is a forest.\nMount Savor is a mountain.\nThe Gastrogriff is a mythical creature.",
+      "content": "The protagonist is Chef Luminara.\nThe city is Gastropolis.\nThe eatery is The Enchanted Pot.\nThe companion is Spatulon.\nThe forest is the Whispering Woods.\nThe mountain is Mount Savor.",
       "reference": "Protagonist Luminara is introduced. City Gastropolis is first. Restaurant The Enchanted Pot is mentioned. Forest Whispering Woods comes next. Finally, Mountain Savor appears.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -483,7 +893,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "ner"
+        "cur_task_type": "ner",
+        "raw_response_details": {
+          "id": "019d90bb5fc5c6d603ff7176a31071a1",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "The protagonist is Chef Luminara.\nThe city is Gastropolis.\nThe eatery is The Enchanted Pot.\nThe companion is Spatulon.\nThe forest is the Whispering Woods.\nThe mountain is Mount Savor.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249692,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 46,
+            "prompt_tokens": 1240,
+            "total_tokens": 1286,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1240
+          }
+        }
       }
     },
     {
@@ -502,7 +953,7 @@
     {
       "turn_id": 23,
       "role": "assistant",
-      "content": "The legendary chef is Luminara.\nThe bustling city is Gastropolis.\nThe hidden gem is The Enchanted Pot.\nHer trusty companion is Spatulon.\nThe enchanted forest is Whispering Woods.\nThe daunting peak is Mount Savor.\nThe majestic guardian is the Gastrogriff.",
+      "content": "The legendary protagonist is Chef Luminara.\nThe bustling city is Gastropolis.\nThe hidden eatery is The Enchanted Pot.\nHer magical companion is Spatulon.\nThe enchanted forest is the Whispering Woods.\nThe towering mountain is Mount Savor.",
       "reference": "Enthusiastically, we meet protagonist Luminara. Mysteriously, the city Gastropolis is first revealed. Magically, restaurant The Enchanted Pot emerges. Whisperingly, forest Whispering Woods is encountered. Triumphantly, Mountain Savor finally appears.",
       "reference_document": "In the bustling city of Gastropolis, where the scent of spices and the sizzle of pans wafted through the air, there lived a chef named Luminara, whose culinary skills were the stuff of legend. Luminara’s restaurant, The Enchanted Pot, was tucked away in an alley draped with ivy and fairy lights, a hidden gem known only to the most adventurous of food lovers.\n\nLuminara was not just any chef; she was a culinary alchemist, blending traditional ingredients with rare, magical flora and fauna. Her signature dish was the Whimsical Soup, a broth that changed flavor with the mood of the diner, leaving them delighted and astonished in equal measure.\n\nThe story begins on a crisp autumn morning when Luminara received a mysterious letter sealed with an emerald wax stamp. The letter was an invitation to embark on a quest to discover the legendary Moonberry, an elusive ingredient said to unlock the true potential of any dish it graced. It was an adventure that could cement Luminara's place in the annals of culinary history.\n\nWith her trusty talking spatula, Spatulon, by her side, Luminara set out on her quest. She traversed through the Whispering Woods, where trees shared secrets and the air shimmered with enchantment. She scaled the peaks of Mount Savor, each step bringing her closer to the Moonberry, which was guarded by the mythical creature known as the Gastrogriff.\n\nUpon reaching the peak at twilight, Luminara found the Gastrogriff perched beside a single, luminescent Moonberry bush. With a respectful nod to the majestic beast, she approached and explained her quest for culinary greatness. The Gastrogriff, impressed by Luminara's passion and determination, offered her a single Moonberry, its glow reflecting in her hopeful eyes.\n\nLuminara returned to Gastropolis, her apron stained with the adventures of her journey. The Moonberry was the star of her next creation, a dish that didn't just resonate with the diner's mood but also told a story, a story of a chef's quest for the extraordinary.\n\nAs patrons of The Enchanted Pot took their first bites, they were transported through Luminara's journey, tasting the whispering woods, the icy peaks, and the warmth of triumph. Luminara had not just found an ingredient; she had woven her tale into the tapestry of Gastropolis's rich culinary lore. The Enchanted Pot was no longer just a restaurant; it was a portal to the wonders of imagination, one dish at a time.",
       "eval_config": {
@@ -526,7 +977,48 @@
         "dynamic_config_source": {}
       },
       "turn_labels": {
-        "cur_task_type": "ner"
+        "cur_task_type": "ner",
+        "raw_response_details": {
+          "id": "019d90bb6c36ad12f0fc22268d090a28",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "The legendary protagonist is Chef Luminara.\nThe bustling city is Gastropolis.\nThe hidden eatery is The Enchanted Pot.\nHer magical companion is Spatulon.\nThe enchanted forest is the Whispering Woods.\nThe towering mountain is Mount Savor.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1776249695,
+          "model": "deepseek-ai/DeepSeek-V3.2",
+          "object": "chat.completion",
+          "service_tier": null,
+          "system_fingerprint": "",
+          "usage": {
+            "completion_tokens": 53,
+            "prompt_tokens": 1305,
+            "total_tokens": 1358,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 0,
+              "rejected_prediction_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cached_tokens": 0
+            },
+            "prompt_cache_hit_tokens": 0,
+            "prompt_cache_miss_tokens": 1305
+          }
+        }
       }
     }
   ]
