@@ -60,6 +60,22 @@ class BenchmarkDataset(abc.ABC):
         """
         return turn.eval_config.metrics
 
+    def get_default_user_simulator_calls(self, turn: Turn) -> int:
+        """Default simulated rounds when turn.eval_config.user_simulator_calls == -1."""
+        return 0
+
+    def render_user_simulator_prompt(
+        self,
+        *,
+        dialog: Dialog,
+        history_messages: List[Dict[str, str]],
+        current_turn: Turn,
+    ) -> str:
+        """Render dataset-specific user-simulator prompt. Override when enable_user_simulator is used."""
+        raise NotImplementedError(
+            f"{self.__class__.__name__} does not implement render_user_simulator_prompt()"
+        )
+
     def preprocess(self, *, raw_path: str, processed_root: str, force: bool = False) -> str:
         raw_p = Path(raw_path)
         out_dir = Path(processed_root) / self.dataset_name

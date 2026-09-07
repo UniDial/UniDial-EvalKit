@@ -17,9 +17,10 @@ class EvalPipelineConfig:
 
     # Dataset
     dataset: str = "mt_eval"
-    raw_data_dir: str = "./raw_data/MT-Eval"
+    raw_data_dir: Optional[str] = None
     processed_data_dir: str = "./data"
     output_dir: str = "./output"
+    down_sampling_dir: str = "./down_sampling"
     require_alternative_roles: bool = False
 
     # Generation model
@@ -33,8 +34,14 @@ class EvalPipelineConfig:
     judge_model_type: str = "openai"
     judge_model_name: str = "gpt-4.1-2025-04-14"
 
+    # User simulator model (None => reuse generation model_type / model_name)
+    user_simulator_model_type: Optional[str] = None
+    user_simulator_model_name: Optional[str] = None
+    # None => use dataset default for turns with user_simulator_calls=-1
+    max_user_simulator_calls: Optional[int] = None
+
     # Embedding model for Agents
-    embedding_model_name: str = "all-MiniLM-L6-v2" # "text-embedding-ada-002" # a-mem: sentence-transformers/all-MiniLM-L6-v2
+    embedding_model_name: str = "all-MiniLM-L6-v2" # "text-embedding-ada-002" # hippo: sentence-transformers/all-MiniLM-L6-v2
     
     # Common
     api_key: Optional[str] = None

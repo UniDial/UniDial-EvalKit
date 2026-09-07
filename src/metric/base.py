@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 import abc
-from typing import Any, Dict, Optional, Union, List
-import evaluate
+import json
+import re
+from collections import Counter
+from typing import Any, Dict, List, Optional, Union
+
+try:
+    import evaluate
+except Exception:
+    evaluate = None
 
 from src.registry import register_metric
-
 
 
 class BaseMetric(abc.ABC):
@@ -31,11 +37,6 @@ try:
 except ImportError:
     PorterStemmer = None
 
-try:
-    import evaluate
-except Exception:
-    evaluate = None
-
 
 # -------------------------
 # Shared utilities
@@ -53,6 +54,169 @@ def _word_tokenize(text: str, lower: bool = True):
 def _multiset_overlap(a, b):
     return sum((Counter(a) & Counter(b)).values())
 
+
+def _strip_special_tokens(
+    text: str,
+    *,
+    start_token: Optional[str] = None,
+    end_token: Optional[str] = None,
+) -> str:
+    out = str(text).strip()
+    if start_token:
+        out = out.split(start_token)[-1].strip()
+        if end_token and out.endswith(end_token):
+            out = out[: -len(end_token)].strip()
+    return out
+
+
+def _parse_index(value: Any) -> Optional[int]:
+    """Parse a 1-based index from int/float/str/JSON ``{"answer": i}``."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return int(value)
+    if isinstance(value, dict) and "answer" in value:
+        try:
+            return int(value["answer"])
+        except (TypeError, ValueError):
+            return None
+    if not isinstance(value, str):
+        return None
+
+    text = value.strip()
+    if not text:
+        return None
+    try:
+        payload = json.loads(text)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        payload = None
+
+    if isinstance(payload, (int, float)) and not isinstance(payload, bool):
+        return int(payload)
+    if isinstance(payload, dict) and "answer" in payload:
+        try:
+            return int(payload["answer"])
+        except (TypeError, ValueError):
+            return None
+
+    match = re.search(r'"answer"\s*:\s*(-?\d+)', text)
+    if match:
+        return int(match.group(1))
+    if re.fullmatch(r"-?\d+", text):
+        return int(text)
+    return None
+
+
+def coerce_to_sequence(
+    value: Any,
+    *,
+    lower: bool = False,
+    split_special_start_token: Optional[str] = None,
+    split_special_end_token: Optional[str] = None,
+    choice_sequences: Optional[List[Any]] = None,
+    sequence_key: Optional[str] = None,
+) -> List[Any]:
+    """Normalize heterogeneous metric inputs into a flat sequence.
+
+    Supported forms:
+    - ``list`` / ``tuple``: used as-is
+    - ``set`` / ``frozenset``: sorted for stability
+    - scalar ``int`` / ``float`` / ``bool``: single-element list
+    - ``dict``: optional ``sequence_key`` value, else ``state`` / ``sequence`` /
+      ``items`` / ``values``; with ``choice_sequences``, ``answer`` index is resolved
+    - ``str``: strip optional fences, JSON-decode when possible, else comma-split
+      or word-tokenize; with ``choice_sequences``, answer-index JSON is resolved
+    """
+    if value is None:
+        return []
+
+    if isinstance(value, (list, tuple)):
+        seq = list(value)
+    elif isinstance(value, (set, frozenset)):
+        seq = sorted(value, key=lambda x: str(x))
+    elif isinstance(value, bool) or isinstance(value, (int, float)):
+        if choice_sequences is not None:
+            idx = _parse_index(value)
+            if idx is not None:
+                zero_based = idx - 1
+                if 0 <= zero_based < len(choice_sequences):
+                    return coerce_to_sequence(
+                        choice_sequences[zero_based],
+                        lower=lower,
+                        sequence_key=sequence_key,
+                    )
+                return []
+        seq = [value]
+    elif isinstance(value, dict):
+        if choice_sequences is not None:
+            idx = _parse_index(value)
+            if idx is not None:
+                zero_based = idx - 1
+                if 0 <= zero_based < len(choice_sequences):
+                    return coerce_to_sequence(
+                        choice_sequences[zero_based],
+                        lower=lower,
+                        sequence_key=sequence_key,
+                    )
+                return []
+        key = sequence_key
+        if key is None:
+            for candidate in ("state", "sequence", "items", "values"):
+                if candidate in value:
+                    key = candidate
+                    break
+        if key is not None and key in value:
+            return coerce_to_sequence(
+                value[key],
+                lower=lower,
+                choice_sequences=choice_sequences,
+                sequence_key=sequence_key,
+            )
+        seq = list(value.values())
+    elif isinstance(value, str):
+        text = _strip_special_tokens(
+            value,
+            start_token=split_special_start_token,
+            end_token=split_special_end_token,
+        )
+        if choice_sequences is not None:
+            idx = _parse_index(text)
+            if idx is not None:
+                zero_based = idx - 1
+                if 0 <= zero_based < len(choice_sequences):
+                    return coerce_to_sequence(
+                        choice_sequences[zero_based],
+                        lower=lower,
+                        sequence_key=sequence_key,
+                    )
+                return []
+        try:
+            payload = json.loads(text)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            payload = None
+        if payload is not None and not isinstance(payload, str):
+            return coerce_to_sequence(
+                payload,
+                lower=lower,
+                choice_sequences=choice_sequences,
+                sequence_key=sequence_key,
+            )
+        if "," in text:
+            seq = [part.strip() for part in text.split(",") if part.strip()]
+        else:
+            seq = _word_tokenize(text, lower=False)
+    else:
+        seq = [value]
+
+    if lower:
+        normalized = []
+        for item in seq:
+            if isinstance(item, str):
+                normalized.append(item.lower())
+            else:
+                normalized.append(str(item).lower())
+        return normalized
+    return seq
 
 
 @register_metric("exact_match")
@@ -79,18 +243,22 @@ class ExactMatchMetric(BaseMetric):
         if reference is None:
             return {"score": 0.0, "rationale": "No reference provided"}
 
-        if kwargs["split_special_start_token"]:
-            prediction = prediction.split(kwargs["split_special_start_token"])[-1].strip()
-            if kwargs["split_special_end_token"] and prediction.endswith(kwargs["split_special_end_token"]):
-                prediction = prediction[:-len(kwargs["split_special_end_token"])].strip()
+        prediction = str(prediction)
+        reference = str(reference)
 
-            
+        start_token = kwargs.get("split_special_start_token")
+        end_token = kwargs.get("split_special_end_token")
+        if start_token:
+            prediction = prediction.split(start_token)[-1].strip()
+            if end_token and prediction.endswith(end_token):
+                prediction = prediction[:-len(end_token)].strip()
+
         if self.lower:
             prediction = prediction.lower()
             reference = reference.lower()
-            
+
         score = 1.0 if prediction == reference else 0.0
-        return {"score": score, "exact_match": score}
+        return {"score": score}
 
        
 
@@ -124,7 +292,6 @@ class PrecisionMetric(BaseMetric):
 
         return {
             "score": score,
-            "precision": score,
             "overlap": overlap,
             "pred_len": len(p),
             "ref_len": len(r),
@@ -247,16 +414,11 @@ class F1Metric(BaseMetric):
                 scores.append(max_score)
             
             f1 = sum(scores) / len(scores) if scores else 0.0
-            return {
-                "score": f1,
-                "f1": f1,
-            }
+            return {"score": f1}
         else:
             res = self._get_f1_score(prediction, reference)
-            return {
-                "score": res["f1"],
-                **res
-            }
+            score = res.pop("f1")
+            return {"score": score, **res}
 
 # class HuggingFaceMetric(BaseMetric):
 #     """

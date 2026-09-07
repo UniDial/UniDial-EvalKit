@@ -17,6 +17,8 @@ class TurnEvalConfig(BaseModel):
 
     do_eval: bool = False
     metrics: List[MetricConfig] = Field(default_factory=list)
+    # 0: off; N>0: exactly N simulated rounds after this user turn; -1: use dataset/config default
+    user_simulator_calls: int = 0
 
     # Dynamic evaluation config source: used to generate metrics at runtime.
     # If metrics is empty but do_eval=True, the system will try to derive config from dynamic_config_source.
@@ -42,6 +44,7 @@ class DialogEvalConfig(BaseModel):
     """Session-level configuration (extensible)."""
 
     use_reference_history: bool = False
+    enable_user_simulator: bool = False # whether to use user simulator
 
 
 class Dialog(BaseModel):

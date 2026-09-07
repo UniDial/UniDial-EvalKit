@@ -94,6 +94,9 @@ class OpenAIModel(BaseModel):
         kwargs.pop("dialog_id", None)
         # print(kwargs)
         try:
+            # if self.model_name == "gemma-4-31B-it-thinking":
+            #     kwargs["skip_special_tokens"] = False
+
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=messages,

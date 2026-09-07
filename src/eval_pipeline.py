@@ -44,6 +44,7 @@ __all__ = [
     "AggregationPhase",
     # Factories
     "create_generation_model",
+    "create_user_simulator_model",
     "create_metrics_map",
     # Orchestrator
     "EvalPipeline",
@@ -67,6 +68,20 @@ def create_generation_model(cfg: EvalPipelineConfig) -> BaseModel:
         save_llm_logs=cfg.save_llm_logs,
         save_agent_logs=cfg.save_agent_logs,
         agent_logs_output_dir=cfg.agent_logs_output_dir
+    )
+
+
+def create_user_simulator_model(cfg: EvalPipelineConfig) -> BaseModel:
+    """Create user-simulator LLM; falls back to generation model fields when unset."""
+    model_type = cfg.user_simulator_model_type or cfg.model_type
+    model_name = cfg.user_simulator_model_name or cfg.model_name
+    logger.info(f"Initializing user simulator model: {model_name} (type={model_type})")
+    ModelClass = get_model_class(model_type)
+    return ModelClass(
+        model_name=model_name,
+        api_key=cfg.api_key,
+        base_url=cfg.base_url,
+        save_llm_logs=cfg.save_llm_logs,
     )
 
 
@@ -142,7 +157,17 @@ class EvalPipeline:
     def run_generation(self, dialogs: List[Dialog]) -> List[Dialog]:
         """Phase 2: Model generation."""
         model = create_generation_model(self.cfg)
-        return GenerationPhase.run(dialogs, model, self.cfg)
+        needs_user_sim = any(
+            d.dialog_eval_config.enable_user_simulator for d in dialogs
+        )
+        user_sim_model = create_user_simulator_model(self.cfg) if needs_user_sim else None
+        return GenerationPhase.run(
+            dialogs,
+            model,
+            self.cfg,
+            dataset=self.dataset,
+            user_sim_model=user_sim_model,
+        )
 
     def run_evaluation(self, generated_dialogs: List[Dialog]) -> List[Dict[str, Any]]:
         """Phase 3: Metric evaluation."""
@@ -169,6 +194,7 @@ class EvalPipeline:
             if not generated_dialogs:
                 generated_dialogs = self._load_generated_dialogs()
             if not generated_dialogs:
+                # print(self.cfg)
                 logger.error("No generated dialogs found. Cannot proceed with evaluation.")
                 return
 
@@ -179,6 +205,7 @@ class EvalPipeline:
     def _load_generated_dialogs(self) -> List[Dialog]:
         """Load previously generated Dialog files from disk."""
         gen_dir = self.cfg.gen_output_dir
+        # print(gen_dir)
         if not gen_dir.exists():
             return []
         logger.info(f"Loading generated dialogs from {gen_dir}")

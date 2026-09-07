@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Optional, Set
 from tqdm import tqdm
 
 from src.dataset import BenchmarkDataset
-from src.dataset.schema import Dialog
+from src.dataset.schema import Dialog, Turn, TurnEvalConfig
 from src.metric.aggregator import aggregate_results
 from src.model import BaseModel
 
@@ -29,6 +29,63 @@ from src.dataset.data_utils import to_jsonable
 logger = logging.getLogger(__name__)
 
 
+def _resolve_user_simulator_calls(
+    turn: Turn,
+    dataset: BenchmarkDataset,
+    cfg_override: Optional[int],
+) -> int:
+    raw = turn.eval_config.user_simulator_calls
+    if raw == 0:
+        return 0
+    if raw > 0:
+        return raw
+    # raw == -1 (or any negative): use config override or dataset default
+    if cfg_override is not None:
+        return max(int(cfg_override), 0)
+    return max(int(dataset.get_default_user_simulator_calls(turn)), 0)
+
+
+def _append_history(
+    messages: List[Dict[str, str]],
+    turn: Turn,
+    *,
+    content: Optional[str] = None,
+    already_appended: bool = False,
+) -> None:
+    """Append a turn according to its history-retention label."""
+    include_in_history = turn.turn_labels.get("raw_include_in_history", True) is not False
+
+    if already_appended:
+        if not messages or messages[-1].get("role") != turn.role:
+            raise ValueError(f"Generation history does not end with a {turn.role} turn")
+        if not include_in_history:
+            messages.pop()
+        return
+
+    if not include_in_history:
+        return
+    messages.append({"role": turn.role, "content": content if content is not None else turn.content})
+
+
+def _call_model_generate(
+    model: BaseModel,
+    messages: List[Dict[str, str]],
+    *,
+    temperature: Optional[float],
+    max_tokens: Optional[int],
+    dialog_id: Any,
+) -> tuple:
+    gen_res = model.generate(
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        dialog_id=dialog_id,
+    )
+    if isinstance(gen_res, tuple) and len(gen_res) == 2:
+        return gen_res
+    return gen_res, None
+
+
 # ---------------------------------------------------------------------------
 # Single-Dialog processing functions (stateless, concurrency-friendly)
 # ---------------------------------------------------------------------------
@@ -36,61 +93,128 @@ logger = logging.getLogger(__name__)
 def _generate_single_dialog(
     dialog: Dialog,
     model: BaseModel,
+    dataset: BenchmarkDataset,
+    user_sim_model: Optional[BaseModel] = None,
     temperature: Optional[float] = None,
     max_tokens: int = 1024,
+    max_user_simulator_calls_override: Optional[int] = None,
 ) -> Dialog:
     """Generate model responses for a single Dialog, return the updated Dialog."""
-    processed_turns = []
+    processed_turns: List[Turn] = []
     messages: List[Dict[str, str]] = []
     dialog_id = dialog.dialog_id
+    next_turn_id = max((t.turn_id for t in dialog.dialog_turns), default=-1) + 1
 
     model.begin_dialog(dialog_id=dialog_id)
     try:
-        for turn in dialog.dialog_turns:
+        for turn_index, turn in enumerate(dialog.dialog_turns):
             if turn.role == "system":
-                messages.append({"role": "system", "content": turn.content})
+                _append_history(messages, turn)
                 processed_turns.append(turn)
 
             elif turn.role == "user":
+                # Always expose the user input to the upcoming generation.
+                # Durable retention is decided after the assistant turn.
                 messages.append({"role": "user", "content": turn.content})
                 processed_turns.append(turn)
 
             elif turn.role == "assistant":
+                preceding_user = (
+                    dialog.dialog_turns[turn_index - 1]
+                    if turn_index > 0 and dialog.dialog_turns[turn_index - 1].role == "user"
+                    else None
+                )
+                should_generate = bool(turn.eval_config.do_eval) or turn.content is None
+                new_turn = turn.model_copy(deep=True)
 
-                # Check if this turn requires evaluation; if so, generate; otherwise, keep existing content
-                if turn.eval_config.do_eval:
-                    gen_res = model.generate(
-                        messages=messages,
+                if should_generate:
+                    response, response_details = _call_model_generate(
+                        model,
+                        messages,
                         temperature=temperature,
                         max_tokens=max_tokens,
                         dialog_id=dialog_id,
                     )
-                    if isinstance(gen_res, tuple) and len(gen_res) == 2:
-                        response, response_details = gen_res
-                    else:
-                        response, response_details = gen_res, None
-                        
-                    # Build history: use reference or generated response based on dialog config
-                    if dialog.dialog_eval_config.use_reference_history:
-                        messages.append({
-                            "role": "assistant",
-                            "content": turn.reference if turn.reference is not None else turn.content,
-                        })
-                    else:
-                        messages.append({"role": "assistant", "content": response})
-
-                    # Create new turn with generated content
-                    new_turn = turn.model_copy()
                     new_turn.content = response
-                    # Store raw generation details for later debugging/analysis.
-                    # Use `raw_` prefix so downstream evaluation output can filter it out.
                     if response_details is not None:
                         new_turn.turn_labels["raw_response_details"] = to_jsonable(response_details)
-                    
-                    processed_turns.append(new_turn)
+
+                if dialog.dialog_eval_config.use_reference_history and turn.reference is not None:
+                    hist_content = turn.reference if isinstance(turn.reference, str) else str(turn.reference)
                 else:
-                    messages.append({"role": "assistant", "content": turn.content})
-                    processed_turns.append(turn.model_copy())
+                    hist_content = new_turn.content
+
+                if preceding_user is not None:
+                    _append_history(messages, preceding_user, already_appended=True)
+                _append_history(messages, new_turn, content=hist_content)
+                processed_turns.append(new_turn)
+
+                # After each predefined user→assistant pair, optionally run simulator.
+                if (
+                    dialog.dialog_eval_config.enable_user_simulator
+                    and preceding_user is not None
+                    and user_sim_model is not None
+                ):
+                    n_calls = _resolve_user_simulator_calls(
+                        preceding_user, dataset, max_user_simulator_calls_override
+                    )
+                    for _ in range(n_calls):
+                        prompt = dataset.render_user_simulator_prompt(
+                            dialog=dialog,
+                            history_messages=messages,
+                            current_turn=preceding_user,
+                        )
+                        sim_user_text, sim_user_details = _call_model_generate(
+                            user_sim_model,
+                            [{"role": "user", "content": prompt}],
+                            temperature=temperature,
+                            max_tokens=max_tokens,
+                            dialog_id=dialog_id,
+                        )
+                        sim_user_turn = Turn(
+                            turn_id=next_turn_id,
+                            role="user",
+                            content=sim_user_text,
+                            eval_config=TurnEvalConfig(do_eval=False, user_simulator_calls=0),
+                            turn_labels={
+                                "synthesized": True,
+                                "simulator_anchor_turn_id": preceding_user.turn_id,
+                                **(
+                                    {"raw_response_details": to_jsonable(sim_user_details)}
+                                    if sim_user_details is not None
+                                    else {}
+                                ),
+                            },
+                        )
+                        next_turn_id += 1
+                        _append_history(messages, sim_user_turn)
+                        processed_turns.append(sim_user_turn)
+
+                        sim_asst_text, sim_asst_details = _call_model_generate(
+                            model,
+                            messages,
+                            temperature=temperature,
+                            max_tokens=max_tokens,
+                            dialog_id=dialog_id,
+                        )
+                        sim_asst_turn = Turn(
+                            turn_id=next_turn_id,
+                            role="assistant",
+                            content=sim_asst_text,
+                            eval_config=TurnEvalConfig(do_eval=False, user_simulator_calls=0),
+                            turn_labels={
+                                "synthesized": True,
+                                "simulator_anchor_turn_id": preceding_user.turn_id,
+                                **(
+                                    {"raw_response_details": to_jsonable(sim_asst_details)}
+                                    if sim_asst_details is not None
+                                    else {}
+                                ),
+                            },
+                        )
+                        next_turn_id += 1
+                        _append_history(messages, sim_asst_turn)
+                        processed_turns.append(sim_asst_turn)
     finally:
         # Always cleanup dialog-scoped state for stateful agent models.
         model.end_dialog(dialog_id=dialog_id)
@@ -111,7 +235,8 @@ def _evaluate_single_dialog(
 
     for turn in dialog.dialog_turns:
         if turn.role == "user":
-            history_messages.append({"role": "user", "content": turn.content})
+            if turn.turn_labels.get("raw_include_in_history", True) is not False:
+                history_messages.append({"role": "user", "content": turn.content})
 
         elif turn.role == "assistant":
             if turn.eval_config and turn.eval_config.do_eval:
@@ -124,9 +249,13 @@ def _evaluate_single_dialog(
                     metric_inst = metrics_map.get(metric_name)
                     if not metric_inst:
                         continue
-
+                    
+                    if "\n\nAnswer:" in turn.content:
+                        content = turn.content.split("\n\nAnswer:")[1].strip()
+                    else:
+                        content = turn.content
                     score_dict = metric_inst.compute(
-                        prediction=turn.content,
+                        prediction=content, #turn.content,
                         reference=turn.reference,
                         history_messages=history_messages,
                         dataset=dataset,
@@ -152,7 +281,8 @@ def _evaluate_single_dialog(
                         },
                     })
 
-            history_messages.append({"role": "assistant", "content": turn.content})
+            if turn.turn_labels.get("raw_include_in_history", True) is not False:
+                history_messages.append({"role": "assistant", "content": turn.content})
 
     return results
 
@@ -167,10 +297,19 @@ class DataPhase:
     @staticmethod
     def run(dataset: BenchmarkDataset, cfg: EvalPipelineConfig) -> List[Dialog]:
         logger.info("Preprocessing / Loading dataset …")
-        processed_path = dataset.preprocess(
-            raw_path=cfg.raw_data_dir,
-            processed_root=cfg.processed_data_dir,
-        )
+        if cfg.raw_data_dir:
+            processed_path = dataset.preprocess(
+                raw_path=cfg.raw_data_dir,
+                processed_root=cfg.processed_data_dir,
+            )
+        else:
+            processed_path = os.path.join(cfg.processed_data_dir, dataset.dataset_name)
+            meta_path = os.path.join(processed_path, "_meta.json")
+            if not os.path.isdir(processed_path) or not os.path.isfile(meta_path):
+                raise FileNotFoundError(
+                    f"Processed dataset not found at {processed_path}; "
+                    "provide --raw_data_dir to preprocess it"
+                )
         dialogs = list(dataset.load_eval_dialogs(data_root=processed_path, recursive=True, require_alternative_roles=cfg.require_alternative_roles))
         logger.info(f"Loaded {len(dialogs)} dialogs.")
         return dialogs
@@ -184,9 +323,18 @@ class GenerationPhase:
         dialogs: List[Dialog],
         model: BaseModel,
         cfg: EvalPipelineConfig,
+        dataset: Optional[BenchmarkDataset] = None,
+        user_sim_model: Optional[BaseModel] = None,
     ) -> List[Dialog]:
         output_dir = cfg.gen_output_dir
         os.makedirs(output_dir, exist_ok=True)
+        
+        # 0. Load kept dialog ids # modified
+        kept_dialog_ids_path = os.path.join(cfg.down_sampling_dir, f"{cfg.dataset}.json")
+        if os.path.exists(kept_dialog_ids_path):
+            kept_dialog_ids = json.load(open(kept_dialog_ids_path, "r", encoding="utf-8"))
+        else:
+            kept_dialog_ids = None
 
         # 1. Load existing results to support resume
         processed: Dict[int, Dialog] = {}
@@ -202,10 +350,14 @@ class GenerationPhase:
                     logger.warning(f"Failed to parse {p}: {e}")
 
         # 2. Identify remaining tasks
-        remaining = [d for d in dialogs if d.dialog_id not in processed]
+        remaining = [d for d in dialogs if d.dialog_id not in processed and (kept_dialog_ids is None or int(d.dialog_id) in kept_dialog_ids)] # modified
+        
         if not remaining:
             logger.info("All dialogs already generated. Skipping.")
             return sorted(processed.values(), key=lambda x: x.dialog_id)
+
+        if dataset is None:
+            raise ValueError("GenerationPhase.run requires dataset for user-simulator / prompt hooks")
 
         logger.info(f"Generating responses for {len(remaining)} dialogs …")
 
@@ -216,8 +368,11 @@ class GenerationPhase:
                     _generate_single_dialog,
                     d,
                     model,
+                    dataset,
+                    user_sim_model,
                     cfg.temperature,
                     cfg.max_tokens,
+                    cfg.max_user_simulator_calls,
                 ): d
                 for d in remaining
             }
@@ -251,6 +406,13 @@ class EvaluationPhase:
     ) -> List[Dict[str, Any]]:
         output_dir = cfg.eval_output_dir
         os.makedirs(output_dir, exist_ok=True)
+        
+        # 0. Load kept dialog ids # modified
+        kept_dialog_ids_path = os.path.join(cfg.down_sampling_dir, f"{cfg.dataset}.json")
+        if os.path.exists(kept_dialog_ids_path):
+            kept_dialog_ids = json.load(open(kept_dialog_ids_path, "r", encoding="utf-8"))
+        else:
+            kept_dialog_ids = None
 
         # 1. Load existing evaluation results
         processed_ids: Set[int] = set()
@@ -259,6 +421,11 @@ class EvaluationPhase:
         if existing_files:
             logger.info(f"Found {len(existing_files)} existing eval files. Resuming …")
             for p in existing_files:
+
+                # modified
+                if kept_dialog_ids is not None and int(p.stem) not in kept_dialog_ids:
+                    continue
+                
                 try:
                     with open(p, "r", encoding="utf-8") as f:
                         # Each file contains a list of result records for that dialog
@@ -271,7 +438,7 @@ class EvaluationPhase:
                 except Exception as e:
                     logger.warning(f"Failed to parse {p}: {e}")
 
-        remaining = [d for d in generated_dialogs if d.dialog_id not in processed_ids]
+        remaining = [d for d in generated_dialogs if d.dialog_id not in processed_ids and (kept_dialog_ids is None or int(d.dialog_id) in kept_dialog_ids)] # modified
         if not remaining:
             logger.info("All dialogs already evaluated.")
             return all_results

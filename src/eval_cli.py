@@ -19,9 +19,15 @@ logger = logging.getLogger(__name__)
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluation Pipeline")
     parser.add_argument("--dataset", type=str, default=None, help="Benchmark dataset name (e.g., mt_eval)")
-    parser.add_argument("--raw_data_dir", type=str, default=None, help="Path to raw dataset files")
+    parser.add_argument(
+        "--raw_data_dir",
+        type=str,
+        default=None,
+        help="Path to raw dataset files (optional when processed data already exists)",
+    )
     parser.add_argument("--processed_data_dir", type=str, default=None, help="Path to store/load processed dialogs")
     parser.add_argument("--output_dir", type=str, default=None, help="Directory to save evaluation results")
+    parser.add_argument("--down_sampling_dir", type=str, default=None, help="Directory of kept dialog id json files (default: ./down_sampling)")
     parser.add_argument("--require_alternative_roles", action="store_true", help="Whether to require alternative roles, depending on the chat template")
     parser.add_argument("--model_type", type=str, default=None, help="Type of model to use (openai, etc.)")
     parser.add_argument("--model_name", type=str, default=None, help="Model to evaluate (e.g., gpt-3.5-turbo)")
@@ -34,6 +40,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max_tokens", type=int, default=None, help="Maximum tokens for model generation")
     parser.add_argument("--judge_model_type", type=str, default=None, help="Type of judge model to use (openai, etc.)")
     parser.add_argument("--judge_model_name", type=str, default=None, help="Judge model name for LLM-based metrics")
+    parser.add_argument(
+        "--user_simulator_model_type",
+        type=str,
+        default=None,
+        help="User simulator model type (default: reuse --model_type)",
+    )
+    parser.add_argument(
+        "--user_simulator_model_name",
+        type=str,
+        default=None,
+        help="User simulator model name (default: reuse --model_name)",
+    )
+    parser.add_argument(
+        "--max_user_simulator_calls",
+        type=int,
+        default=None,
+        help="Override default simulated rounds for turns with user_simulator_calls=-1",
+    )
     parser.add_argument("--parallel", type=int, default=None, help="Number of parallel threads/processes")
     parser.add_argument("--api_key", type=str, default=None, help="API key (or set OPENAI_API_KEY)")
     parser.add_argument("--base_url", type=str, default=None, help="API Base URL")
@@ -74,6 +98,7 @@ def args_to_config(args: argparse.Namespace) -> EvalPipelineConfig:
         raw_data_dir=args.raw_data_dir,
         processed_data_dir=args.processed_data_dir,
         output_dir=args.output_dir,
+        down_sampling_dir=args.down_sampling_dir,
         require_alternative_roles=args.require_alternative_roles,
         model_type=args.model_type,
         model_name=args.model_name,
@@ -81,6 +106,9 @@ def args_to_config(args: argparse.Namespace) -> EvalPipelineConfig:
         max_tokens=args.max_tokens,
         judge_model_type=args.judge_model_type,
         judge_model_name=args.judge_model_name,
+        user_simulator_model_type=args.user_simulator_model_type,
+        user_simulator_model_name=args.user_simulator_model_name,
+        max_user_simulator_calls=args.max_user_simulator_calls,
         embedding_model_name=args.embedding_model_name,
         api_key=args.api_key,
         base_url=args.base_url,

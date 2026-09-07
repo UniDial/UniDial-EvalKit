@@ -7,13 +7,17 @@ from .base import (
     PrecisionMetric,
     RecallMetric,
 )
+from .hamming import HammingMetric
+from .jaccard import JaccardMetric
 from src.registry import METRIC_REGISTRY, register_metric
 
 # Import metric modules to trigger @register_metric decorators.
 from . import (  # noqa: F401
     base,
     code_match,
+    hamming,
     instruction_following,
+    jaccard,
     llm_judge,
     numeric_match,
 )
@@ -41,6 +45,8 @@ __all__ = [
     "RecallMetric",
     "ExactMatchMetric",
     "F1Metric",
+    "HammingMetric",
+    "JaccardMetric",
     "METRIC_REGISTRY",
     "register_metric",
     "get_metric_class",

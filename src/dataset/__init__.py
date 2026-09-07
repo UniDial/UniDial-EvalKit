@@ -5,6 +5,7 @@ from src.registry import DATASET_REGISTRY, register_dataset
 
 # Import dataset modules to trigger @register_dataset decorators.
 from . import (  # noqa: F401
+    amemgym,
     locomo,
     longmemeval,
     mathchat,

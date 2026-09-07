@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Union
+from typing import Any, Iterable, Iterator, Union, Optional, Tuple
+import re
 
 from .schema import Dialog
 
@@ -50,6 +51,52 @@ def to_jsonable(obj: Any) -> Any:
         return {"_repr": repr(obj)}
     except Exception:
         return {"_repr": "<unserializable>"}
+    
+    
+
+_DATE_PREFIX_RE = re.compile(r"^\s*DATE:\s*", flags=re.IGNORECASE)
+_ROLE_PREFIX_RE = re.compile(r"^\s*(user|assistant|system)\s*:\s*", flags=re.IGNORECASE)
+
+
+def normalize_statement(content: str) -> Tuple[str, Optional[str]]:
+    """
+    Normalize a dialogue statement.
+
+    Steps:
+    1. Extract leading DATE info if present.
+    2. Remove repeated leading role labels such as User:/Assistant:/System:.
+
+    Returns:
+        (normalized_text, date_info)
+    """
+    text = content if isinstance(content, str) else str(content)
+    date_info: Optional[str] = None
+
+    date_match = _DATE_PREFIX_RE.match(text)
+    if date_match:
+        after_date = text[date_match.end():]
+        if "\n\n" in after_date:
+            date_line, _, rest = after_date.partition("\n\n")
+            date_info = date_line.strip() or None
+            text = rest.strip()
+        elif "\n" in after_date:
+            date_line, _, rest = after_date.partition("\n")
+            date_info = date_line.strip() or None
+            text = rest.strip()
+        else:
+            date_info = after_date.strip() or None
+            text = ""
+
+    normalized = text
+    while True:
+        match = _ROLE_PREFIX_RE.match(normalized)
+        if not match:
+            break
+        normalized = normalized[match.end():]
+
+    return normalized.strip(), date_info
+
+
 
 
 # def load_dialogs_from_jsonl(path: PathLike) -> Iterator[Dialog]:
