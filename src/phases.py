@@ -98,12 +98,48 @@ def _generate_single_dialog(
     temperature: Optional[float] = None,
     max_tokens: int = 1024,
     max_user_simulator_calls_override: Optional[int] = None,
+    checkpoint_path: Optional[Any] = None,
+    resume_dialog: Optional[Dialog] = None,
 ) -> Dialog:
-    """Generate model responses for a single Dialog, return the updated Dialog."""
+    """Generate one dialog, checkpoint each new model output, and resume saved turns."""
     processed_turns: List[Turn] = []
     messages: List[Dict[str, str]] = []
     dialog_id = dialog.dialog_id
-    next_turn_id = max((t.turn_id for t in dialog.dialog_turns), default=-1) + 1
+
+    # Index completed predefined turns by turn_id and simulator turns by their
+    # anchor user turn so both kinds can be replayed without another model call.
+    saved_turns = resume_dialog.dialog_turns if resume_dialog is not None else []
+    saved_predefined = {
+        turn.turn_id: turn
+        for turn in saved_turns
+        if not turn.turn_labels.get("synthesized", False)
+    }
+    saved_synthesized: Dict[int, List[Turn]] = {}
+    for turn in saved_turns:
+        if turn.turn_labels.get("synthesized", False):
+            anchor_id = turn.turn_labels.get("simulator_anchor_turn_id")
+            saved_synthesized.setdefault(anchor_id, []).append(turn)
+
+    # Continue synthesized IDs after both original and previously saved turns.
+    next_turn_id = max(
+        (t.turn_id for t in [*dialog.dialog_turns, *saved_turns]),
+        default=-1,
+    ) + 1
+
+    def save_checkpoint(complete: bool = False) -> Dialog:
+        result = dialog.model_copy(deep=True)
+        result.dialog_turns = list(processed_turns)
+        if complete:
+            result.dialog_labels.pop("_generation_incomplete", None)
+        else:
+            result.dialog_labels["_generation_incomplete"] = True
+        if checkpoint_path is not None:
+            # Keep the previous valid checkpoint until the new JSON is complete.
+            tmp_path = f"{checkpoint_path}.tmp"
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                f.write(result.model_dump_json(indent=2))
+            os.replace(tmp_path, checkpoint_path)
+        return result
 
     model.begin_dialog(dialog_id=dialog_id)
     try:
@@ -125,9 +161,16 @@ def _generate_single_dialog(
                     else None
                 )
                 should_generate = bool(turn.eval_config.do_eval) or turn.content is None
-                new_turn = turn.model_copy(deep=True)
 
-                if should_generate:
+                # A saved turn is replayed into history; only a missing turn is generated.
+                saved_turn = saved_predefined.get(turn.turn_id)
+                new_turn = (
+                    saved_turn.model_copy(deep=True)
+                    if saved_turn is not None
+                    else turn.model_copy(deep=True)
+                )
+
+                if should_generate and saved_turn is None:
                     response, response_details = _call_model_generate(
                         model,
                         messages,
@@ -148,6 +191,8 @@ def _generate_single_dialog(
                     _append_history(messages, preceding_user, already_appended=True)
                 _append_history(messages, new_turn, content=hist_content)
                 processed_turns.append(new_turn)
+                if should_generate and saved_turn is None:
+                    save_checkpoint()
 
                 # After each predefined user→assistant pair, optionally run simulator.
                 if (
@@ -158,70 +203,93 @@ def _generate_single_dialog(
                     n_calls = _resolve_user_simulator_calls(
                         preceding_user, dataset, max_user_simulator_calls_override
                     )
+                    # Resume at any point in the saved simulator user/assistant sequence.
+                    resumed_sim_turns = saved_synthesized.get(preceding_user.turn_id, [])
+                    resumed_sim_index = 0
                     for _ in range(n_calls):
-                        prompt = dataset.render_user_simulator_prompt(
-                            dialog=dialog,
-                            history_messages=messages,
-                            current_turn=preceding_user,
-                        )
-                        sim_user_text, sim_user_details = _call_model_generate(
-                            user_sim_model,
-                            [{"role": "user", "content": prompt}],
-                            temperature=temperature,
-                            max_tokens=max_tokens,
-                            dialog_id=dialog_id,
-                        )
-                        sim_user_turn = Turn(
-                            turn_id=next_turn_id,
-                            role="user",
-                            content=sim_user_text,
-                            eval_config=TurnEvalConfig(do_eval=False, user_simulator_calls=0),
-                            turn_labels={
-                                "synthesized": True,
-                                "simulator_anchor_turn_id": preceding_user.turn_id,
-                                **(
-                                    {"raw_response_details": to_jsonable(sim_user_details)}
-                                    if sim_user_details is not None
-                                    else {}
-                                ),
-                            },
-                        )
-                        next_turn_id += 1
+                        generated_sim_user = False
+                        if (
+                            resumed_sim_index < len(resumed_sim_turns)
+                            and resumed_sim_turns[resumed_sim_index].role == "user"
+                        ):
+                            sim_user_turn = resumed_sim_turns[resumed_sim_index].model_copy(deep=True)
+                            resumed_sim_index += 1
+                        else:
+                            prompt = dataset.render_user_simulator_prompt(
+                                dialog=dialog,
+                                history_messages=messages,
+                                current_turn=preceding_user,
+                            )
+                            sim_user_text, sim_user_details = _call_model_generate(
+                                user_sim_model,
+                                [{"role": "user", "content": prompt}],
+                                temperature=temperature,
+                                max_tokens=max_tokens,
+                                dialog_id=dialog_id,
+                            )
+                            sim_user_turn = Turn(
+                                turn_id=next_turn_id,
+                                role="user",
+                                content=sim_user_text,
+                                eval_config=TurnEvalConfig(do_eval=False, user_simulator_calls=0),
+                                turn_labels={
+                                    "synthesized": True,
+                                    "simulator_anchor_turn_id": preceding_user.turn_id,
+                                    **(
+                                        {"raw_response_details": to_jsonable(sim_user_details)}
+                                        if sim_user_details is not None
+                                        else {}
+                                    ),
+                                },
+                            )
+                            next_turn_id += 1
+                            generated_sim_user = True
                         _append_history(messages, sim_user_turn)
                         processed_turns.append(sim_user_turn)
+                        if generated_sim_user:
+                            save_checkpoint()
 
-                        sim_asst_text, sim_asst_details = _call_model_generate(
-                            model,
-                            messages,
-                            temperature=temperature,
-                            max_tokens=max_tokens,
-                            dialog_id=dialog_id,
-                        )
-                        sim_asst_turn = Turn(
-                            turn_id=next_turn_id,
-                            role="assistant",
-                            content=sim_asst_text,
-                            eval_config=TurnEvalConfig(do_eval=False, user_simulator_calls=0),
-                            turn_labels={
-                                "synthesized": True,
-                                "simulator_anchor_turn_id": preceding_user.turn_id,
-                                **(
-                                    {"raw_response_details": to_jsonable(sim_asst_details)}
-                                    if sim_asst_details is not None
-                                    else {}
-                                ),
-                            },
-                        )
-                        next_turn_id += 1
+                        generated_sim_assistant = False
+                        if (
+                            resumed_sim_index < len(resumed_sim_turns)
+                            and resumed_sim_turns[resumed_sim_index].role == "assistant"
+                        ):
+                            sim_asst_turn = resumed_sim_turns[resumed_sim_index].model_copy(deep=True)
+                            resumed_sim_index += 1
+                        else:
+                            sim_asst_text, sim_asst_details = _call_model_generate(
+                                model,
+                                messages,
+                                temperature=temperature,
+                                max_tokens=max_tokens,
+                                dialog_id=dialog_id,
+                            )
+                            sim_asst_turn = Turn(
+                                turn_id=next_turn_id,
+                                role="assistant",
+                                content=sim_asst_text,
+                                eval_config=TurnEvalConfig(do_eval=False, user_simulator_calls=0),
+                                turn_labels={
+                                    "synthesized": True,
+                                    "simulator_anchor_turn_id": preceding_user.turn_id,
+                                    **(
+                                        {"raw_response_details": to_jsonable(sim_asst_details)}
+                                        if sim_asst_details is not None
+                                        else {}
+                                    ),
+                                },
+                            )
+                            next_turn_id += 1
+                            generated_sim_assistant = True
                         _append_history(messages, sim_asst_turn)
                         processed_turns.append(sim_asst_turn)
+                        if generated_sim_assistant:
+                            save_checkpoint()
     finally:
         # Always cleanup dialog-scoped state for stateful agent models.
         model.end_dialog(dialog_id=dialog_id)
 
-    new_dialog = dialog.model_copy()
-    new_dialog.dialog_turns = processed_turns
-    return new_dialog
+    return save_checkpoint(complete=True)
 
 
 def _evaluate_single_dialog(
@@ -338,6 +406,7 @@ class GenerationPhase:
 
         # 1. Load existing results to support resume
         processed: Dict[int, Dialog] = {}
+        partial: Dict[int, Dialog] = {}
         existing_files = list(output_dir.glob("*.json"))
         if existing_files:
             logger.info(f"Found {len(existing_files)} existing generated files. Resuming …")
@@ -345,7 +414,10 @@ class GenerationPhase:
                 try:
                     with open(p, "r", encoding="utf-8") as f:
                         d = Dialog.model_validate_json(f.read())
-                        processed[d.dialog_id] = d
+                        if d.dialog_labels.get("_generation_incomplete"):
+                            partial[d.dialog_id] = d
+                        else:
+                            processed[d.dialog_id] = d
                 except Exception as e:
                     logger.warning(f"Failed to parse {p}: {e}")
 
@@ -373,6 +445,8 @@ class GenerationPhase:
                     cfg.temperature,
                     cfg.max_tokens,
                     cfg.max_user_simulator_calls,
+                    output_dir / f"{d.dialog_id}.json",
+                    partial.get(d.dialog_id),
                 ): d
                 for d in remaining
             }
@@ -384,9 +458,6 @@ class GenerationPhase:
                 d = future_map[future]
                 try:
                     res = future.result()
-                    file_path = output_dir / f"{res.dialog_id}.json"
-                    with open(file_path, "w", encoding="utf-8") as f:
-                        f.write(res.model_dump_json(indent=2))
                     processed[res.dialog_id] = res
                 except Exception as e:
                     logger.error(f"Generation failed for dialog {d.dialog_id}: {e}")
