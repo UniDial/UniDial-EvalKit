@@ -350,7 +350,20 @@ def _evaluate_single_dialog(
                     })
 
             if turn.turn_labels.get("raw_include_in_history", True) is not False:
-                history_messages.append({"role": "assistant", "content": turn.content})
+                if (
+                    dialog.dialog_eval_config.use_reference_history
+                    and turn.reference is not None
+                ):
+                    history_content = (
+                        turn.reference
+                        if isinstance(turn.reference, str)
+                        else str(turn.reference)
+                    )
+                else:
+                    history_content = turn.content
+                history_messages.append(
+                    {"role": "assistant", "content": history_content}
+                )
 
     return results
 

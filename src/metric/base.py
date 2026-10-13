@@ -253,6 +253,13 @@ class ExactMatchMetric(BaseMetric):
             if end_token and prediction.endswith(end_token):
                 prediction = prediction[:-len(end_token)].strip()
 
+        if kwargs.get("parse_json"):
+            try:
+                score = 1.0 if json.loads(prediction) == json.loads(reference) else 0.0
+                return {"score": score}
+            except (TypeError, ValueError, json.JSONDecodeError):
+                pass
+
         if self.lower:
             prediction = prediction.lower()
             reference = reference.lower()

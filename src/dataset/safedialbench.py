@@ -246,7 +246,7 @@ class SafeDialBenchDataset(BenchmarkDataset):
             turn_id += 1
 
 
-            if method in ["Topic Inversion", "Purpose Inversion"] and turn_index != len(history) - 1:
+            if method in ["Topic Change", "Purpose Reverse"] and turn_index != len(history) - 1: # <fix>
                 
                 turns.append(Turn(turn_id=turn_id, role="assistant", content=assistant_text, reference=assistant_text))
                 turn_id += 1

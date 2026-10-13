@@ -32,7 +32,7 @@ class EvalPipelineConfig:
 
     # Judge model
     judge_model_type: str = "openai"
-    judge_model_name: str = "gpt-4.1-2025-04-14"
+    judge_model_name: str = "gpt-4.1" # -2025-04-14
 
     # User simulator model (None => reuse generation model_type / model_name)
     user_simulator_model_type: Optional[str] = None

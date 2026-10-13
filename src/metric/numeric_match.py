@@ -37,6 +37,7 @@ class NumericMatchMetric(BaseMetric):
         prediction: Union[str, int, float],
         reference: Optional[Union[str, int, float]],
         history_messages: Dict[str, Any],
+        reference_answer_tag: Optional[str] = None,
         **kwargs: Any,
     ) -> Dict[str, Any]:
         
@@ -48,7 +49,17 @@ class NumericMatchMetric(BaseMetric):
         
 
         pred_num = self.number_extractor(pred_str)
-        ref_num = self.number_extractor(ref_str)
+        ref_num = None
+        if reference_answer_tag:
+            tagged_answers = re.findall(
+                rf'\\{re.escape(reference_answer_tag)}\{{([^{{}}]+)\}}',
+                ref_str,
+                flags=re.IGNORECASE,
+            )
+            if tagged_answers:
+                ref_num = self.number_extractor(tagged_answers[-1])
+        if ref_num is None:
+            ref_num = self.number_extractor(ref_str)
         
         if pred_num is None or ref_num is None:
             # If we can't extract numbers from either, fallback to exact string match?

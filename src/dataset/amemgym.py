@@ -294,7 +294,7 @@ class AmemgymDataset(BenchmarkDataset):
             "mode": "aligned",
         }
         return [
-            MetricConfig(class_name="exact_match", args=dict(fence_args)),
+            MetricConfig(class_name="exact_match", args={**fence_args, "parse_json": True}),
             MetricConfig(class_name="hamming", args={k: v for k, v in sequence_args.items() if k != "mode"}),
             MetricConfig(class_name="jaccard", args=dict(sequence_args)),
         ]

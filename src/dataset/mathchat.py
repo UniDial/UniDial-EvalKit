@@ -120,17 +120,25 @@ Finally, output the results in the following JSON format:
                         yield self._process_p2p_generation(item, dialog_id, task_name, file_name, line_index,)
                 
 
-    def _parse_conversation(self, conversation: str):
+    def _parse_conversation_turns(self, conversation: str):
         pattern = r'\n*\s*(A:|B:)'
         parts = re.split(pattern, conversation)
-        a_dialogue, b_dialogue = [], []
-        
+        conversation_turns = []
+
         for i in range(1, len(parts), 2):
-            speaker = parts[i]
+            speaker = parts[i][0]
             dialogue = parts[i+1].strip()
-            if speaker == 'A:':
+            conversation_turns.append((speaker, dialogue))
+
+        return conversation_turns
+
+    def _parse_conversation(self, conversation: str):
+        a_dialogue, b_dialogue = [], []
+
+        for speaker, dialogue in self._parse_conversation_turns(conversation):
+            if speaker == 'A':
                 a_dialogue.append(dialogue)
-            elif speaker == 'B:':
+            elif speaker == 'B':
                 b_dialogue.append(dialogue)
         return a_dialogue, b_dialogue
 
@@ -160,7 +168,12 @@ Finally, output the results in the following JSON format:
             reference=original_answer,
             eval_config=TurnEvalConfig(
                 do_eval=True,
-                metrics=[MetricConfig(class_name="numeric_match")] 
+                metrics=[
+                    MetricConfig(
+                        class_name="numeric_match",
+                        args={"reference_answer_tag": "ANSWER"},
+                    )
+                ]
             )
         ))
         turn_id += 1
@@ -183,7 +196,12 @@ Finally, output the results in the following JSON format:
                 reference=ref,
                 eval_config=TurnEvalConfig(
                     do_eval=True,
-                    metrics=[MetricConfig(class_name="numeric_match")]
+                    metrics=[
+                        MetricConfig(
+                            class_name="numeric_match",
+                            args={"reference_answer_tag": "ANSWER"},
+                        )
+                    ]
                 )
             ))
             turn_id += 1
@@ -213,33 +231,29 @@ Finally, output the results in the following JSON format:
         return dialog
 
     def _process_error_correction(self, item: Dict[str, Any], dialog_id: str, task_name: str, file_name: str, line_index: int) -> Dialog:
-        a_dialogue, b_dialogue = self._parse_conversation(item['error_correction'])
+        conversation_turns = self._parse_conversation_turns(item['error_correction'])
+        target_index = next(
+            (i for i in range(len(conversation_turns) - 1, -1, -1)
+             if conversation_turns[i][0] == 'B'),
+            None,
+        )
+        if target_index is None:
+            raise ValueError(
+                f"MathChat error_correction has no B target at {file_name}:{line_index}"
+            )
         
         turns = []
         turn_id = 0
-        
-        turns.append(Turn(
-            turn_id=turn_id,
-            role="user",
-            content="Please give me a math problem and I will answer that. You need to analyze my solution and correct it if I make errors."
-        ))
-        turn_id += 1
-        
-        # Context Turn (Pre-filled Assistant)
-        turns.append(Turn(
-            turn_id=turn_id,
-            role="assistant",
-            content=a_dialogue[0] if a_dialogue else ""
-        ))
-        turn_id += 1
-        
-        # Context Turn (User - the one with errors?)
-        turns.append(Turn(
-            turn_id=turn_id,
-            role="user",
-            content=b_dialogue[0] if b_dialogue else ""
-        ))
-        turn_id += 1
+
+        # A is the user and B is the assistant. Hold out the final B turn as
+        # the generation target and preserve every preceding correction round.
+        for speaker, content in conversation_turns[:target_index]:
+            turns.append(Turn(
+                turn_id=turn_id,
+                role="user" if speaker == 'A' else "assistant",
+                content=content,
+            ))
+            turn_id += 1
         
         # Final Turn to Generate
         turns.append(Turn(
@@ -276,7 +290,24 @@ Finally, output the results in the following JSON format:
         return dialog
 
     def _process_error_analysis(self, item: Dict[str, Any], dialog_id: str, task_name: str, file_name: str, line_index: int) -> Dialog: 
-        a_dialogue, b_dialogue = self._parse_conversation(item.get('error_correction', '')) 
+        conversation_text = (
+            item.get('error_analysis')
+            or item.get('error_correction', '')
+        )
+        conversation_turns = self._parse_conversation_turns(conversation_text)
+        target_index = next(
+            (i for i in range(len(conversation_turns) - 1, -1, -1)
+             if conversation_turns[i][0] == 'A'),
+            None,
+        )
+        if target_index is None:
+            raise ValueError(
+                f"MathChat error_analysis has no A target at {file_name}:{line_index}"
+            )
+        wrong_attempt = next(
+            (content for speaker, content in conversation_turns if speaker == 'B'),
+            "",
+        )
         
         turns = []
         turn_id = 0
@@ -287,20 +318,16 @@ Finally, output the results in the following JSON format:
             content="Please give me a math problem and I will answer that. You need to analyze my solution and correct it if I make errors."
         ))
         turn_id += 1
-        
-        turns.append(Turn(
-            turn_id=turn_id,
-            role="assistant",
-            content=a_dialogue[0] if a_dialogue else ""
-        ))
-        turn_id += 1
-        
-        turns.append(Turn(
-            turn_id=turn_id,
-            role="user",
-            content=b_dialogue[0] if b_dialogue else ""
-        ))
-        turn_id += 1
+
+        # In error analysis, A is the assistant and B is the user. Hold out
+        # the final A turn and retain all earlier analysis/follow-up rounds.
+        for speaker, content in conversation_turns[:target_index]:
+            turns.append(Turn(
+                turn_id=turn_id,
+                role="assistant" if speaker == 'A' else "user",
+                content=content,
+            ))
+            turn_id += 1
         
         # Capture context for rendering in prompt
         # We need to pass the context: Question (a[0]), Wrong Attempt (b[0]), Correct Solution (item['answer'])
@@ -309,7 +336,7 @@ Finally, output the results in the following JSON format:
         dynamic_config = {
             "task_name": task_name, 
             "question": item["question"],
-            "wrong_attempt": b_dialogue[0] if b_dialogue else "",
+            "wrong_attempt": wrong_attempt,
         }
         
         # Final Turn
@@ -454,5 +481,5 @@ Finally, output the results in the following JSON format:
 
 
     def metric_configs(self) -> List[str]:
-        return {"llm_judge": {"min_score": 1, "max_score": 15}, "numeric_match":{}}
+        return {"llm_judge": {"min_score": 3, "max_score": 15}, "numeric_match":{}}
     
